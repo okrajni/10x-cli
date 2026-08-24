@@ -57,6 +57,23 @@ No critical or high-severity findings at scaffold time. Audit deferred pending `
 
 ## Next steps
 
-Your frontend is scaffolded. Run `npm install` and `npm run dev` to start the Vite dev server. A future skill will set up agent context (`CLAUDE.md`, `AGENTS.md`) and CI workflows. For now, happy hacking.
+### Frontend (root directory)
+```bash
+npm install
+npm run dev
+```
 
-**Backend scope:** This run only scaffolded the frontend (Vite + React). The backend (Spring Boot) is a separate scaffold — you'll run `/10x-bootstrapper` again with a backend-focused hand-off, or scaffold the backend manually if you prefer.
+### Backend (backend/ subdirectory)
+```bash
+cd backend
+./mvnw dependency:resolve
+./mvnw spring-boot:run
+```
+
+### Full-stack integration
+- Configure `backend/src/main/resources/application.properties` for PostgreSQL connection
+- Create `.env` in root for frontend API_BASE_URL pointing to backend
+- Set up GitHub Actions CI/CD workflows in `.github/workflows/`
+- Test WebSocket real-time sync between frontend and backend
+
+A future skill will generate `CLAUDE.md`, `AGENTS.md`, and CI workflow templates. For now, your full-stack project is scaffolded and tests pass — happy hacking!
