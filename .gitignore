@@ -8,3 +8,26 @@ coverage/
 tests/e2e/.env.test
 .vitest-cache/
 .claude/
+
+
+!.vscode/extensions.json
+# Editor directories and files
+# Logs
+*.local
+*.njsproj
+*.ntvs*
+*.sln
+*.suo
+*.sw?
+.idea
+.vscode/*
+dist
+dist-ssr
+lerna-debug.log*
+logs
+node_modules
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+# from vite-react
