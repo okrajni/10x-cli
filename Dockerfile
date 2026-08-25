@@ -7,7 +7,7 @@ COPY src/ ./src/
 RUN mvn clean package -DskipTests
 
 # Runtime stage: use minimal JRE image
-FROM eclipse-temurin:21-jre-focal
+FROM eclipse-temurin:21-jre-bookworm
 WORKDIR /app
 
 # Copy built JAR from builder stage
