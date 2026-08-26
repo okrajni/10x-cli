@@ -3,16 +3,23 @@ status: approved
 created_at: 2026-08-25T13:00:00Z
 milestone: module-1-lesson-5
 deployment_target: fly-io
-application_name: 10x-cli-mvp
+application_name: doneyet
 region: sjc
 ---
 
 # Deployment Plan: 10x-cli to Fly.io (MVP)
 
-**Status**: ✓ Approved  
+**Status**: ✓ Complete and Live  
 **Deployer**: Joanna Okrajni  
-**Date**: 2026-08-25  
+**Date**: 2026-08-25 (Final: 2026-08-26)  
 **Reference**: Module 1, Lesson 5 — Infrastructure & Deployment
+
+**Migration Complete (2026-08-26)**:
+- App renamed from `10x-cli-mvp-restless-petal-7183` to `doneyet`
+- New Fly.io Managed Postgres database created and attached
+- Database connection SSL configured
+- App now live and responding on https://doneyet.fly.dev/
+- Both machines (sjc region) running and healthy
 
 ---
 
@@ -59,7 +66,7 @@ The plan was created following the anti-bias cross-check framework from `/contex
 ### ✓ Phase 3: Fly.io Account Setup & Initialization (COMPLETE)
 
 - [x] `flyctl` CLI installed and authenticated
-- [x] Fly.io app initialized: `10x-cli-mvp-restless-petal-7183`
+- [x] Fly.io app initialized: `doneyet-restless-petal-7183`
 - [x] Region: San Jose (sjc)
 - [x] `fly.toml` generated and configured
 
@@ -79,7 +86,7 @@ The plan was created following the anti-bias cross-check framework from `/contex
 - [x] Application built and deployed
 - [x] PostgreSQL database connection configured
 - [x] Both machines (2/2) running and healthy
-- [x] App responds to HTTP requests on https://10x-cli-mvp.fly.dev
+- [x] App responds to HTTP requests on https://doneyet.fly.dev
 - [x] Database connection verified (no connection errors in logs)
 
 ---
@@ -110,7 +117,7 @@ The plan was created following the anti-bias cross-check framework from `/contex
 
 3. **Initialize Fly.io App**
    ```bash
-   flyctl launch --name 10x-cli-mvp --region sjc
+   flyctl launch --name doneyet --region sjc
    ```
    - Say "No" to: "Copy configuration from existing app?"
    - Say "No" to: "Set up PostgreSQL database now?" (we'll do this separately)
@@ -151,7 +158,7 @@ flyctl config view
 **Option A: Use Fly.io Managed Postgres (Recommended)**
 ```bash
 flyctl postgres create --name 10x-cli-db --region sjc
-flyctl postgres attach 10x-cli-db --app 10x-cli-mvp
+flyctl postgres attach 10x-cli-db --app doneyet
 flyctl config view | grep DATABASE_URL  # Verify connection string
 ```
 
@@ -185,7 +192,7 @@ flyctl secrets set DATABASE_URL="postgresql://user:pass@external-host:5432/10x-c
 
 4. **Smoke test public URL**
    ```bash
-   curl -i https://10x-cli-mvp.fly.dev/health
+   curl -i https://doneyet.fly.dev/health
    # Expected: 200 OK
    ```
 
@@ -202,7 +209,7 @@ flyctl secrets set DATABASE_URL="postgresql://user:pass@external-host:5432/10x-c
 ### ✓ Phase 8: Post-Deployment Verification (COMPLETE)
 
 - [x] 2 machines running and healthy (sjc region)
-- [x] App responds to HTTP requests (https://10x-cli-mvp.fly.dev/)
+- [x] App responds to HTTP requests (https://doneyet.fly.dev/)
 - [x] Database connectivity verified
 - [x] No ERROR logs in startup
 - [x] Both machines show clean startup: "Started DoneYetApplication"
@@ -218,7 +225,7 @@ flyctl secrets set DATABASE_URL="postgresql://user:pass@external-host:5432/10x-c
 - **Database**: Fly.io Managed PostgreSQL (1zqyxr7gldxrwp8m)
 - **Region**: San Jose (sjc)
 - **Machines**: 2 × shared-cpu-1x (1GB RAM each)
-- **URL**: https://10x-cli-mvp.fly.dev/
+- **URL**: https://doneyet.fly.dev/
 - **CI/CD**: GitHub Actions auto-deploy on push to main/master
 
 ### Archived Phases
@@ -299,7 +306,7 @@ flyctl secrets set DATABASE_URL="postgresql://user:pass@external-host:5432/10x-c
    ```
 
 3. **Test functionality**
-   - Health endpoint: `curl https://10x-cli-mvp.fly.dev/health`
+   - Health endpoint: `curl https://doneyet.fly.dev/health`
    - Database connectivity: Check app logs for DB connection success
    - Telegram integration: Verify bot token loaded (app logs)
 
@@ -351,7 +358,7 @@ Typical rollback time: 2–3 minutes.
 | Secrets configured | 4 | ✓ | 5 secrets deployed (DATABASE_URL, USERNAME, PASSWORD, TELEGRAM_BOT_TOKEN, OPENAI_API_KEY) |
 | Database provisioned | 5 | ✓ | `flyctl mpg status 1zqyxr7gldxrwp8m` shows "ready" |
 | App deployed | 6 | ✓ | 2 machines running and healthy |
-| App responds to HTTP | 6 | ✓ | `curl https://10x-cli-mvp.fly.dev/` → 404 (app running, no endpoints defined) |
+| App responds to HTTP | 6 | ✓ | `curl https://doneyet.fly.dev/` → 404 (app running, no endpoints defined) |
 | GitHub Actions configured | 7 | ✓ | FLY_API_TOKEN stored; workflow ready on push to main |
 | Machines healthy | 8 | ✓ | Both machines started and responding; clean logs |
 
