@@ -9,7 +9,7 @@ tech_stack:
   framework: Spring Boot
   runtime: JVM
   package_manager: Maven
-  database: MySQL / PostgreSQL
+  database: PostgreSQL
 ---
 
 ## Recommendation
