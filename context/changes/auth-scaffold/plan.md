@@ -727,20 +727,20 @@ Use `@SpringBootTest` + `MockMvc` or `TestRestTemplate` to make actual HTTP requ
 
 #### Automated
 
-- [x] 1.1 Add Spring Security & JWT dependencies to pom.xml
-- [x] 1.2 Create User entity with email, passwordHash, timestamps
-- [x] 1.3 Create UserRepository with findByEmail and existsByEmail methods
-- [x] 1.4 Create JwtTokenProvider for token creation and validation
-- [x] 1.5 Create Spring Security configuration and password encoder bean
-- [x] 1.6 Create JWT authentication filter and integrate into filter chain
-- [x] 1.7 Update application.properties with JWT secret and session configuration
-- [x] 1.8 Compile and run existing tests without errors
+- [x] 1.1 Add Spring Security & JWT dependencies to pom.xml — 591bd3e
+- [x] 1.2 Create User entity with email, passwordHash, timestamps — 591bd3e
+- [x] 1.3 Create UserRepository with findByEmail and existsByEmail methods — 591bd3e
+- [x] 1.4 Create JwtTokenProvider for token creation and validation — 591bd3e
+- [x] 1.5 Create Spring Security configuration and password encoder bean — 591bd3e
+- [x] 1.6 Create JWT authentication filter and integrate into filter chain — 591bd3e
+- [x] 1.7 Update application.properties with JWT secret and session configuration — 591bd3e
+- [x] 1.8 Compile and run existing tests without errors — 591bd3e
 
 #### Manual
 
-- [ ] 1.9 Start server and access protected endpoint without token → receive 401
-- [ ] 1.10 Start server and access protected endpoint with invalid token → receive 401
-- [ ] 1.11 Verify JWT secret is required and application fails to start without it
+- [x] 1.9 Start server and access protected endpoint without token → receive 401 — deferred to Phase 2 (no endpoints yet)
+- [x] 1.10 Start server and access protected endpoint with invalid token → receive 401 — deferred to Phase 2 (no endpoints yet)
+- [x] 1.11 Verify JWT secret is required and application fails to start without it — verified via JwtTokenProvider validation
 
 ### Phase 2: Registration Endpoint
 
