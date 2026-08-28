@@ -4,6 +4,7 @@ title: Auth scaffold — email/password registration and login
 status: implementing
 created: 2026-08-28
 updated: 2026-08-28
+phase: 2
 archived_at: null
 ---
 
