@@ -415,20 +415,20 @@ Write comprehensive tests to verify entity relationships, soft-delete behavior, 
 
 #### Manual
 
-- [ ] 2.5 Repository queries return expected results
-- [ ] 2.6 Household isolation verified
-- [ ] 2.7 Cross-household queries blocked
+- [x] 2.5 Repository queries return expected results — 0e59f7d
+- [x] 2.6 Household isolation verified — 0e59f7d
+- [x] 2.7 Cross-household queries blocked — 0e59f7d
 
 ### Phase 3: Schema Verification & Testing
 
 #### Automated
 
-- [x] 3.1 Full test suite passes
-- [x] 3.2 Coverage >80%
-- [x] 3.3 Constraint tests pass
+- [x] 3.1 Full test suite passes — 8a79eec
+- [x] 3.2 Coverage >80% — 8a79eec
+- [x] 3.3 Constraint tests pass — 8a79eec
 
 #### Manual
 
-- [ ] 3.4 Schema dump verified against spec
-- [ ] 3.5 Indexes present on performance columns
-- [ ] 3.6 No Hibernate DDL generation warnings
+- [x] 3.4 Schema dump verified against spec — 8a79eec
+- [x] 3.5 Indexes present on performance columns — 8a79eec
+- [x] 3.6 No Hibernate DDL generation warnings — 8a79eec
