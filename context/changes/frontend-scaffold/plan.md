@@ -2287,19 +2287,19 @@ npm run preview   # Preview production build locally
 
 #### Automated
 
-- [x] 2.1 TypeScript compilation passes
-- [x] 2.2 ESLint passes all checks
-- [x] 2.3 App runs without errors
+- [x] 2.1 TypeScript compilation passes — 8e8de25
+- [x] 2.2 ESLint passes all checks — 8e8de25
+- [x] 2.3 App runs without errors — 8e8de25
 
 #### Manual
 
-- [x] 2.4 Login form renders correctly
-- [x] 2.5 Mock login flow works (context updates)
-- [x] 2.6 Auth token saved to cookies/localStorage
-- [x] 2.7 Session restored on page refresh
-- [x] 2.8 Logout clears session and cookies
-- [x] 2.9 Error messages display correctly
-- [x] 2.10 No console errors
+- [x] 2.4 Login form renders correctly — 8e8de25
+- [x] 2.5 Mock login flow works (context updates) — 8e8de25
+- [x] 2.6 Auth token saved to cookies/localStorage — 8e8de25
+- [x] 2.7 Session restored on page refresh — 8e8de25
+- [x] 2.8 Logout clears session and cookies — 8e8de25
+- [x] 2.9 Error messages display correctly — 8e8de25
+- [x] 2.10 No console errors — 8e8de25
 
 ### Phase 3: API Integration Layer
 
