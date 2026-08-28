@@ -746,12 +746,12 @@ Use `@SpringBootTest` + `MockMvc` or `TestRestTemplate` to make actual HTTP requ
 
 #### Automated
 
-- [ ] 2.1 Create RegisterRequest and AuthResponse DTOs
-- [ ] 2.2 Create RegistrationService with validation and user creation
-- [ ] 2.3 Create AuthController with POST /auth/register endpoint
-- [ ] 2.4 Add exception handlers for validation, conflict, and server errors
-- [ ] 2.5 Write unit tests for RegistrationService (valid, invalid, duplicate)
-- [ ] 2.6 Write integration tests for /auth/register endpoint
+- [x] 2.1 Create RegisterRequest and AuthResponse DTOs
+- [x] 2.2 Create RegistrationService with validation and user creation
+- [x] 2.3 Create AuthController with POST /auth/register endpoint
+- [x] 2.4 Add exception handlers for validation, conflict, and server errors
+- [x] 2.5 Write unit tests for RegistrationService (valid, invalid, duplicate)
+- [x] 2.6 Write integration tests for /auth/register endpoint
 
 #### Manual
 
