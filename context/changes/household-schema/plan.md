@@ -393,25 +393,25 @@ Write comprehensive tests to verify entity relationships, soft-delete behavior, 
 
 #### Automated
 
-- [x] 1.1 Type checking passes
-- [x] 1.2 Linting passes
-- [x] 1.3 App starts without errors
-- [x] 1.4 Entity relationship tests pass
+- [x] 1.1 Type checking passes — 25235bf
+- [x] 1.2 Linting passes — 25235bf
+- [x] 1.3 App starts without errors — 25235bf
+- [x] 1.4 Entity relationship tests pass — 25235bf
 
 #### Manual
 
-- [x] 1.5 PostgreSQL schema verified (tables exist with correct columns)
-- [x] 1.6 Unique constraints exist
-- [x] 1.7 Foreign key relationships verified
+- [x] 1.5 PostgreSQL schema verified (tables exist with correct columns) — 25235bf
+- [x] 1.6 Unique constraints exist — 25235bf
+- [x] 1.7 Foreign key relationships verified — 25235bf
 
 ### Phase 2: Data Access Layer & Query Methods
 
 #### Automated
 
-- [ ] 2.1 Type checking passes
-- [ ] 2.2 Linting passes
-- [ ] 2.3 Repository tests pass
-- [ ] 2.4 Soft-delete filtering tests pass
+- [x] 2.1 Type checking passes
+- [x] 2.2 Linting passes
+- [x] 2.3 Repository tests pass
+- [x] 2.4 Soft-delete filtering tests pass
 
 #### Manual
 
