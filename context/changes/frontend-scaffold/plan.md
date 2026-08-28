@@ -2339,19 +2339,19 @@ npm run preview   # Preview production build locally
 
 #### Automated
 
-- [x] 5.1 TypeScript compilation passes — f0a1b2c
-- [x] 5.2 ESLint passes all checks — f0a1b2c
-- [x] 5.3 Production build succeeds — f0a1b2c
-- [x] 5.4 Build output is reasonable size — f0a1b2c
+- [x] 5.1 TypeScript compilation passes — dbe611b
+- [x] 5.2 ESLint passes all checks — dbe611b
+- [x] 5.3 Production build succeeds — dbe611b
+- [x] 5.4 Build output is reasonable size — dbe611b
 
 #### Manual
 
-- [x] 5.5 Login page loads at startup — f0a1b2c
-- [x] 5.6 Login flow navigates to dashboard — f0a1b2c
-- [x] 5.7 Sidebar navigation works — f0a1b2c
-- [x] 5.8 Hot reload preserves app state — f0a1b2c
-- [x] 5.9 Logout redirects to login — f0a1b2c
-- [x] 5.10 Session persists across page refresh — f0a1b2c
-- [x] 5.11 Lazy loading works (network tab shows chunks) — f0a1b2c
-- [x] 5.12 Protected routes redirect when logged out — f0a1b2c
-- [x] 5.13 No console errors on any page — f0a1b2c
+- [x] 5.5 Login page loads at startup — dbe611b
+- [x] 5.6 Login flow navigates to dashboard — dbe611b
+- [x] 5.7 Sidebar navigation works — dbe611b
+- [x] 5.8 Hot reload preserves app state — dbe611b
+- [x] 5.9 Logout redirects to login — dbe611b
+- [x] 5.10 Session persists across page refresh — dbe611b
+- [x] 5.11 Lazy loading works (network tab shows chunks) — dbe611b
+- [x] 5.12 Protected routes redirect when logged out — dbe611b
+- [x] 5.13 No console errors on any page — dbe611b
