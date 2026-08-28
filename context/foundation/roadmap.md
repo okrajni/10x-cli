@@ -3,7 +3,7 @@ project: "done yet?"
 version: 1
 status: draft
 created: 2026-08-26
-updated: 2026-08-26
+updated: 2026-08-28
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -45,7 +45,7 @@ The mental load of managing a household falls disproportionately on one person �
 
 | ID    | Change ID                | Outcome (user can …)                                          | Prerequisites      | PRD refs           | Status   |
 |-------|--------------------------|---------------------------------------------------------------|--------------------|--------------------|---------:|
-| F-01  | auth-scaffold            | (foundation) Email/password registration & login              | —                  | FR-001, FR-002     | proposed |
+| F-01  | auth-scaffold            | (foundation) Email/password registration & login              | —                  | FR-001, FR-002     | in-progress |
 | F-02  | household-schema         | (foundation) Household data model & schema established        | F-01               | FR-003, FR-004     | proposed |
 | F-04  | frontend-scaffold        | (foundation) React app, routing, component scaffolding, build setup | —                 | —                  | proposed |
 | S-01  | new-user-setup           | Register, create household, invite partner, partner joins     | F-01, F-02, F-04   | US-01, FR-001–005  | proposed |
@@ -93,7 +93,7 @@ What's already in place in the codebase as of 2026-08-26 (auto-researched + user
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Auth is the foundation of everything; if delayed, all downstream work is blocked. Spring Boot has no Spring Security config yet, so this is a first-week critical path item. Once in place, S-01 can start immediately.
-- **Status:** proposed
+- **Status:** in-progress
 
 ### F-02: Household schema & data model
 
