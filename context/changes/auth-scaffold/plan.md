@@ -783,14 +783,14 @@ Use `@SpringBootTest` + `MockMvc` or `TestRestTemplate` to make actual HTTP requ
 
 #### Automated
 
-- [x] 4.1 Implement rate limiting for login (5 attempts per 15 min) — 0000000
-- [x] 4.2 Implement rate limiting for registration (3 per hour per IP) — 0000000
-- [x] 4.3 Add RateLimiter to application — 0000000
-- [x] 4.4 Create POST /auth/logout endpoint and session revocation — 0000000
-- [x] 4.5 Update GlobalExceptionHandler for rate limit responses (429 + Retry-After) — 0000000
-- [x] 4.6 Write integration tests for rate limiting (attempt > threshold → 429) — 0000000
-- [x] 4.7 Verify security properties (no credential leakage, unified error messages) — 0000000
-- [x] 4.8 All tests pass: `mvn test` (21 total) — 0000000
+- [x] 4.1 Implement rate limiting for login (5 attempts per 15 min) — b50fa56
+- [x] 4.2 Implement rate limiting for registration (3 per hour per IP) — b50fa56
+- [x] 4.3 Add RateLimiter to application — b50fa56
+- [x] 4.4 Create POST /auth/logout endpoint and session revocation — b50fa56
+- [x] 4.5 Update GlobalExceptionHandler for rate limit responses (429 + Retry-After) — b50fa56
+- [x] 4.6 Write integration tests for rate limiting (attempt > threshold → 429) — b50fa56
+- [x] 4.7 Verify security properties (no credential leakage, unified error messages) — b50fa56
+- [x] 4.8 All tests pass: `mvn test` (21 total) — b50fa56
 - [ ] 4.9 Write SQL injection and token tampering tests
 
 #### Manual
