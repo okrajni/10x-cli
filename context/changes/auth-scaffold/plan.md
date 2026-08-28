@@ -765,11 +765,11 @@ Use `@SpringBootTest` + `MockMvc` or `TestRestTemplate` to make actual HTTP requ
 
 #### Automated
 
-- [ ] 3.1 Create LoginService with password verification and session creation
-- [ ] 3.2 Create UserSession entity and UserSessionRepository
-- [ ] 3.3 Create POST /auth/login endpoint in AuthController
-- [ ] 3.4 Write unit tests for LoginService (valid, invalid credentials, session creation)
-- [ ] 3.5 Write integration tests for /auth/login endpoint and multi-device login
+- [x] 3.1 Create LoginService with password verification and session creation — 0000000
+- [x] 3.2 Create UserSession entity and UserSessionRepository — 0000000
+- [x] 3.3 Create POST /auth/login endpoint in AuthController — 0000000
+- [x] 3.4 Write unit tests for LoginService (valid, invalid credentials, session creation) — 0000000
+- [x] 3.5 Write integration tests for /auth/login endpoint and multi-device login — 0000000
 - [ ] 3.6 Implement token refresh endpoint (optional; can defer to Phase 4)
 
 #### Manual

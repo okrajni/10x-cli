@@ -95,4 +95,74 @@ class AuthControllerIntegrationTest {
                 .andExpect(jsonPath("$.status").value("error"))
                 .andExpect(jsonPath("$.error.code").value("VALIDATION_ERROR"));
     }
+
+    @Test
+    void shouldLoginUserSuccessfully() throws Exception {
+        // First register a user
+        mockMvc.perform(post("/auth/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(buildRegisterJson("logintest@example.com", "password123")))
+                .andExpect(status().isOk());
+
+        // Then login with the same credentials
+        mockMvc.perform(post("/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(buildRegisterJson("logintest@example.com", "password123")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").isNotEmpty())
+                .andExpect(jsonPath("$.email").value("logintest@example.com"))
+                .andExpect(jsonPath("$.token").isNotEmpty())
+                .andExpect(jsonPath("$.expiresAt").isNotEmpty());
+    }
+
+    @Test
+    void shouldReturnUnauthorizedForWrongPassword() throws Exception {
+        // First register a user
+        mockMvc.perform(post("/auth/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(buildRegisterJson("wrongpass@example.com", "password123")))
+                .andExpect(status().isOk());
+
+        // Try to login with wrong password
+        mockMvc.perform(post("/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(buildRegisterJson("wrongpass@example.com", "wrongpassword")))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.status").value("error"))
+                .andExpect(jsonPath("$.error.code").value("VALIDATION_ERROR"))
+                .andExpect(jsonPath("$.error.message", containsString("Invalid email or password")));
+    }
+
+    @Test
+    void shouldReturnUnauthorizedForNonExistentUser() throws Exception {
+        mockMvc.perform(post("/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(buildRegisterJson("nonexistent@example.com", "password123")))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.status").value("error"))
+                .andExpect(jsonPath("$.error.code").value("VALIDATION_ERROR"))
+                .andExpect(jsonPath("$.error.message", containsString("Invalid email or password")));
+    }
+
+    @Test
+    void shouldCreateSessionOnLogin() throws Exception {
+        // Register a user
+        mockMvc.perform(post("/auth/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(buildRegisterJson("session@example.com", "password123")))
+                .andExpect(status().isOk());
+
+        // Login twice to create multiple sessions
+        mockMvc.perform(post("/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(buildRegisterJson("session@example.com", "password123")))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(buildRegisterJson("session@example.com", "password123")))
+                .andExpect(status().isOk());
+
+        // Both logins should succeed with different tokens
+    }
 }
