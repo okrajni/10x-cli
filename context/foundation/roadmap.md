@@ -46,7 +46,7 @@ The mental load of managing a household falls disproportionately on one person �
 | ID    | Change ID                | Outcome (user can …)                                          | Prerequisites      | PRD refs           | Status   |
 |-------|--------------------------|---------------------------------------------------------------|--------------------|--------------------|---------:|
 | F-01  | auth-scaffold            | (foundation) Email/password registration & login              | —                  | FR-001, FR-002     | in-progress |
-| F-02  | household-schema         | (foundation) Household data model & schema established        | F-01               | FR-003, FR-004     | proposed |
+| F-02  | household-schema         | (foundation) Household data model & schema established        | F-01               | FR-003, FR-004     | in-progress |
 | F-04  | frontend-scaffold        | (foundation) React app, routing, component scaffolding, build setup | —                 | —                  | in-progress |
 | S-01  | new-user-setup           | Register, create household, invite partner, partner joins     | F-01, F-02, F-04   | US-01, FR-001–005  | proposed |
 | S-02  | basic-task-crud          | Create, view, edit, delete task with title, description, category, due date | F-01, F-02, F-04 | US-02 partial, FR-006, FR-008, FR-010–013 | proposed |
@@ -105,9 +105,9 @@ What's already in place in the codebase as of 2026-08-26 (auto-researched + user
 - **Parallel with:** F-04 (frontend work can start independently; both feed S-01, S-02)
 - **Blockers:** —
 - **Unknowns:**
-  - **Telegram bot token ownership:** Is the bot token managed by the system (one bot for all households) or per-household? Architectural choice affects auth + F-03. — Owner: product/ops. Block: yes.
+  - **Telegram bot token ownership:** RESOLVED — system-wide bot model chosen. One bot serves all households; bot token managed centrally (not per-household). F-03 handles provisioning.
 - **Risk:** Schema design choice here cascades into Telegram bot architecture (F-03) and task assignment visibility (S-03). Get the household isolation model right in week 1; redesigning the schema in week 3 wastes critical time.
-- **Status:** proposed
+- **Status:** in-progress
 
 ### F-04: Frontend scaffold
 
