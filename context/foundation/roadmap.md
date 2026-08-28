@@ -47,7 +47,7 @@ The mental load of managing a household falls disproportionately on one person �
 |-------|--------------------------|---------------------------------------------------------------|--------------------|--------------------|---------:|
 | F-01  | auth-scaffold            | (foundation) Email/password registration & login              | —                  | FR-001, FR-002     | in-progress |
 | F-02  | household-schema         | (foundation) Household data model & schema established        | F-01               | FR-003, FR-004     | proposed |
-| F-04  | frontend-scaffold        | (foundation) React app, routing, component scaffolding, build setup | —                 | —                  | proposed |
+| F-04  | frontend-scaffold        | (foundation) React app, routing, component scaffolding, build setup | —                 | —                  | in-progress |
 | S-01  | new-user-setup           | Register, create household, invite partner, partner joins     | F-01, F-02, F-04   | US-01, FR-001–005  | proposed |
 | S-02  | basic-task-crud          | Create, view, edit, delete task with title, description, category, due date | F-01, F-02, F-04 | US-02 partial, FR-006, FR-008, FR-010–013 | proposed |
 | S-03  | task-assignment          | Assign task to self or partner; both see assignments          | S-02, F-04         | FR-007             | proposed |
@@ -77,7 +77,7 @@ What's already in place in the codebase as of 2026-08-26 (auto-researched + user
 - **Backend / API**: Partial — Spring Boot initialized, pom.xml has web dependencies, but no controllers or endpoints
 - **Data**: Partial — PostgreSQL + Hibernate + Spring Data JPA configured, but no entity classes or schema
 - **Auth**: Minimal — 10x-cli has CLI auth scaffolding; Spring Boot has no Spring Security or auth endpoints
-- **Deploy / Infra**: Present — Dockerfile, fly.toml, GitHub Actions auto-deploy workflows all in place
+- **Deploy / Infra**: Present — Dockerfile, fStart `/10x-plan auth-scaffold`ly.toml, GitHub Actions auto-deploy workflows all in place
 - **Observability**: Absent — no logging library, error tracking, or metrics configured
 
 ## Foundations
@@ -122,7 +122,7 @@ What's already in place in the codebase as of 2026-08-26 (auto-researched + user
   - **Frontend state management choice:** Redux, Context API, Zustand, or Jotai? Affects component complexity and testability downstream. — Owner: development team. Block: no (can iterate, but choice in week 1 saves refactoring later).
   - **UI framework & component library:** Use headless components (Radix UI, Headless UI) or a full component library (Material-UI, Chakra)? Affects development speed vs. customization. — Owner: product/design. Block: no (ship with basic HTML + CSS first, polish after north star).
 - **Risk:** Frontend setup in week 1 is critical to avoid late-stage bloat. React Router, build tool, and state management decisions made here cascade into all UI slices. Use a proven lightweight stack (React 18 + React Router + Vite + Context API) to minimize complexity during time crunch.
-- **Status:** proposed
+- **Status:** in-progress
 
 ## Slices
 
@@ -272,7 +272,7 @@ What's already in place in the codebase as of 2026-08-26 (auto-researched + user
 
 ## Your Next Move
 
-**► Parallel launch:** Start `/10x-plan auth-scaffold` on **F-01** AND `/10x-plan frontend-scaffold` on **F-04** immediately.
+**► Parallel launch:**  on **F-01** AND `/10x-plan frontend-scaffold` on **F-04** immediately.
 
   **Why these two first:** F-01 and F-04 have no prerequisites and must both land in week 1 to unblock S-01 and S-02. Backend and frontend can develop in parallel. Email infrastructure provisioning is also week-1 critical path.
 
