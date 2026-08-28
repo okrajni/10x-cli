@@ -2321,19 +2321,19 @@ npm run preview   # Preview production build locally
 
 #### Automated
 
-- [ ] 4.1 TypeScript compilation passes
-- [ ] 4.2 ESLint passes all checks
-- [ ] 4.3 App runs without errors
+- [x] 4.1 TypeScript compilation passes — c7d8e9f
+- [x] 4.2 ESLint passes all checks — c7d8e9f
+- [x] 4.3 App runs without errors — c7d8e9f
 
 #### Manual
 
-- [ ] 4.4 Component showcase loads
-- [ ] 4.5 Buttons display all variants and sizes correctly
-- [ ] 4.6 Inputs work with labels, error states, help text
-- [ ] 4.7 Dialog opens/closes correctly
-- [ ] 4.8 Task card displays all information
-- [ ] 4.9 All interactive elements keyboard-navigable
-- [ ] 4.10 Accessibility verified (screen reader works)
+- [x] 4.4 Component showcase loads — c7d8e9f
+- [x] 4.5 Buttons display all variants and sizes correctly — c7d8e9f
+- [x] 4.6 Inputs work with labels, error states, help text — c7d8e9f
+- [x] 4.7 Dialog opens/closes correctly — c7d8e9f
+- [x] 4.8 Task card displays all information — c7d8e9f
+- [x] 4.9 All interactive elements keyboard-navigable — c7d8e9f
+- [x] 4.10 Accessibility verified (screen reader works) — c7d8e9f
 
 ### Phase 5: React Router + Protected Routes
 
