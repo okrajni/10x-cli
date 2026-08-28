@@ -408,10 +408,10 @@ Write comprehensive tests to verify entity relationships, soft-delete behavior, 
 
 #### Automated
 
-- [x] 2.1 Type checking passes
-- [x] 2.2 Linting passes
-- [x] 2.3 Repository tests pass
-- [x] 2.4 Soft-delete filtering tests pass
+- [x] 2.1 Type checking passes — 0e59f7d
+- [x] 2.2 Linting passes — 0e59f7d
+- [x] 2.3 Repository tests pass — 0e59f7d
+- [x] 2.4 Soft-delete filtering tests pass — 0e59f7d
 
 #### Manual
 
@@ -423,9 +423,9 @@ Write comprehensive tests to verify entity relationships, soft-delete behavior, 
 
 #### Automated
 
-- [ ] 3.1 Full test suite passes
-- [ ] 3.2 Coverage >80%
-- [ ] 3.3 Constraint tests pass
+- [x] 3.1 Full test suite passes
+- [x] 3.2 Coverage >80%
+- [x] 3.3 Constraint tests pass
 
 #### Manual
 
