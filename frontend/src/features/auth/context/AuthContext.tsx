@@ -1,6 +1,7 @@
 import { createContext, useContext, useReducer, useCallback, useEffect, ReactNode } from 'react'
 import { authReducer, initialState } from '../reducer'
 import { AuthState } from '../types'
+import { loginApi } from '../api'
 
 interface AuthContextValue {
   user: AuthState['user']
@@ -24,26 +25,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(async (email: string, password: string) => {
     dispatch({ type: 'LOGIN_START' })
     try {
-      // Mock endpoint for Phase 2 testing
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      })
+      const result = await loginApi({ email, password })
 
-      if (!response.ok) {
-        throw new Error('Login failed')
+      if (!result.ok) {
+        throw new Error(result.message)
       }
 
-      const data = await response.json()
       const expiresAt = Date.now() + 3600000 // 1 hour from now
 
       dispatch({
         type: 'LOGIN_SUCCESS',
         payload: {
-          user: data.user || { id: '1', email, name: email },
-          token: data.token || `mock-token-${Date.now()}`,
-          refreshToken: data.refreshToken || `mock-refresh-${Date.now()}`,
+          user: result.data.user,
+          token: result.data.token,
+          refreshToken: result.data.refreshToken,
           expiresAt,
         },
       })

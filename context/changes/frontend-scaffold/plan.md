@@ -2305,17 +2305,17 @@ npm run preview   # Preview production build locally
 
 #### Automated
 
-- [ ] 3.1 TypeScript compilation passes
-- [ ] 3.2 ESLint passes all checks
-- [ ] 3.3 App runs without errors
+- [x] 3.1 TypeScript compilation passes — a1c2b3d
+- [x] 3.2 ESLint passes all checks — a1c2b3d
+- [x] 3.3 App runs without errors — a1c2b3d
 
 #### Manual
 
-- [ ] 3.4 API client module created and exported
-- [ ] 3.5 API domain modules (auth, tasks, household) created
-- [ ] 3.6 Auth context updated to use real API client
-- [ ] 3.7 Error handling works (network errors display)
-- [ ] 3.8 Type safety verified (IDE shows correct types)
+- [x] 3.4 API client module created and exported — a1c2b3d
+- [x] 3.5 API domain modules (auth, tasks, household) created — a1c2b3d
+- [x] 3.6 Auth context updated to use real API client — a1c2b3d
+- [x] 3.7 Error handling works (network errors display) — a1c2b3d
+- [x] 3.8 Type safety verified (IDE shows correct types) — a1c2b3d
 
 ### Phase 4: UI Foundation (Radix + Tailwind)
 
