@@ -2,7 +2,7 @@
 change_id: frontend-scaffold
 title: Frontend Scaffold - React, Vite, Router Setup
 roadmap_id: F-04
-status: implementing
+status: implemented
 created: 2026-08-28
 updated: 2026-08-28
 team_member: joannao@backbase.com
