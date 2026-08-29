@@ -1,7 +1,5 @@
 package com.example.doneyet.security;
 
-import com.example.doneyet.domain.User;
-import com.example.doneyet.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,17 +10,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Optional;
+import java.util.Collections;
 import java.util.UUID;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
-    private final UserRepository userRepository;
 
-    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, UserRepository userRepository) {
+    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
-        this.userRepository = userRepository;
     }
 
     @Override
@@ -33,13 +29,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (bearerToken != null && jwtTokenProvider.isTokenValid(bearerToken)) {
             try {
                 UUID userId = jwtTokenProvider.extractUserId(bearerToken);
-                Optional<User> user = userRepository.findById(userId);
-
-                if (user.isPresent()) {
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(user.get(), null, java.util.Collections.emptyList());
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
+                String email = jwtTokenProvider.extractEmail(bearerToken);
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(userId.toString(), null, Collections.emptyList());
+                authentication.setDetails(email);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception e) {
                 SecurityContextHolder.clearContext();
             }

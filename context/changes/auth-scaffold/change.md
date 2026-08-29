@@ -1,9 +1,9 @@
 ---
 change_id: auth-scaffold
 title: Auth scaffold — email/password registration and login
-status: implemented
+status: impl_reviewed
 created: 2026-08-28
-updated: 2026-08-28
+updated: 2026-08-29
 phase: 4
 archived_at: null
 ---
