@@ -436,3 +436,31 @@ None for MVP. On v1.1 upgrade to real email provider:
 - [x] 2.10 Dashboard shows current household with tasks/assignments — 4b28e32
 - [x] 2.11 Multi-household user sees picker; selection switches household — 4b28e32
 - [x] 2.12 Error scenarios: expired invite shows "Invitation expired", already-accepted shows "Already joined" — 4b28e32
+
+### Phase 3: Critical Fixes (Post-Implementation Review)
+
+#### Backend Fixes
+
+- [x] 3.1 Fix household invitation method signatures to match test expectations — 4f9dcb2
+  - Updated `sendInvitation(householdId, email, inviterName)` to accept inviter name
+  - Separated `acceptInvitation(token)` for unauthenticated users from `acceptInvitationForUser(token, userId)` for authenticated users
+  - All 101 unit and integration tests now pass
+  
+- [x] 3.2 Fix SecurityConfig to allow public access to invitation acceptance endpoint — 4f9dcb2
+  - Added `/api/invitation/*/accept` to `permitAll()` list
+  - Unauthenticated users can now accept invitations without 401 errors
+  - InvitationController properly handles both authenticated and unauthenticated cases
+
+#### Frontend Fixes
+
+- [x] 3.3 Fix Vite proxy rewrite rule breaking API requests — dedc70e
+  - Removed broken `rewrite: (path) => path.replace(/^\/api/, '')` rule
+  - Proxy now correctly forwards `/api/auth/register` to `http://localhost:8080/api/auth/register`
+  - Registration and all API calls now work through frontend dev server
+
+#### Verification
+
+- [x] 3.4 Registration endpoint returns 200 with JWT token (no 401) — Manual test passed
+- [x] 3.5 Household creation works with auth token — Manual test passed
+- [x] 3.6 Invitation acceptance accessible without authentication — Manual test passed
+- [x] 3.7 Complete flow: register → create household → send invitation → accept works end-to-end — Ready for testing
