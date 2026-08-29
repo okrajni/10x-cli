@@ -7,7 +7,7 @@ import { acceptInvitationApi } from '@features/household/api'
 export default function RegisterPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const { register: authRegister, clearError } = useAuth()
+  const { register: authRegister, clearError, refetchHouseholds } = useAuth()
 
   const inviteEmail = searchParams.get('email') || ''
   const inviteToken = searchParams.get('inviteToken') || ''
@@ -49,6 +49,9 @@ export default function RegisterPage() {
         if (!inviteResult.ok) {
           console.error('Failed to accept invitation:', inviteResult.message)
           // Still redirect to dashboard even if invitation acceptance fails
+        } else {
+          // Refetch households to include the newly accepted one
+          await refetchHouseholds()
         }
       }
 

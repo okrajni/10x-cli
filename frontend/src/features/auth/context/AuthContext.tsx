@@ -19,6 +19,7 @@ interface AuthContextValue {
   refreshToken: () => Promise<void>
   clearError: () => void
   setCurrentHousehold: (household: Household) => void
+  refetchHouseholds: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
@@ -185,6 +186,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'CLEAR_ERROR' })
   }, [])
 
+  // Refetch households action
+  const refetchHouseholds = useCallback(async () => {
+    try {
+      const householdsResult = await getUserHouseholdsApi()
+      if (householdsResult.ok && Array.isArray(householdsResult.data)) {
+        const households = householdsResult.data
+        const currentHousehold: Household | null = households.length > 0 ? (households[0] ?? null) : null
+        dispatch({
+          type: 'SET_HOUSEHOLDS',
+          payload: {
+            households,
+            currentHousehold,
+          },
+        })
+      }
+    } catch {
+      // Silently fail if household fetch fails
+    }
+  }, [])
+
   // On mount, restore session from localStorage
   useEffect(() => {
     const savedState = localStorage.getItem('authState')
@@ -254,6 +275,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     refreshToken: refreshTokenAsync,
     clearError,
     setCurrentHousehold,
+    refetchHouseholds,
   }
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
