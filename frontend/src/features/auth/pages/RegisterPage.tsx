@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { Button, Input } from '@shared/components'
 import { registerApi } from '../api'
 import { useAuth } from '../context/AuthContext'
-import { acceptInvitationApi } from '@features/household/api'
+import { acceptInvitationApi, getUserHouseholdsApi } from '@features/household/api'
 
 export default function RegisterPage() {
   const navigate = useNavigate()
@@ -59,7 +59,14 @@ export default function RegisterPage() {
         }
       }
 
-      navigate('/dashboard')
+      // Fetch households to decide where to redirect
+      const householdsResult = await getUserHouseholdsApi()
+      if (householdsResult.ok && householdsResult.data.length === 0) {
+        // If no households, redirect to creation
+        navigate('/household/create')
+      } else {
+        navigate('/dashboard')
+      }
     } catch (err) {
       setError('An unexpected error occurred')
     } finally {

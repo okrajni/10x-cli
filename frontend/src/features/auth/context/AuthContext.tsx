@@ -1,7 +1,8 @@
 import { createContext, useContext, useReducer, useCallback, useEffect, ReactNode } from 'react'
 import { authReducer, initialState } from '../reducer'
-import { AuthState } from '../types'
+import { AuthState, Household } from '../types'
 import { loginApi } from '../api'
+import { getUserHouseholdsApi } from '@features/household/api'
 
 interface AuthContextValue {
   user: AuthState['user']
@@ -10,10 +11,13 @@ interface AuthContextValue {
   isLoading: AuthState['isLoading']
   isAuthenticated: AuthState['isAuthenticated']
   error: AuthState['error']
+  households: AuthState['households']
+  currentHousehold: AuthState['currentHousehold']
   login: (email: string, password: string) => Promise<void>
   logout: () => Promise<void>
   refreshToken: () => Promise<void>
   clearError: () => void
+  setCurrentHousehold: (household: Household) => void
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
@@ -39,13 +43,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           user: {
             id: result.data.userId,
             email: result.data.email,
-            householdId: undefined,
           },
           token: result.data.token,
-          refreshToken: undefined,
+          refreshToken: null,
           expiresAt,
         },
       })
+
+      // Fetch households after successful login
+      try {
+        const householdsResult = await getUserHouseholdsApi()
+        if (householdsResult.ok && Array.isArray(householdsResult.data)) {
+          const households = householdsResult.data
+          const currentHousehold: Household | null = households.length > 0 ? (households[0] ?? null) : null
+          dispatch({
+            type: 'SET_HOUSEHOLDS',
+            payload: {
+              households,
+              currentHousehold,
+            },
+          })
+        }
+      } catch {
+        // Silently fail if household fetch fails
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Login failed'
       dispatch({ type: 'LOGIN_ERROR', payload: message })
@@ -69,6 +90,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       dispatch({ type: 'LOGOUT' })
     }
   }, [state.token])
+
+  // Set current household action
+  const setCurrentHousehold = useCallback((household: Household) => {
+    dispatch({ type: 'SET_CURRENT_HOUSEHOLD', payload: household })
+  }, [])
 
   // Refresh token action
   const refreshTokenAsync = useCallback(async () => {
@@ -153,10 +179,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isLoading: state.isLoading,
     isAuthenticated: state.isAuthenticated,
     error: state.error,
+    households: state.households,
+    currentHousehold: state.currentHousehold,
     login,
     logout,
     refreshToken: refreshTokenAsync,
     clearError,
+    setCurrentHousehold,
   }
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>

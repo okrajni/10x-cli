@@ -62,7 +62,7 @@ public class HouseholdService {
     }
 
     @Transactional
-    public HouseholdDto.InvitationResponse sendInvitation(UUID householdId, String invitedEmail, String inviterName) {
+    public HouseholdDto.InvitationResponse sendInvitation(UUID householdId, String invitedEmail) {
         validateEmail(invitedEmail);
 
         Household household = householdRepository.findById(householdId)
@@ -85,7 +85,7 @@ public class HouseholdService {
     }
 
     @Transactional
-    public HouseholdDto.HouseholdResponse acceptInvitation(String token) {
+    public HouseholdDto.HouseholdResponse acceptInvitation(String token, UUID userId) {
         HouseholdInvitation invitation = invitationRepository.findByInvitationToken(token)
                 .orElseThrow(() -> new ValidationException("Invalid invitation token"));
 
@@ -97,11 +97,17 @@ public class HouseholdService {
             throw new ConflictException("This invitation has already been accepted");
         }
 
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ValidationException("User not found"));
+
         invitation.setAccepted(true);
         invitation.setAcceptedAt(LocalDateTime.now());
+        invitation.setAcceptedByUser(user);
         invitationRepository.save(invitation);
 
         Household household = invitation.getHousehold();
+        joinHousehold(userId, household.getId());
+
         return new HouseholdDto.HouseholdResponse(
                 household.getId(),
                 household.getName(),

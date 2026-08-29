@@ -39,8 +39,7 @@ public class HouseholdController {
         User user = (User) authentication.getPrincipal();
         HouseholdDto.InvitationResponse response = householdService.sendInvitation(
                 householdId,
-                request.getInvitedEmail(),
-                user.getEmail()
+                request.getInvitedEmail()
         );
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

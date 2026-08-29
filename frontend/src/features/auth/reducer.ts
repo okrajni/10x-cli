@@ -8,6 +8,8 @@ const initialState: AuthState = {
   isLoading: false,
   isAuthenticated: false,
   error: null,
+  households: [],
+  currentHousehold: null,
 }
 
 export function authReducer(state: AuthState, action: AuthAction): AuthState {
@@ -41,6 +43,17 @@ export function authReducer(state: AuthState, action: AuthAction): AuthState {
       return { ...state, error: null }
     case 'RESTORE_SESSION':
       return action.payload
+    case 'SET_HOUSEHOLDS':
+      return {
+        ...state,
+        households: action.payload.households,
+        currentHousehold: action.payload.currentHousehold,
+      }
+    case 'SET_CURRENT_HOUSEHOLD':
+      return {
+        ...state,
+        currentHousehold: action.payload,
+      }
     default:
       return state
   }
