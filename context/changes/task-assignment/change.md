@@ -4,10 +4,10 @@ title: Task Assignment
 description: Users can assign tasks to themselves or their partner; both see the assignee on every task
 type: slice
 parent_roadmap: S-03
-status: implementing
+status: implemented
 priority: must-have
 created: 2026-08-29
-updated: 2026-08-29 (Phase 1 automated complete, awaiting manual verification)
+updated: 2026-08-29
 owner: development team
 ---
 

@@ -556,15 +556,15 @@ export interface HouseholdMember {
 
 #### Automated
 
-- [x] 2.1 HouseholdContext provides household members list (fetched once at app init)
-- [x] 2.2 HouseholdMemberSelect component renders dropdown with household members
-- [x] 2.3 TaskCreatePage includes HouseholdMemberSelect dropdown, form includes assigneeId in submission
-- [x] 2.4 TaskEditPage includes HouseholdMemberSelect, pre-fills from task.assignee
-- [x] 2.5 TaskCard displays assignee name ("Assigned to: [Name]")
-- [x] 2.6 TaskListPage fetches and displays tasks with assignee data
-- [x] 2.7 API client methods updated: createTask() and updateTask() include assigneeId parameter
-- [x] 2.8 Task TypeScript type definitions include assignee object
-- [x] 2.9 React component tests pass (dropdown rendering, form submission with assigneeId, card display)
+- [x] 2.1 HouseholdContext provides household members list (fetched once at app init) — d7a11d3
+- [x] 2.2 HouseholdMemberSelect component renders dropdown with household members — d7a11d3
+- [x] 2.3 TaskCreatePage includes HouseholdMemberSelect dropdown, form includes assigneeId in submission — d7a11d3
+- [x] 2.4 TaskEditPage includes HouseholdMemberSelect, pre-fills from task.assignee — d7a11d3
+- [x] 2.5 TaskCard displays assignee name ("Assigned to: [Name]") — d7a11d3
+- [x] 2.6 TaskListPage fetches and displays tasks with assignee data — d7a11d3
+- [x] 2.7 API client methods updated: createTask() and updateTask() include assigneeId parameter — d7a11d3
+- [x] 2.8 Task TypeScript type definitions include assignee object — d7a11d3
+- [x] 2.9 React component tests pass (dropdown rendering, form submission with assigneeId, card display) — d7a11d3
 
 #### Manual
 
