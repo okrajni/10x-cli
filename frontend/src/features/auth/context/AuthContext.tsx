@@ -229,22 +229,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setApiToken(parsed.token)
             dispatch({ type: 'RESTORE_SESSION', payload: parsed })
 
-            // Refetch households after session restore
-            getUserHouseholdsApi().then((householdsResult) => {
-              if (householdsResult.ok && Array.isArray(householdsResult.data)) {
-                const households = householdsResult.data
-                const currentHousehold: Household | null = households.length > 0 ? (households[0] ?? null) : null
-                dispatch({
-                  type: 'SET_HOUSEHOLDS',
-                  payload: {
-                    households,
-                    currentHousehold,
-                  },
-                })
-              }
-            }).catch(() => {
-              // Silently fail if household fetch fails
-            })
+            // Restore households from localStorage if available
+            if (parsed.households && Array.isArray(parsed.households)) {
+              const currentHousehold = parsed.currentHousehold ?? (parsed.households.length > 0 ? parsed.households[0] : null)
+              dispatch({
+                type: 'SET_HOUSEHOLDS',
+                payload: {
+                  households: parsed.households,
+                  currentHousehold,
+                },
+              })
+            } else {
+              // Refetch households if not in localStorage
+              getUserHouseholdsApi().then((householdsResult) => {
+                if (householdsResult.ok && Array.isArray(householdsResult.data)) {
+                  const households = householdsResult.data
+                  const currentHousehold: Household | null = households.length > 0 ? (households[0] ?? null) : null
+                  dispatch({
+                    type: 'SET_HOUSEHOLDS',
+                    payload: {
+                      households,
+                      currentHousehold,
+                    },
+                  })
+                }
+              }).catch(() => {
+                // Silently fail if household fetch fails
+              })
+            }
           }
         }
       } catch (err) {
@@ -262,6 +274,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         refreshToken: state.refreshToken,
         expiresAt: state.expiresAt,
         isAuthenticated: state.isAuthenticated,
+        households: state.households,
+        currentHousehold: state.currentHousehold,
       }
       localStorage.setItem('authState', JSON.stringify(stateToSave))
       // Also set token in a cookie for API requests
@@ -270,7 +284,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem('authState')
       document.cookie = 'authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
     }
-  }, [state.isAuthenticated, state.token, state.user, state.refreshToken, state.expiresAt])
+  }, [state.isAuthenticated, state.token, state.user, state.refreshToken, state.expiresAt, state.households, state.currentHousehold])
 
   const contextValue: AuthContextValue = {
     user: state.user,
