@@ -501,12 +501,12 @@ None for MVP. On v1.1 upgrade to support optional due dates:
 
 #### Manual
 
-- [x] 1.10 Create task via curl/Postman → 200 with task returned
-- [x] 1.11 List tasks → returns only current household's tasks
-- [x] 1.12 Edit task → 200 with updated fields
-- [x] 1.13 Soft-delete task → 204, task gone from active queries but recoverable
-- [x] 1.14 Cross-household access rejected → 403 Forbidden
-- [x] 1.15 Mark task complete (completedAt set) → task stays in DB, excluded from active list
+- [x] 1.10 Create task via curl/Postman → 200 with task returned — 0d34a34
+- [x] 1.11 List tasks → returns only current household's tasks — 0d34a34
+- [x] 1.12 Edit task → 200 with updated fields — 0d34a34
+- [x] 1.13 Soft-delete task → 204, task gone from active queries but recoverable — 0d34a34
+- [x] 1.14 Cross-household access rejected → 403 Forbidden — 0d34a34
+- [x] 1.15 Mark task complete (completedAt set) → task stays in DB, excluded from active list — 0d34a34
 
 ### Phase 2: Frontend Task CRUD UI
 
@@ -520,11 +520,11 @@ None for MVP. On v1.1 upgrade to support optional due dates:
 
 #### Manual
 
-- [x] 2.6 Create task with all fields → appears in list sorted by due date
-- [x] 2.7 Create task with invalid input (empty title) → inline error shown, not submitted
-- [x] 2.8 Edit task → form pre-filled, changes saved and reflected in list (after refresh)
-- [x] 2.9 Delete task → confirmation dialog, confirm → task removed
-- [x] 2.10 Mark task complete → disappears from active list, reappears in completed toggle
-- [x] 2.11 Single user sees their household's tasks (multi-user scaffold removed, now single-user model)
-- [x] 2.12 Cross-household access (URL hack) → 403 error shown
-- [x] 2.13 Empty state message when no active tasks
+- [x] 2.6 Create task with all fields → appears in list sorted by due date — 0d34a34
+- [x] 2.7 Create task with invalid input (empty title) → inline error shown, not submitted — 0d34a34
+- [x] 2.8 Edit task → form pre-filled, changes saved and reflected in list (after refresh) — 0d34a34
+- [x] 2.9 Delete task → confirmation dialog, confirm → task removed — 0d34a34
+- [x] 2.10 Mark task complete → disappears from active list, reappears in completed toggle — 0d34a34
+- [x] 2.11 Single user sees their household's tasks (multi-user scaffold removed, now single-user model) — 0d34a34
+- [x] 2.12 Cross-household access (URL hack) → 403 error shown — 0d34a34
+- [x] 2.13 Empty state message when no active tasks — 0d34a34
