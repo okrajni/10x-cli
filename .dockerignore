@@ -1,0 +1,77 @@
+# flyctl launch added from .bootstrap-scaffold/.gitignore
+.bootstrap-scaffold/**/HELP.md
+.bootstrap-scaffold/**/target
+.bootstrap-scaffold/**/.mvn/wrapper/maven-wrapper.jar
+!.bootstrap-scaffold/**/**/src/main/**/target
+!.bootstrap-scaffold/**/**/src/test/**/target
+
+### STS ###
+.bootstrap-scaffold/**/.apt_generated
+.bootstrap-scaffold/**/.classpath
+.bootstrap-scaffold/**/.factorypath
+.bootstrap-scaffold/**/.project
+.bootstrap-scaffold/**/.settings
+.bootstrap-scaffold/**/.springBeans
+.bootstrap-scaffold/**/.sts4-cache
+
+### IntelliJ IDEA ###
+.bootstrap-scaffold/**/.idea
+.bootstrap-scaffold/**/*.iws
+.bootstrap-scaffold/**/*.iml
+.bootstrap-scaffold/**/*.ipr
+
+### NetBeans ###
+.bootstrap-scaffold/nbproject/private
+.bootstrap-scaffold/nbbuild
+.bootstrap-scaffold/dist
+.bootstrap-scaffold/nbdist
+.bootstrap-scaffold/.nb-gradle
+.bootstrap-scaffold/**/build
+!.bootstrap-scaffold/**/**/src/main/**/build
+!.bootstrap-scaffold/**/**/src/test/**/build
+
+### VS Code ###
+.bootstrap-scaffold/**/.vscode
+
+# flyctl launch added from .gitignore
+**/node_modules
+**/dist
+**/coverage
+**/*.log
+**/.DS_Store
+**/.env
+**/.env.local
+**/tests/e2e/.env.test
+**/.vitest-cache
+**/.claude
+**/HELP.md
+**/target
+**/.mvn/wrapper/maven-wrapper.jar
+!**/**/src/main/**/target
+!**/**/src/test/**/target
+### STS ###
+**/.apt_generated
+**/.classpath
+**/.factorypath
+**/.project
+**/.settings
+**/.springBeans
+**/.sts4-cache
+### IntelliJ IDEA ###
+**/.idea
+**/*.iws
+**/*.iml
+**/*.ipr
+### NetBeans ###
+nbproject/private
+nbbuild
+dist
+nbdist
+.nb-gradle
+**/build
+!**/**/src/main/**/build
+!**/**/src/test/**/build
+### VS Code ###
+**/.vscode
+# from spring
+fly.toml

@@ -1,4 +1,4 @@
-# Is it done? – MVP
+# done yet? – MVP
 
 ### Main problem
 
@@ -6,7 +6,7 @@ In many households, one person carries most of the "mental load" of managing the
 
 The problem is not only doing household chores — it is having to constantly remember, plan, coordinate and remind others about them.
 
-Is it done? aims to take over this coordination and reminder role, so household responsibilities can be shared without one partner becoming the "manager" of the home.
+done yet? aims to take over this coordination and reminder role, so household responsibilities can be shared without one partner becoming the "manager" of the home.
 
 ### Smallest set of functionality
 

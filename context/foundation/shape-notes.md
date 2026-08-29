@@ -1,5 +1,5 @@
 ---
-project: "Is it done?"
+project: "done yet?"
 context_type: greenfield
 checkpoint:
   current_phase: 8
@@ -9,13 +9,13 @@ checkpoint:
 updated: 2026-08-19 — SHAPING COMPLETE
 ---
 
-# Is it done? – Shaping Notes
+# done yet? – Shaping Notes
 
 ## Vision & Problem Statement
 
 The mental load of managing a household falls disproportionately on one person — they remember what needs to be done, decide when it should be done, assign tasks, and remind others about unfinished chores. This invisible labor fractures shared responsibility.
 
-**Is it done?** transfers the coordination and reminder role to software, so household responsibilities can be shared without one partner becoming the "manager" of the home.
+**done yet?** transfers the coordination and reminder role to software, so household responsibilities can be shared without one partner becoming the "manager" of the home.
 
 ## User & Persona
 

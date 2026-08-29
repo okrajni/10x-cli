@@ -1,5 +1,5 @@
 ---
-project: "Is it done?"
+project: "done yet?"
 version: 1
 status: draft
 created: 2026-08-19
@@ -14,13 +14,13 @@ timeline_budget:
   after_hours_only: true
 ---
 
-# Is it done? – Product Requirements Document
+# done yet? – Product Requirements Document
 
 ## Vision & Problem Statement
 
 The mental load of managing a household falls disproportionately on one person — they remember what needs to be done, decide when it should be done, assign tasks, and remind others about unfinished chores. This invisible labor fractures shared responsibility.
 
-**Is it done?** transfers the coordination and reminder role to software, so household responsibilities can be shared without one partner becoming the "manager" of the home.
+**done yet?** transfers the coordination and reminder role to software, so household responsibilities can be shared without one partner becoming the "manager" of the home.
 
 ## User & Persona
 
