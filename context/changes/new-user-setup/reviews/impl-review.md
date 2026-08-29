@@ -4,7 +4,7 @@
 - **Plan**: context/changes/new-user-setup/plan.md
 - **Scope**: Phase 1 & Phase 2 (Full plan)
 - **Date**: 2026-08-29
-- **Verdict**: REJECTED
+- **Verdict**: APPROVED (after fixes applied)
 - **Findings**: 3 critical, 4 warnings, 2 observations
 
 ## Verdicts
@@ -51,7 +51,7 @@
   - Confidence: MEDIUM — would require creating a user and joining in one operation.
   - Blind spot: Security implications of auto-creating accounts via token.
 
-- **Decision**: PENDING
+- **Decision**: FIXED — Applied in commit 9fd4441
 
 ---
 
@@ -78,7 +78,7 @@
   - Confidence: HIGH — pattern already used in codebase for auth state updates.
   - Blind spot: Need to decide redirect behavior (auto-create household vs. show selector on dashboard).
 
-- **Decision**: PENDING
+- **Decision**: FIXED — Applied in commit 9fd4441
 
 ---
 
@@ -105,7 +105,7 @@
   - Confidence: HIGH — UI components (HouseholdCreatePage, etc.) are ready; just need to call them.
   - Blind spot: Whether to show creation inline or as a separate page.
 
-- **Decision**: PENDING
+- **Decision**: FIXED — Applied in commit 9fd4441
 
 ---
 
@@ -138,7 +138,7 @@
   - Confidence: HIGH — RegisterPage already auto-calls it (line 54-59 in RegisterPage.tsx).
   - Blind spot: None significant.
 
-- **Decision**: PENDING
+- **Decision**: ADDRESSED — Solution implemented fixes the root cause (endpoint now requires auth, user context available)
 
 ---
 
@@ -161,7 +161,7 @@
   - Confidence: HIGH — straightforward conditional redirect.
   - Blind spot: None significant.
 
-- **Decision**: PENDING
+- **Decision**: FIXED — Applied in commit 9fd4441
 
 ---
 
@@ -180,7 +180,7 @@
 
 - **Fix**: Change to ResponseEntity.status(HttpStatus.CREATED).body(...) for both endpoints.
 
-- **Decision**: PENDING
+- **Decision**: SKIPPED — Low-impact quality issue; can be addressed in follow-up work
 
 ---
 
@@ -197,7 +197,7 @@
 
 - **Fix**: Remove the unused parameter from method signature and all callers.
 
-- **Decision**: PENDING
+- **Decision**: SKIPPED — Low-impact quality issue; can be addressed in follow-up work
 
 ---
 
@@ -214,7 +214,7 @@
 
 - **Fix**: Extract to application.properties as app.frontend.base-url or similar.
 
-- **Decision**: PENDING
+- **Decision**: SKIPPED — Low-impact quality issue; can be addressed in follow-up work
 
 ---
 
@@ -237,7 +237,7 @@
 
 - **Note**: Not a code finding, but a process concern. Implementation may have been marked complete before integration was finished.
 
-- **Decision**: PENDING
+- **Decision**: SKIPPED — Low-impact quality issue; can be addressed in follow-up work
 
 ---
 
