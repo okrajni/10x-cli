@@ -12,6 +12,8 @@ import java.util.UUID;
 public interface HouseholdMemberRepository extends JpaRepository<HouseholdMember, UUID> {
     Optional<HouseholdMember> findByHouseholdIdAndUserId(UUID householdId, UUID userId);
 
+    Optional<HouseholdMember> findByIdAndHouseholdId(UUID id, UUID householdId);
+
     List<HouseholdMember> findByHouseholdId(UUID householdId);
 
     List<HouseholdMember> findByUserId(UUID userId);

@@ -1,6 +1,8 @@
 package com.example.doneyet.repository;
 
 import com.example.doneyet.domain.Household;
+import com.example.doneyet.domain.HouseholdMember;
+import com.example.doneyet.domain.HouseholdMemberRole;
 import com.example.doneyet.domain.Task;
 import com.example.doneyet.domain.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,6 +37,9 @@ class HouseholdIsolationTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private HouseholdMemberRepository householdMemberRepository;
+
     private User userA;
     private User userB;
     private Household householdA;
@@ -56,8 +61,14 @@ class HouseholdIsolationTest {
         householdA = householdRepository.save(householdA);
         householdB = householdRepository.save(householdB);
 
-        taskA = new Task("Task A", householdA, userA, userA);
-        taskB = new Task("Task B", householdB, userB, userB);
+        HouseholdMember memberA = new HouseholdMember(householdA, userA, HouseholdMemberRole.CREATOR);
+        HouseholdMember memberB = new HouseholdMember(householdB, userB, HouseholdMemberRole.CREATOR);
+
+        memberA = householdMemberRepository.save(memberA);
+        memberB = householdMemberRepository.save(memberB);
+
+        taskA = new Task("Task A", householdA, memberA, userA);
+        taskB = new Task("Task B", householdB, memberB, userB);
 
         taskA = taskRepository.save(taskA);
         taskB = taskRepository.save(taskB);
@@ -99,17 +110,23 @@ class HouseholdIsolationTest {
         User commonUser = new User("common@example.com", "hash");
         commonUser = userRepository.save(commonUser);
 
-        Task sharedAssigneeTaskA = new Task("Shared Task A", householdA, commonUser, userA);
-        Task sharedAssigneeTaskB = new Task("Shared Task B", householdB, commonUser, userB);
+        HouseholdMember commonMemberA = new HouseholdMember(householdA, commonUser, HouseholdMemberRole.PARTNER);
+        HouseholdMember commonMemberB = new HouseholdMember(householdB, commonUser, HouseholdMemberRole.PARTNER);
+
+        commonMemberA = householdMemberRepository.save(commonMemberA);
+        commonMemberB = householdMemberRepository.save(commonMemberB);
+
+        Task sharedAssigneeTaskA = new Task("Shared Task A", householdA, commonMemberA, userA);
+        Task sharedAssigneeTaskB = new Task("Shared Task B", householdB, commonMemberB, userB);
 
         taskRepository.save(sharedAssigneeTaskA);
         taskRepository.save(sharedAssigneeTaskB);
 
         List<Task> resultA = taskRepository.findByHouseholdIdAndAssigneeIdAndDeletedAtIsNull(
-                householdA.getId(), commonUser.getId()
+                householdA.getId(), commonMemberA.getId()
         );
         List<Task> resultB = taskRepository.findByHouseholdIdAndAssigneeIdAndDeletedAtIsNull(
-                householdB.getId(), commonUser.getId()
+                householdB.getId(), commonMemberB.getId()
         );
 
         assertEquals(1, resultA.size());
@@ -120,7 +137,12 @@ class HouseholdIsolationTest {
 
     @Test
     void multipleTasksPerHousehold_AllIsolated() {
-        Task additionalTaskA = new Task("Additional Task A", householdA, userA, userA);
+        HouseholdMember memberA = householdMemberRepository.findAll().stream()
+                .filter(m -> m.getHousehold().getId().equals(householdA.getId()) && m.getUser().getId().equals(userA.getId()))
+                .findFirst()
+                .orElseThrow();
+
+        Task additionalTaskA = new Task("Additional Task A", householdA, memberA, userA);
         additionalTaskA = taskRepository.save(additionalTaskA);
 
         List<Task> resultA = taskRepository.findByHouseholdIdAndDeletedAtIsNull(householdA.getId());

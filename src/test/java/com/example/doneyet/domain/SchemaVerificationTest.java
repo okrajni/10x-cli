@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import com.example.doneyet.domain.HouseholdMember;
+import com.example.doneyet.domain.HouseholdMemberRole;
 
 class SchemaVerificationTest {
     @Test
@@ -48,7 +50,10 @@ class SchemaVerificationTest {
         Household household = new Household("Test Household", creator);
         household.setId(UUID.randomUUID());
 
-        Task task = new Task("Clean kitchen", household, assignee, creator);
+        HouseholdMember assigneeMember = new HouseholdMember(household, assignee, HouseholdMemberRole.PARTNER);
+        assigneeMember.setId(UUID.randomUUID());
+
+        Task task = new Task("Clean kitchen", household, assigneeMember, creator);
         task.setId(UUID.randomUUID());
         task.setDescription("Deep clean");
         task.setCategory(TaskCategory.CLEANING);
@@ -61,7 +66,7 @@ class SchemaVerificationTest {
         assertEquals("Deep clean", task.getDescription());
         assertEquals(TaskCategory.CLEANING, task.getCategory());
         assertEquals(household.getId(), task.getHousehold().getId());
-        assertEquals(assignee.getId(), task.getAssignee().getId());
+        assertEquals(assigneeMember.getId(), task.getAssignee().getId());
         assertEquals(creator.getId(), task.getCreatedBy().getId());
         assertFalse(task.isCompleted());
         assertNull(task.getDeletedAt());
@@ -75,7 +80,10 @@ class SchemaVerificationTest {
         Household household = new Household("Test Household", creator);
         household.setId(UUID.randomUUID());
 
-        Task task = new Task("Test", household, creator, creator);
+        HouseholdMember creatorMember = new HouseholdMember(household, creator, HouseholdMemberRole.CREATOR);
+        creatorMember.setId(UUID.randomUUID());
+
+        Task task = new Task("Test", household, creatorMember, creator);
         task.setId(UUID.randomUUID());
 
         assertNull(task.getDeletedAt());

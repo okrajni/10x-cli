@@ -1,6 +1,7 @@
 package com.example.doneyet.service;
 
 import com.example.doneyet.domain.Household;
+import com.example.doneyet.domain.HouseholdMember;
 import com.example.doneyet.domain.Task;
 import com.example.doneyet.domain.User;
 import com.example.doneyet.dto.TaskDto;
@@ -44,7 +45,15 @@ public class TaskService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ValidationException("User not found"));
 
-        Task task = new Task(request.getTitle(), household, user);
+        UUID assigneeId = request.getAssigneeId() != null
+                ? request.getAssigneeId()
+                : householdMemberRepository.findByHouseholdIdAndUserId(householdId, userId)
+                    .map(HouseholdMember::getId)
+                    .orElseThrow(() -> new ValidationException("User is not a member of this household"));
+
+        HouseholdMember assignee = validateAndFetchAssignee(householdId, assigneeId);
+
+        Task task = new Task(request.getTitle(), household, assignee, user);
         task.setDescription(request.getDescription());
         task.setCategory(request.getCategory());
         task.setDueDate(request.getDueDate());
@@ -94,6 +103,10 @@ public class TaskService {
         if (request.getCompletedAt() != null) {
             task.setCompletedAt(request.getCompletedAt());
         }
+        if (request.getAssigneeId() != null) {
+            HouseholdMember assignee = validateAndFetchAssignee(householdId, request.getAssigneeId());
+            task.setAssignee(assignee);
+        }
 
         Task updatedTask = taskRepository.save(task);
         return mapToResponse(updatedTask);
@@ -123,6 +136,11 @@ public class TaskService {
         }
     }
 
+    private HouseholdMember validateAndFetchAssignee(UUID householdId, UUID assigneeId) {
+        return householdMemberRepository.findByIdAndHouseholdId(assigneeId, householdId)
+                .orElseThrow(() -> new ValidationException("Invalid assignee: not a member of this household"));
+    }
+
     private TaskDto.TaskResponse mapToResponse(Task task) {
         return new TaskDto.TaskResponse(
                 task.getId(),
@@ -133,6 +151,7 @@ public class TaskService {
                 task.getDueDate(),
                 task.getCompletedAt(),
                 task.getDeletedAt(),
+                task.getAssigneeDTO(),
                 task.getCreatedAt(),
                 task.getUpdatedAt()
         );

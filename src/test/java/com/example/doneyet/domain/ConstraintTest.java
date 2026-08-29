@@ -15,6 +15,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.doneyet.TestConfig;
+import com.example.doneyet.domain.HouseholdMember;
+import com.example.doneyet.domain.HouseholdMemberRole;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -64,7 +66,8 @@ class ConstraintTest {
 
     @Test
     void taskWithNullHouseholdId_ThrowsConstraintViolation() {
-        Task task = new Task("Test", null, user, user);
+        HouseholdMember assignee = new HouseholdMember(null, user, HouseholdMemberRole.CREATOR);
+        Task task = new Task("Test", null, assignee, user);
 
         assertThrows(Exception.class, () -> {
             taskRepository.save(task);
@@ -74,7 +77,7 @@ class ConstraintTest {
 
     @Test
     void taskWithNullAssigneeId_SucceedsNoConstraintViolation() {
-        Task task = new Task("Test", household, user);
+        Task task = new Task("Test", household, null, user);
 
         assertDoesNotThrow(() -> {
             taskRepository.save(task);
@@ -100,7 +103,9 @@ class ConstraintTest {
 
     @Test
     void taskCreatedByCannotBeNull_ThrowsConstraintViolation() {
-        Task task = new Task("Test", household, user, null);
+        HouseholdMember assignee = new HouseholdMember(household, user, HouseholdMemberRole.CREATOR);
+        householdMemberRepository.save(assignee);
+        Task task = new Task("Test", household, assignee, null);
 
         assertThrows(Exception.class, () -> {
             taskRepository.save(task);
@@ -120,7 +125,9 @@ class ConstraintTest {
 
     @Test
     void nullTaskTitle_ThrowsConstraintViolation() {
-        Task task = new Task(null, household, user, user);
+        HouseholdMember assignee = new HouseholdMember(household, user, HouseholdMemberRole.CREATOR);
+        householdMemberRepository.save(assignee);
+        Task task = new Task(null, household, assignee, user);
 
         assertThrows(Exception.class, () -> {
             taskRepository.save(task);

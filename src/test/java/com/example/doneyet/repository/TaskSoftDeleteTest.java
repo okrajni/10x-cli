@@ -1,6 +1,8 @@
 package com.example.doneyet.repository;
 
 import com.example.doneyet.domain.Household;
+import com.example.doneyet.domain.HouseholdMember;
+import com.example.doneyet.domain.HouseholdMemberRole;
 import com.example.doneyet.domain.Task;
 import com.example.doneyet.domain.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,8 +38,12 @@ class TaskSoftDeleteTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private HouseholdMemberRepository householdMemberRepository;
+
     private User creator;
     private Household household;
+    private HouseholdMember creatorMember;
     private Task task;
 
     @BeforeEach
@@ -48,7 +54,10 @@ class TaskSoftDeleteTest {
         household = new Household("Test Household", creator);
         household = householdRepository.save(household);
 
-        task = new Task("Clean kitchen", household, creator, creator);
+        creatorMember = new HouseholdMember(household, creator, HouseholdMemberRole.CREATOR);
+        creatorMember = householdMemberRepository.save(creatorMember);
+
+        task = new Task("Clean kitchen", household, creatorMember, creator);
         task = taskRepository.save(task);
     }
 
@@ -106,7 +115,7 @@ class TaskSoftDeleteTest {
 
     @Test
     void multipleTasksWithSoftDelete_OnlyActiveTasks_Returned() {
-        Task task2 = new Task("Buy groceries", household, creator, creator);
+        Task task2 = new Task("Buy groceries", household, creatorMember, creator);
         task2 = taskRepository.save(task2);
 
         task.setDeletedAt(LocalDateTime.now());
@@ -125,7 +134,7 @@ class TaskSoftDeleteTest {
         taskRepository.save(task);
 
         List<Task> result = taskRepository.findByHouseholdIdAndAssigneeIdAndDeletedAtIsNull(
-                household.getId(), creator.getId()
+                household.getId(), creatorMember.getId()
         );
 
         assertTrue(result.isEmpty());

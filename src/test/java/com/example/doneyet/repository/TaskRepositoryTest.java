@@ -1,6 +1,8 @@
 package com.example.doneyet.repository;
 
 import com.example.doneyet.domain.Household;
+import com.example.doneyet.domain.HouseholdMember;
+import com.example.doneyet.domain.HouseholdMemberRole;
 import com.example.doneyet.domain.Task;
 import com.example.doneyet.domain.TaskCategory;
 import com.example.doneyet.domain.User;
@@ -38,11 +40,15 @@ class TaskRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private HouseholdMemberRepository householdMemberRepository;
+
     private User creator;
     private User assignee;
     private User otherUser;
     private Household household1;
     private Household household2;
+    private HouseholdMember assigneeMember;
     private Task task1;
     private Task task2;
 
@@ -62,12 +68,15 @@ class TaskRepositoryTest {
         household1 = householdRepository.save(household1);
         household2 = householdRepository.save(household2);
 
-        task1 = new Task("Task 1", household1, assignee, creator);
+        assigneeMember = new HouseholdMember(household1, assignee, HouseholdMemberRole.PARTNER);
+        assigneeMember = householdMemberRepository.save(assigneeMember);
+
+        task1 = new Task("Task 1", household1, assigneeMember, creator);
         task1.setCategory(TaskCategory.CLEANING);
         task1.setDueDate(LocalDate.now().plusDays(1));
         task1 = taskRepository.save(task1);
 
-        task2 = new Task("Task 2", household1, assignee, creator);
+        task2 = new Task("Task 2", household1, assigneeMember, creator);
         task2.setCategory(TaskCategory.SHOPPING);
         task2.setDueDate(LocalDate.now().plusDays(2));
         task2 = taskRepository.save(task2);
@@ -109,11 +118,11 @@ class TaskRepositoryTest {
     @Test
     void findByHouseholdIdAndAssigneeIdAndDeletedAtIsNull_ReturnsTasks() {
         List<Task> result = taskRepository.findByHouseholdIdAndAssigneeIdAndDeletedAtIsNull(
-                household1.getId(), assignee.getId()
+                household1.getId(), assigneeMember.getId()
         );
 
         assertEquals(2, result.size());
-        assertTrue(result.stream().allMatch(t -> t.getAssignee().getId().equals(assignee.getId())));
+        assertTrue(result.stream().allMatch(t -> t.getAssignee().getId().equals(assigneeMember.getId())));
     }
 
     @Test
@@ -122,7 +131,7 @@ class TaskRepositoryTest {
         taskRepository.save(task1);
 
         List<Task> result = taskRepository.findByHouseholdIdAndAssigneeIdAndDeletedAtIsNull(
-                household1.getId(), assignee.getId()
+                household1.getId(), assigneeMember.getId()
         );
 
         assertEquals(1, result.size());

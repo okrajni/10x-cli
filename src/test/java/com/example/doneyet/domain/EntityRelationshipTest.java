@@ -8,6 +8,8 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import com.example.doneyet.domain.HouseholdMember;
+import com.example.doneyet.domain.HouseholdMemberRole;
 
 class EntityRelationshipTest {
 
@@ -19,10 +21,13 @@ class EntityRelationshipTest {
         Household household = new Household("Test Household", creator);
         household.setId(UUID.randomUUID());
 
-        Task task1 = new Task("Task 1", household, creator, creator);
+        HouseholdMember creatorMember = new HouseholdMember(household, creator, HouseholdMemberRole.CREATOR);
+        creatorMember.setId(UUID.randomUUID());
+
+        Task task1 = new Task("Task 1", household, creatorMember, creator);
         task1.setId(UUID.randomUUID());
 
-        Task task2 = new Task("Task 2", household, creator, creator);
+        Task task2 = new Task("Task 2", household, creatorMember, creator);
         task2.setId(UUID.randomUUID());
 
         household.getTasks().add(task1);
@@ -70,9 +75,10 @@ class EntityRelationshipTest {
         User assignee = new User("assignee@example.com", "hash");
         User creator = new User("creator@example.com", "hash");
         Household household = new Household("Test Household", creator);
-        Task task = new Task("Test Task", household, assignee, creator);
+        HouseholdMember assigneeMember = new HouseholdMember(household, assignee, HouseholdMemberRole.PARTNER);
+        Task task = new Task("Test Task", household, assigneeMember, creator);
 
-        assertEquals(assignee, task.getAssignee());
+        assertEquals(assigneeMember, task.getAssignee());
         assertEquals(household, task.getHousehold());
     }
 
@@ -80,7 +86,8 @@ class EntityRelationshipTest {
     void taskSoftDeleteFieldExists() {
         User creator = new User("creator@example.com", "hash");
         Household household = new Household("Test Household", creator);
-        Task task = new Task("Test Task", household, creator, creator);
+        HouseholdMember creatorMember = new HouseholdMember(household, creator, HouseholdMemberRole.CREATOR);
+        Task task = new Task("Test Task", household, creatorMember, creator);
 
         assertNull(task.getDeletedAt());
 
@@ -115,8 +122,9 @@ class EntityRelationshipTest {
         User creator = new User("creator@example.com", "hash");
         User assignee = new User("assignee@example.com", "hash");
         Household household = new Household("Test Household", creator);
+        HouseholdMember assigneeMember = new HouseholdMember(household, assignee, HouseholdMemberRole.PARTNER);
 
-        Task task = new Task("Clean kitchen", household, assignee, creator);
+        Task task = new Task("Clean kitchen", household, assigneeMember, creator);
         task.setDescription("Clean the kitchen thoroughly");
         task.setCategory(TaskCategory.CLEANING);
         task.setDueDate(LocalDate.now().plusDays(1));

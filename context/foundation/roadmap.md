@@ -3,7 +3,7 @@ project: "done yet?"
 version: 1
 status: draft
 created: 2026-08-26
-updated: 2026-08-29
+updated: 2026-08-29 (synced by /10x-implement)
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -50,7 +50,7 @@ The mental load of managing a household falls disproportionately on one person �
 | F-04  | frontend-scaffold        | (foundation) React app, routing, component scaffolding, build setup | —                 | —                  | in-progress |
 | S-01  | new-user-setup           | Register, create household, invite partner, partner joins     | F-01, F-02, F-04   | US-01, FR-001–005  | in-progress |
 | S-02  | basic-task-crud          | Create, view, edit, delete task with title, description, category, due date | F-01, F-02, F-04 | US-02 partial, FR-006, FR-008, FR-010–013 | planning |
-| S-03  | task-assignment          | Assign task to self or partner; both see assignments          | S-02, F-04         | FR-007             | proposed |
+| S-03  | task-assignment          | Assign task to self or partner; both see assignments          | S-02, F-04         | FR-007             | in-progress |
 | F-03  | telegram-bot-scaffold    | (foundation) Telegram bot scaffolding, token management, webhook setup | F-01, S-03 | FR-015 | proposed |
 | S-04  | telegram-reminder        | (NORTH STAR) Receive Telegram reminder at configured time     | S-03, F-03         | US-02, FR-016      | proposed |
 | S-05  | telegram-completion-sync | Mark task complete from Telegram; reflected immediately in web app | S-04, F-04 | FR-017, FR-018 | proposed |
@@ -160,7 +160,7 @@ What's already in place in the codebase as of 2026-08-26 (auto-researched + user
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Assignment is the core coordination mechanism (PRD: "tasks are never assigned to the household — they're always assigned to a specific person"). A household member must always know who owns a task; this explicitness prevents the tragedy-of-the-commons. Ensure assignment is required, not optional.
-- **Status:** proposed
+- **Status:** in-progress
 
 ### F-03: Telegram bot scaffold
 
