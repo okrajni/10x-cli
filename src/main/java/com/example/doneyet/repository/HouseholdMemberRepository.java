@@ -14,5 +14,7 @@ public interface HouseholdMemberRepository extends JpaRepository<HouseholdMember
 
     List<HouseholdMember> findByHouseholdId(UUID householdId);
 
+    List<HouseholdMember> findByUserId(UUID userId);
+
     long countByHouseholdId(UUID householdId);
 }

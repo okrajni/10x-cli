@@ -31,6 +31,12 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
+    @ExceptionHandler(ResourceExpiredException.class)
+    public ResponseEntity<Map<String, Object>> handleResourceExpiredException(ResourceExpiredException ex) {
+        Map<String, Object> response = buildErrorResponse("RESOURCE_EXPIRED", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.GONE).body(response);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
         Map<String, Object> response = buildErrorResponse("INTERNAL_ERROR", "An unexpected error occurred");

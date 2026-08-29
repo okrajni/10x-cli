@@ -3,7 +3,7 @@ project: "done yet?"
 version: 1
 status: draft
 created: 2026-08-26
-updated: 2026-08-28
+updated: 2026-08-29
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -48,7 +48,7 @@ The mental load of managing a household falls disproportionately on one person �
 | F-01  | auth-scaffold            | (foundation) Email/password registration & login              | —                  | FR-001, FR-002     | in-progress |
 | F-02  | household-schema         | (foundation) Household data model & schema established        | F-01               | FR-003, FR-004     | in-progress |
 | F-04  | frontend-scaffold        | (foundation) React app, routing, component scaffolding, build setup | —                 | —                  | in-progress |
-| S-01  | new-user-setup           | Register, create household, invite partner, partner joins     | F-01, F-02, F-04   | US-01, FR-001–005  | proposed |
+| S-01  | new-user-setup           | Register, create household, invite partner, partner joins     | F-01, F-02, F-04   | US-01, FR-001–005  | in-progress |
 | S-02  | basic-task-crud          | Create, view, edit, delete task with title, description, category, due date | F-01, F-02, F-04 | US-02 partial, FR-006, FR-008, FR-010–013 | proposed |
 | S-03  | task-assignment          | Assign task to self or partner; both see assignments          | S-02, F-04         | FR-007             | proposed |
 | F-03  | telegram-bot-scaffold    | (foundation) Telegram bot scaffolding, token management, webhook setup | F-01, S-03 | FR-015 | proposed |
@@ -136,7 +136,7 @@ What's already in place in the codebase as of 2026-08-26 (auto-researched + user
 - **Blockers:** Email infrastructure provisioning (SMTP, SendGrid, Mailgun, etc.)
 - **Unknowns:** —
 - **Risk:** Invitation email delivery is a hard dependency (partner must receive a joinable link). Email infrastructure (SMTP, SendGrid, etc.) must be in place by end of week 1. If email setup delays, the entire on-ramp blocks.
-- **Status:** proposed
+- **Status:** in-progress
 
 ### S-02: Basic task CRUD
 
