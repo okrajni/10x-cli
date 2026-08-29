@@ -74,7 +74,7 @@ public class HouseholdService {
         HouseholdInvitation invitation = new HouseholdInvitation(household, invitedEmail, token, expiresAt);
         HouseholdInvitation savedInvitation = invitationRepository.save(invitation);
 
-        String invitationLink = String.format("http://localhost:3000/invitation/accept/%s", token);
+        String invitationLink = String.format("http://localhost:5173/invitation/accept/%s?email=%s", token, invitedEmail);
         emailService.sendInvitationEmail(invitedEmail, invitationLink, household.getName());
 
         return new HouseholdDto.InvitationResponse(
