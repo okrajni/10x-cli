@@ -13,7 +13,7 @@ interface Household {
 
 export default function HouseholdCreatePage() {
   const navigate = useNavigate()
-  const { setCurrentHousehold } = useAuth()
+  const { setCurrentHousehold, refetchHouseholds } = useAuth()
   const [name, setName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -54,18 +54,17 @@ export default function HouseholdCreatePage() {
         return
       }
 
-      // Refetch households to update the UI and auth context
+      // Refetch households in auth context to update global state
+      await refetchHouseholds()
+
+      // Also update local state for UI
       const householdsResult = await getUserHouseholdsApi()
       if (householdsResult.ok && householdsResult.data && householdsResult.data.length > 0) {
         setHouseholds(householdsResult.data)
-        // Set the current household to the newly created one
-        const newHousehold = householdsResult.data.find((h) => h.householdId === result.data.householdId)
-        if (newHousehold) {
-          setCurrentHousehold(newHousehold)
-          // Redirect to dashboard after successful creation
-          navigate('/dashboard', { replace: true })
-        }
       }
+
+      // Redirect to dashboard after successful creation and households are synced
+      navigate('/dashboard', { replace: true })
     } catch (err) {
       setError('An unexpected error occurred')
     } finally {
