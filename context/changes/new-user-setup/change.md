@@ -1,9 +1,9 @@
 # Change: new-user-setup
 
-**Status**: implementing  
+**Status**: implemented  
 **Created**: 2026-08-28  
 **Updated**: 2026-08-29  
-**Review**: context/changes/new-user-setup/reviews/impl-review.md (Review complete; critical issues being fixed)  
+**Review**: context/changes/new-user-setup/reviews/impl-review.md (All critical issues fixed and verified)  
 
 ## Summary
 
