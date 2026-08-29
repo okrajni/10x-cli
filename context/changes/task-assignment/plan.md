@@ -533,15 +533,15 @@ export interface HouseholdMember {
 
 #### Automated
 
-- [x] 1.1 Task entity extended with assigneeId FK to HouseholdMember, assignee relationship, and getAssigneeDTO() helper
-- [x] 1.2 Task repository queries work with assignee field (no new methods needed; existing CRUD auto-supports)
-- [x] 1.3 Task DTO (CreateTaskRequest, UpdateTaskRequest, TaskResponse) updated with assigneeId and AssigneeDTO
-- [x] 1.4 TaskService.createTask() defaults assigneeId to task creator if not provided, validates assignee is in household
-- [x] 1.5 TaskService.updateTask() handles assigneeId updates with validation, helper validateAndFetchAssignee() method
-- [x] 1.6 TaskController endpoints updated to accept/return assigneeId; household isolation enforced
-- [x] 1.7 Database migration creates assignee_id column, NOT NULL constraint, FK to household_member
-- [x] 1.8 SecurityConfig protects task endpoints; only authenticated users can access
-- [x] 1.9 Unit tests for TaskService assignment logic pass (default, validation, reassignment)
+- [x] 1.1 Task entity extended with assigneeId FK to HouseholdMember, assignee relationship, and getAssigneeDTO() helper — ddea742
+- [x] 1.2 Task repository queries work with assignee field (no new methods needed; existing CRUD auto-supports) — ddea742
+- [x] 1.3 Task DTO (CreateTaskRequest, UpdateTaskRequest, TaskResponse) updated with assigneeId and AssigneeDTO — ddea742
+- [x] 1.4 TaskService.createTask() defaults assigneeId to task creator if not provided, validates assignee is in household — ddea742
+- [x] 1.5 TaskService.updateTask() handles assigneeId updates with validation, helper validateAndFetchAssignee() method — ddea742
+- [x] 1.6 TaskController endpoints updated to accept/return assigneeId; household isolation enforced — ddea742
+- [x] 1.7 Database migration creates assignee_id column, NOT NULL constraint, FK to household_member — ddea742
+- [x] 1.8 SecurityConfig protects task endpoints; only authenticated users can access — ddea742
+- [x] 1.9 Unit tests for TaskService assignment logic pass (default, validation, reassignment) — ddea742
 - [ ] 1.10 Integration tests for TaskController endpoints with assigneeId pass
 
 #### Manual
