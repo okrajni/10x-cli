@@ -219,50 +219,55 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // On mount, restore session from localStorage
   useEffect(() => {
-    const savedState = localStorage.getItem('authState')
-    if (savedState) {
-      try {
-        const parsed = JSON.parse(savedState)
-        if (parsed.token && parsed.expiresAt) {
-          // Check if token is not expired
-          if (parsed.expiresAt > Date.now()) {
-            setApiToken(parsed.token)
-            dispatch({ type: 'RESTORE_SESSION', payload: parsed })
+    const restoreSession = async () => {
+      const savedState = localStorage.getItem('authState')
+      if (savedState) {
+        try {
+          const parsed = JSON.parse(savedState)
+          if (parsed.token && parsed.expiresAt) {
+            // Check if token is not expired
+            if (parsed.expiresAt > Date.now()) {
+              setApiToken(parsed.token)
+              dispatch({ type: 'RESTORE_SESSION', payload: parsed })
 
-            // Restore households from localStorage if available
-            if (parsed.households && Array.isArray(parsed.households)) {
-              const currentHousehold = parsed.currentHousehold ?? (parsed.households.length > 0 ? parsed.households[0] : null)
-              dispatch({
-                type: 'SET_HOUSEHOLDS',
-                payload: {
-                  households: parsed.households,
-                  currentHousehold,
-                },
-              })
-            } else {
-              // Refetch households if not in localStorage
-              getUserHouseholdsApi().then((householdsResult) => {
-                if (householdsResult.ok && Array.isArray(householdsResult.data)) {
-                  const households = householdsResult.data
-                  const currentHousehold: Household | null = households.length > 0 ? (households[0] ?? null) : null
-                  dispatch({
-                    type: 'SET_HOUSEHOLDS',
-                    payload: {
-                      households,
-                      currentHousehold,
-                    },
-                  })
+              // Restore households from localStorage if available
+              if (parsed.households && Array.isArray(parsed.households)) {
+                const currentHousehold = parsed.currentHousehold ?? (parsed.households.length > 0 ? parsed.households[0] : null)
+                dispatch({
+                  type: 'SET_HOUSEHOLDS',
+                  payload: {
+                    households: parsed.households,
+                    currentHousehold,
+                  },
+                })
+              } else {
+                // Refetch households if not in localStorage
+                try {
+                  const householdsResult = await getUserHouseholdsApi()
+                  if (householdsResult.ok && Array.isArray(householdsResult.data)) {
+                    const households = householdsResult.data
+                    const currentHousehold: Household | null = households.length > 0 ? (households[0] ?? null) : null
+                    dispatch({
+                      type: 'SET_HOUSEHOLDS',
+                      payload: {
+                        households,
+                        currentHousehold,
+                      },
+                    })
+                  }
+                } catch {
+                  // Silently fail if household fetch fails
                 }
-              }).catch(() => {
-                // Silently fail if household fetch fails
-              })
+              }
             }
           }
+        } catch (err) {
+          console.error('Failed to restore session:', err)
         }
-      } catch (err) {
-        console.error('Failed to restore session:', err)
       }
     }
+
+    restoreSession()
   }, [])
 
   // Save auth state to localStorage whenever it changes

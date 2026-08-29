@@ -14,6 +14,14 @@ export default function DashboardPage() {
     }
   }, [households, navigate])
 
+  if (!currentHousehold && households.length > 0) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-gray-500">Loading household data...</p>
+      </div>
+    )
+  }
+
   return (
     <div>
       <h1 className="text-3xl font-bold mb-6">Welcome, {user?.email}!</h1>
