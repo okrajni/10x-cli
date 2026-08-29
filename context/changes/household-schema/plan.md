@@ -1,208 +1,109 @@
-# Household Schema & Data Model Implementation Plan
+# Household Schema — One Household Per User Constraint
 
 ## Overview
 
-Establish PostgreSQL schema with households, users, household_members, and tasks tables. Enforce user-household isolation and multi-member relationships (2-member partner model). This foundation unblocks all downstream task management slices (S-02: task CRUD, S-03: assignment, S-06: dashboard, S-07: AI).
+Enforce the "one household per user" constraint across the backend and frontend. Currently, users can create unlimited households, but the system assumes each user has exactly one. This creates a silent bug in TaskController where `.findFirst()` picks the first household if multiple exist. Add validation to prevent multiple household creation, make error handling consistent, and update the UI to prevent users from encountering this constraint.
 
 ## Current State Analysis
 
-**Existing:**
-- Spring Boot 4.1.1 with Spring Data JPA + Hibernate
-- PostgreSQL with HikariCP (5 connection pool size)
-- User entity: `id` (UUID), `email` (unique), `passwordHash`, `createdAt`, `updatedAt`
-- UserSession entity: tracks device, IP, JWT state
-- Schema auto-generation via Hibernate `create-drop` mode
-- No migration framework (Flyway/Liquibase)
+**What exists:**
+- Household entity with `id`, `name`, `createdBy`, `createdAt`, `updatedAt`
+- HouseholdService.`createHousehold()` validates name and user existence but **does not check for duplicate households**
+- HouseholdRepository.`findByCreatedById(userId)` returns **all** households for a user (can be multiple)
+- TaskController.`getUserHouseholdId()` calls `.findFirst()` on the list, silently using the first household if multiple exist
+- Tests validate name/access but **do not test the one-household constraint**
+- Frontend allows unlimited household creation without feedback
 
-**Missing:**
-- Household entity and table
-- HouseholdMember join table (user-household relationship)
-- Task entity with category enum, assignment, completion tracking
-- HouseholdInvitation entity for email-based partner invites
-- Soft-delete support (deletedAt column for tasks)
-- Task query methods with household isolation and soft-delete filtering
-- Repositories and indexes
+**What's missing:**
+- Validation in HouseholdService to prevent 2nd household creation
+- Query method to check if user already has a household
+- Test coverage for duplicate household prevention
+- Frontend UI to disable create button after first household is created
+- Clear error message when user attempts to create a 2nd household
+
+**Root Cause:**
+The existing plan designed a full HouseholdMember join table (Phases 1-3, marked complete), but the implementation only partially matches—the Household entity lacks the OneToMany relationship to HouseholdMembers. Rather than implement the full design, this plan adds a targeted service-level constraint to prevent the bug.
 
 ## Desired End State
 
 After this plan is complete:
-- PostgreSQL schema has `households`, `household_members`, `tasks`, `household_invitations` tables
-- Users can be members of exactly one household (via HouseholdMember join with 2-member limit)
-- Tasks are always bound to a household (isolation enforced)
-- Soft-deleted tasks are excluded from queries by default
-- Repositories provide query methods for household-scoped operations
-- Unit tests verify entity relationships, constraints, and isolation
+- HouseholdService.`createHousehold()` throws a 422 Unprocessable Entity error if user already has a household
+- Error message clearly states: "User already has a household. Use the existing household to create tasks."
+- HouseholdRepository has a new query method `existsByCreatedById(userId): boolean` for efficient checking
+- Unit tests verify the constraint (attempt to create 2nd household throws expected exception)
+- Frontend HouseholdCreatePage disables the create button and shows existing household after first creation
+- TaskController behavior is unchanged (still works correctly with the constraint in place)
+- All existing tests pass; new tests validate the constraint
 
-**Verification:** Run `bun run build` and `bun test` — all tests pass; no DDL errors on app startup.
-
-### Key Discoveries
-
-- **Telegram bot ownership:** User chose system-wide bot model (one bot for all households) — schema should not include per-household or per-user bot token storage. Bot configuration handled in F-03.
-- **Soft delete for tasks:** `deletedAt: LocalDateTime (nullable)` column added; all task queries exclude soft-deleted items by default.
-- **Household creation:** Users auto-join household they create (not a separate acceptance step).
-- **Categories:** Fixed enum only (CLEANING, SHOPPING, LAUNDRY, MAINTENANCE, BILLS) — no custom categories in MVP.
-- **Household member count:** 2 members only (partner model) — enforced at schema level (unique constraint on household_id).
+**Verification:**
+- `bun run typecheck` passes
+- `bun run lint` passes
+- `bun test` passes (including new constraint tests)
+- Manual test: register, create household, attempt to create 2nd household → get 422 error with clear message
+- Manual test: frontend shows existing household details instead of create button after creation
 
 ## What We're NOT Doing
 
-- Soft delete for households or users (hard delete only; users can't delete account in MVP)
-- Edit history tracking (no `lastEditedBy` / `lastEditedAt` in MVP; can add in future)
-- Recurring task support (FR-009 deferred to v1.1)
-- Custom task categories per household (fixed enum only)
-- Household roles beyond CREATOR/PARTNER (flat model per PRD)
-- Bot token storage in schema (system-wide bot config in F-03)
-- More than 2 household members (partner model only)
+- Implementing the full HouseholdMember join table from the existing plan (that's Phase 1-3; this is a targeted fix for MVP)
+- Adding hard-delete or soft-delete of households (permanent model per requirements)
+- Changing the 2-member partner model design (that's future work)
+- Modifying Task entity relationships (they already work correctly)
+- Adding household rename/update capability (out of scope)
+- Migrating existing households from other systems (greenfield MVP)
 
 ## Implementation Approach
 
-**Entity-first design:** Define JPA entities with annotations; Hibernate auto-generates schema on startup via `create-drop` mode. No manual DDL or migrations in this phase (MVP trade-off for speed; Flyway migration layer can be added later).
+**Constraint enforcement:** Add validation in HouseholdService.`createHousehold()` before persisting. Use the existing `findByCreatedById()` query to check if user already has a household. Throw `ValidationException` (existing exception type used throughout the codebase) with HTTP 422 status (already configured in GlobalExceptionHandler).
 
-**Isolation pattern:** Every Task has `householdId` foreign key. Queries filter by `householdId` to prevent cross-household data leaks. HouseholdMember acts as the authorization matrix (is User X a member of Household Y?).
+**UI feedback:** After user creates their first household, disable the create form and show the existing household details. Frontend queries household list on mount and shows conditional UI based on count.
 
-**Soft delete:** Add `deletedAt: LocalDateTime` column to Task; create repository method `findAllByHouseholdIdAndDeletedAtIsNull()` as the default query. Hard-delete methods exist for testing cleanup only.
+**No schema changes:** This constraint is enforced at the service layer, not the database level. If future work adds HouseholdMember, this constraint becomes redundant with the database-level unique constraint.
 
 ## Critical Implementation Details
 
-**Task assignment invariant:** Every task has an `assigneeId` (FK to User). Assignment is never null or to "the household"; it's always to a specific person. This explicitness enforces the PRD rule: "tasks are never assigned to the household — they're always assigned to a specific person."
+**Service-level validation only:** Unlike HouseholdMember (which would enforce at DB via UNIQUE constraint), this uses Java logic in HouseholdService.`createHousehold()`. If a future refactor moves to stored procedures or introduces a bug, multiple households could theoretically exist in the database. The existing TaskController `.findFirst()` pattern will still work (picks the first), but ideally future work should migrate to HouseholdMember as designed in the existing plan.
 
-**HouseholdMember uniqueness:** Unique constraint on `(householdId, userId)` prevents duplicate membership. Combined with a check constraint `(householdId IN SELECT COUNT(userId) FROM household_members GROUP BY householdId HAVING COUNT(*) <= 2)` — enforces 2-member limit, though easier to enforce at service layer initially.
+**Error status code:** ValidationException is mapped to HTTP 422 by GlobalExceptionHandler (lines 14-18). Ensure frontend handles this status code specifically for the "already has household" message; other 422s (null name, invalid user) will have different messages.
 
-## Phase 1: Core Entity Definitions
+**Household retrieval:** TaskController.`getUserHouseholdId()` will never need to `.findFirst()` after this constraint is in place (always exactly one household per user), but don't change TaskController in this plan—the `.findFirst()` is harmless and changing it risks breaking task operations.
 
-### Overview
-
-Define and annotate all entities (Household, HouseholdMember, Task, HouseholdInvitation) with JPA annotations. Add category enum. Relationships are configured; Hibernate will generate schema on app startup.
-
-### Changes Required
-
-#### 1. Household Entity
-
-**File:** `src/main/java/com/example/doneyet/domain/Household.java`
-
-**Intent:** Represent a household unit. Store name, creation metadata, and track who created it (for audit). The household is the organizational boundary; all tasks and members belong to exactly one household.
-
-**Contract:** JPA Entity mapped to `households` table with columns: `id` (UUID PK), `name` (not null, String), `createdBy` (FK to User, not null), `createdAt`, `updatedAt`. Relationships: OneToMany with HouseholdMember and Task.
-
-#### 2. HouseholdMember Entity
-
-**File:** `src/main/java/com/example/doneyet/domain/HouseholdMember.java`
-
-**Intent:** Join table for user-household membership. Tracks which users are members of which households, with role information (CREATOR vs PARTNER). Enforces the 2-member partner model.
-
-**Contract:** JPA Entity mapped to `household_members` table. Columns: `id` (UUID PK), `householdId` (FK, not null), `userId` (FK to User, not null), `role` (enum: CREATOR, PARTNER), `joinedAt`. Composite unique constraint: `UNIQUE(householdId, userId)`. ManyToOne to Household and User.
-
-#### 3. Task Entity
-
-**File:** `src/main/java/com/example/doneyet/domain/Task.java`
-
-**Intent:** Represent a household task (chore, errand, bill payment, etc.). Store title, optional description, category, due date, and tracking for assignment and completion. Soft-delete support via `deletedAt`.
-
-**Contract:** JPA Entity mapped to `tasks` table. Columns: `id` (UUID PK), `householdId` (FK, not null — for isolation), `title` (String, not null), `description` (String, nullable), `category` (enum: CLEANING, SHOPPING, LAUNDRY, MAINTENANCE, BILLS), `assigneeId` (FK to User, not null — who owns this task), `dueDate` (LocalDate, nullable), `reminderTime` (LocalTime, nullable), `completed` (boolean, default false), `completedBy` (FK to User, nullable), `completedAt` (LocalDateTime, nullable), `deletedAt` (LocalDateTime, nullable), `createdBy` (FK to User, not null), `createdAt`, `updatedAt`. ManyToOne relationships to Household and User (for assignee, completedBy, createdBy).
-
-Index on `(householdId, deletedAt)` for soft-delete filtering performance.
-
-#### 4. TaskCategory Enum
-
-**File:** `src/main/java/com/example/doneyet/domain/TaskCategory.java`
-
-**Intent:** Define the fixed set of allowed task categories per PRD.
-
-**Contract:** Java enum with five values: `CLEANING`, `SHOPPING`, `LAUNDRY`, `MAINTENANCE`, `BILLS`. Maps to database as VARCHAR via Hibernate `@Enumerated(EnumType.STRING)`.
-
-#### 5. HouseholdMemberRole Enum
-
-**File:** `src/main/java/com/example/doneyet/domain/HouseholdMemberRole.java`
-
-**Intent:** Track role in household (who created it vs who joined). Enables future permission logic; flat in MVP.
-
-**Contract:** Java enum with two values: `CREATOR`, `PARTNER`. Maps to database as VARCHAR.
-
-#### 6. HouseholdInvitation Entity
-
-**File:** `src/main/java/com/example/doneyet/domain/HouseholdInvitation.java`
-
-**Intent:** Represent an email-based invitation to join a household. Partner receives email with a token link; accepting the link creates a HouseholdMember record and marks the invitation accepted.
-
-**Contract:** JPA Entity mapped to `household_invitations` table. Columns: `id` (UUID PK), `householdId` (FK, not null), `invitedEmail` (String, not null), `invitationToken` (String, unique, not null), `expiresAt` (LocalDateTime, not null — 24 hours from creation), `accepted` (boolean, default false), `acceptedAt` (LocalDateTime, nullable), `acceptedByUserId` (FK to User, nullable), `createdAt`. ManyToOne to Household. Unique constraint on `invitationToken`.
-
-### Success Criteria
-
-#### Automated Verification
-
-- Type checking passes: `bun run typecheck`
-- Linting passes: `bun run lint`
-- App starts without errors: entities are scanned, Hibernate generates schema
-- Unit tests verify entity relationships (ManyToOne, OneToMany cardinality) pass
-- Entity constraint tests pass (unique constraint on HouseholdMember, Task soft-delete)
-- Repositories can be instantiated (Spring auto-wires them)
-
-#### Manual Verification
-
-- PostgreSQL schema contains all tables: `households`, `household_members`, `tasks`, `household_invitations`
-- Column names and types match entity definitions (e.g., `categoryId` is VARCHAR for enum)
-- Foreign key relationships are in place
-- Unique constraints exist on intended columns
-- Indexes exist on performance-critical columns (householdId, task.deletedAt)
-
-**Implementation Note:** After completing this phase and all automated verification passes, pause here for manual confirmation that the PostgreSQL schema is correct before proceeding to Phase 2.
-
----
-
-## Phase 2: Data Access Layer & Query Methods
+## Phase 1: Backend Validation
 
 ### Overview
 
-Create Spring Data JPA repositories with custom query methods for household-scoped operations, soft-delete filtering, and task lifecycle queries. Add repository tests.
+Add validation in HouseholdService to prevent users from creating a second household. Update repository with an efficient query method. Add unit tests for the constraint.
 
 ### Changes Required
 
-#### 1. HouseholdRepository
+#### 1. HouseholdService.`createHousehold()` Method
+
+**File:** `src/main/java/com/example/doneyet/service/HouseholdService.java`
+
+**Intent:** Before creating a household, check if the user already has one. If they do, throw an exception instead of persisting.
+
+**Contract:** Modify the `createHousehold(UUID userId, String name)` method (currently lines 27-42) to add a household-count check before persisting. Call a new repository method `existsByCreatedById(userId)` (see below). If true, throw `new ValidationException("User already has a household. Use the existing household to create tasks.")`. The exact line to add is:
+
+```java
+if (householdRepository.existsByCreatedById(userId)) {
+    throw new ValidationException("User already has a household. Use the existing household to create tasks.");
+}
+```
+
+Insert this check after user existence validation (line 31) and before name validation (line 32).
+
+#### 2. HouseholdRepository.`existsByCreatedById()` Query Method
 
 **File:** `src/main/java/com/example/doneyet/repository/HouseholdRepository.java`
 
-**Intent:** Access Household entities by ID or by membership. Support queries like "find all households a user is a member of" for login/dashboard flows.
+**Intent:** Provide an efficient query to check if a user already has a household, without fetching all households into memory.
 
-**Contract:** Extends `JpaRepository<Household, UUID>`. Custom methods:
-- `findById(UUID id): Optional<Household>` (inherited)
-- `findByCreatedBy(UUID userId): List<Household>` — households created by this user
-- `@Query("SELECT DISTINCT h FROM Household h JOIN HouseholdMember hm ON h.id = hm.householdId WHERE hm.userId = ?1") findHouseholdsByMemberId(UUID userId): List<Household>` — all households this user is a member of
+**Contract:** Add a new method to HouseholdRepository:
 
-#### 2. HouseholdMemberRepository
+```java
+boolean existsByCreatedById(UUID userId);
+```
 
-**File:** `src/main/java/com/example/doneyet/repository/HouseholdMemberRepository.java`
-
-**Intent:** Query membership records. Answer: "Is User X a member of Household Y?" and "How many members does Household H have?"
-
-**Contract:** Extends `JpaRepository<HouseholdMember, UUID>`. Custom methods:
-- `findByHouseholdIdAndUserId(UUID householdId, UUID userId): Optional<HouseholdMember>` — check membership
-- `findByHouseholdId(UUID householdId): List<HouseholdMember>` — all members of a household
-- `countByHouseholdId(UUID householdId): long` — member count (for 2-member validation)
-
-#### 3. TaskRepository
-
-**File:** `src/main/java/com/example/doneyet/repository/TaskRepository.java`
-
-**Intent:** Query tasks with household isolation and soft-delete filtering. Default queries exclude deleted tasks; explicit methods exist for testing and cleanup.
-
-**Contract:** Extends `JpaRepository<Task, UUID>`. Custom methods:
-- `findByHouseholdIdAndDeletedAtIsNull(UUID householdId): List<Task>` — all active tasks in a household
-- `findByHouseholdIdAndAssigneeIdAndDeletedAtIsNull(UUID householdId, UUID assigneeId): List<Task>` — tasks assigned to a user
-- `findByHouseholdIdAndDueDateAndDeletedAtIsNull(UUID householdId, LocalDate dueDate): List<Task>` — tasks due on a specific date
-- `findByHouseholdIdAndCompletedAndDeletedAtIsNull(UUID householdId, boolean completed): List<Task>` — filter by completion status
-- `findByIdAndHouseholdId(UUID id, UUID householdId): Optional<Task>` — isolation check (returns Task only if it belongs to this household)
-- `save(Task task): Task` — persists task; ensure all queries exclude soft-deleted by default via `@Query` annotation or service-layer filtering
-
-#### 4. HouseholdInvitationRepository
-
-**File:** `src/main/java/com/example/doneyet/repository/HouseholdInvitationRepository.java`
-
-**Intent:** Query invitations by token, email, or household. Support acceptance flows and expiry checks.
-
-**Contract:** Extends `JpaRepository<HouseholdInvitation, UUID>`. Custom methods:
-- `findByInvitationToken(String token): Optional<HouseholdInvitation>` — look up by token from email link
-- `findByHouseholdIdAndInvitedEmail(UUID householdId, String email): Optional<HouseholdInvitation>` — check if email already invited
-- `findByHouseholdIdAndAcceptedFalse(UUID householdId): List<HouseholdInvitation>` — pending invitations for a household
-- `findByExpiresAtBeforeAndAcceptedFalse(LocalDateTime now): List<HouseholdInvitation>` — expired invitations (for cleanup job)
+Spring Data JPA will auto-generate the SQL: `SELECT COUNT(*) > 0 FROM households WHERE created_by = ?`. This is more efficient than fetching all households.
 
 ### Success Criteria
 
@@ -210,116 +111,163 @@ Create Spring Data JPA repositories with custom query methods for household-scop
 
 - Type checking passes: `bun run typecheck`
 - Linting passes: `bun run lint`
-- Unit tests for repositories pass: each repository method is tested with sample data
-- Isolation test passes: query a task from Household A and verify it's not accessible via Household B's queries
-- Soft-delete test passes: create a task, soft-delete it, verify it's excluded from default queries
-- Spring wires all repositories at startup (no instantiation errors)
+- App starts without errors (Spring wires the new repository method)
+- HouseholdServiceTest compiles and runs
 
 #### Manual Verification
 
-- Queries return expected results against PostgreSQL
-- Soft-deleted tasks are not returned by default query methods
-- Household isolation is enforced (cross-household queries return empty)
-- Transaction handling is correct (no uncommitted reads)
-
-**Implementation Note:** After completing this phase and all automated verification passes, pause here for manual confirmation that repository queries work correctly with sample data before proceeding to Phase 3.
+- Verify repository query works: call `existsByCreatedById(userId)` in tests, confirm returns true/false correctly
+- Verify exception is thrown: create a user, create a household, attempt to create a 2nd household, confirm 422 Unprocessable Entity is returned with the correct message
 
 ---
 
-## Phase 3: Schema Verification & Testing
+## Phase 2: Unit Tests for the Constraint
 
 ### Overview
 
-Write comprehensive tests to verify entity relationships, soft-delete behavior, household isolation, and constraint enforcement. Run full test suite.
+Write tests to verify the constraint is enforced: users cannot create a second household, and the error message is clear.
 
 ### Changes Required
 
-#### 1. Entity Relationship Tests
+#### 1. Test for Duplicate Household Prevention
 
-**File:** `src/test/java/com/example/doneyet/domain/EntityRelationshipTest.java`
+**File:** `src/test/java/com/example/doneyet/service/HouseholdServiceTest.java`
 
-**Intent:** Verify JPA annotations generate correct schema and relationships work as expected.
+**Intent:** Verify that attempting to create a second household throws the expected exception.
 
-**Contract:** Test class with `@DataJpaTest` annotation. Tests:
-- Household can have multiple Tasks (OneToMany relationship works)
-- Household can have multiple HouseholdMembers (OneToMany)
-- HouseholdMember links correct User and Household (ManyToOne)
-- Task.assigneeId references a User
-- Task.householdId references a Household
-- Cascade delete rules (e.g., deleting Household cascades to Tasks)
+**Contract:** Add a test method to HouseholdServiceTest:
 
-#### 2. Soft Delete Behavior Tests
+```java
+@Test
+public void testCreateSecondHouseholdThrows() {
+    // Given: a user with one household already created
+    User user = new User("user@example.com", "hashedPassword");
+    userRepository.save(user);
+    Household first = new Household("First Household", user);
+    householdRepository.save(first);
+    
+    // When: attempting to create a second household
+    // Then: ValidationException is thrown with the correct message
+    ValidationException exception = assertThrows(
+        ValidationException.class,
+        () -> householdService.createHousehold(user.getId(), "Second Household")
+    );
+    assertEquals("User already has a household. Use the existing household to create tasks.", exception.getMessage());
+}
+```
 
-**File:** `src/test/java/com/example/doneyet/repository/TaskSoftDeleteTest.java`
+#### 2. Test for First Household Creation (Sanity Check)
 
-**Intent:** Verify soft-deleted tasks are excluded from default queries and included only when explicitly requested.
+**File:** `src/test/java/com/example/doneyet/service/HouseholdServiceTest.java`
 
-**Contract:** Test class that:
-- Creates a task, saves it, queries it — present in default query
-- Soft-deletes the task (set `deletedAt` to now, save)
-- Queries default list — deleted task not included
-- Queries with explicit `findByHouseholdIdAndDeletedAtIsNotNull()` — deleted task is included
-- Cascade behavior: deleting a Task does not delete the User or Household
+**Intent:** Ensure the constraint doesn't block the first household creation.
 
-#### 3. Household Isolation Tests
+**Contract:** Add or update an existing test:
 
-**File:** `src/test/java/com/example/doneyet/repository/HouseholdIsolationTest.java`
-
-**Intent:** Verify tasks from one household cannot leak to queries for another household.
-
-**Contract:** Test class that:
-- Creates Household A and B with different users
-- Creates Task T1 in Household A (assigned to user in A)
-- Creates Task T2 in Household B (assigned to user in B)
-- Queries Household A's tasks — only T1 is returned
-- Queries Household B's tasks — only T2 is returned
-- Cross-household query attempt returns empty (no "T1 in B" or "T2 in A")
-
-#### 4. Constraint Enforcement Tests
-
-**File:** `src/test/java/com/example/doneyet/domain/ConstraintTest.java`
-
-**Intent:** Verify database constraints are enforced (unique, not-null, foreign keys).
-
-**Contract:** Test class that:
-- Duplicate email in User throws (inherited from F-01, included for completeness)
-- Null household_id on Task throws
-- Null assignee_id on Task throws
-- Duplicate HouseholdMember (same household + user) throws or is prevented
-- Foreign key violation on invalid householdId throws
-
-#### 5. HouseholdInvitation Lifecycle Tests
-
-**File:** `src/test/java/com/example/doneyet/domain/HouseholdInvitationTest.java`
-
-**Intent:** Verify invitation creation, expiry, and acceptance flow.
-
-**Contract:** Test class that:
-- New invitation has `accepted = false`, `acceptedAt = null`
-- Invitation token is unique (can't create two invitations with same token)
-- Invitation.expiresAt is 24 hours from creation
-- Expired invitations are correctly identified by `expiresAt < now`
-- Accepting an invitation sets `accepted = true`, `acceptedAt = now`, `acceptedByUserId`
+```java
+@Test
+public void testCreateFirstHouseholdSucceeds() {
+    // Given: a user with no households
+    User user = new User("user@example.com", "hashedPassword");
+    userRepository.save(user);
+    
+    // When: creating the first household
+    HouseholdDto.HouseholdResponse response = householdService.createHousehold(user.getId(), "My Household");
+    
+    // Then: the household is created successfully
+    assertNotNull(response.getHouseholdId());
+    assertEquals("My Household", response.getName());
+}
+```
 
 ### Success Criteria
 
 #### Automated Verification
 
-- Unit tests pass: `bun test` (all tests in src/test/java)
-- Coverage for repositories and entities >80%
-- No SQL errors on test startup (H2 in-memory database auto-schema works)
-- Soft-delete tests pass
-- Isolation tests pass
-- Constraint tests pass (or document expected exceptions)
+- Type checking passes: `bun run typecheck`
+- Linting passes: `bun run lint`
+- All HouseholdServiceTest tests pass: `bun test src/test/java/com/example/doneyet/service/HouseholdServiceTest.java`
+- New constraint tests pass
+- Existing tests still pass (first household creation, name validation, access control)
 
 #### Manual Verification
 
-- Test output shows all entity relationships correctly established
-- Schema dump (via PostgreSQL console) matches expected structure
-- Indexes are present on performance-critical columns
-- No warnings in Hibernate DDL generation logs
+- Run full test suite: `bun test` — all tests pass
+- Verify constraint test output shows the expected exception is thrown
+- Verify no regressions in existing household tests
 
-**Implementation Note:** After completing this phase and all automated verification passes, pause here for manual confirmation that all tests pass and schema is correct before declaring the plan complete.
+---
+
+## Phase 3: Frontend UI Update
+
+### Overview
+
+Update the frontend to disable the household creation form after the first household is created. Show the existing household details instead of the create form when a household already exists.
+
+### Changes Required
+
+#### 1. HouseholdCreatePage Component Conditional Rendering
+
+**File:** `frontend/src/features/household/pages/HouseholdCreatePage.tsx`
+
+**Intent:** After a user creates their first household, prevent them from seeing the create form. Instead, show the existing household details and a message explaining they can only have one household.
+
+**Contract:** Modify the component to:
+- On mount, fetch the user's households via `getUserHouseholdsApi()`
+- If households list is not empty (household already exists):
+  - Hide the create form
+  - Show the existing household name, ID, and a message: "You have one household. Create tasks to get started."
+  - Show a button to go to the task dashboard or show household details
+- If households list is empty:
+  - Show the create form as currently implemented
+- After successful creation, refetch the list and re-render to show the existing household view
+
+Pseudo-code outline:
+```typescript
+const [households, setHouseholds] = useState([]);
+const [loading, setLoading] = useState(true);
+
+useEffect(() => {
+  const fetchHouseholds = async () => {
+    const result = await getUserHouseholdsApi();
+    if (result.ok) {
+      setHouseholds(result.data);
+    }
+    setLoading(false);
+  };
+  fetchHouseholds();
+}, []);
+
+return (
+  <div>
+    {households.length > 0 ? (
+      <div>
+        <h2>Your Household</h2>
+        <p>{households[0].name}</p>
+        <p>You have one household. Create tasks to get started.</p>
+      </div>
+    ) : (
+      <HouseholdCreateForm onSuccess={() => refetch()} />
+    )}
+  </div>
+);
+```
+
+### Success Criteria
+
+#### Automated Verification
+
+- TypeScript compilation passes: `bun run typecheck`
+- Linting passes: `bun run lint`
+- Component renders without errors (no null pointer exceptions on empty households)
+
+#### Manual Verification
+
+- Register a new user and navigate to the household creation page — see the create form
+- Create a household — form successfully creates household
+- After creation, page re-renders and shows the existing household details instead of the create form
+- Refresh the page — still shows existing household details, not the create form
+- The "create task" flow works seamlessly from the household page
 
 ---
 
@@ -327,108 +275,105 @@ Write comprehensive tests to verify entity relationships, soft-delete behavior, 
 
 ### Unit Tests
 
-**Entity tests** (`src/test/java/com/example/doneyet/domain/`):
-- Entity creation, getters/setters, equality
-- Relationship navigation (Household → Tasks, etc.)
-- Enum values and mapping
+**Backend:**
+- Constraint validation: attempt to create 2nd household → ValidationException thrown
+- First household creation: succeeds without error
+- Repository query: `existsByCreatedById(userId)` returns true when household exists, false otherwise
+- Error message: verify exact wording of exception message (frontend depends on this)
 
-**Repository tests** (`src/test/java/com/example/doneyet/repository/`):
-- CRUD operations (create, read, update, delete)
-- Custom query methods return correct data
-- Soft-delete filtering works
-- Household isolation is enforced
-- Constraint violations throw expected exceptions
-
-**Constraint & lifecycle tests**:
-- Unique constraints work
-- Not-null constraints work
-- Foreign key relationships work
-- Cascade delete behavior
-- Invitation expiry logic
+**Frontend:**
+- Component renders create form when households list is empty
+- Component renders existing household details when households list has items
+- Button to navigate to tasks works
 
 ### Integration Tests
 
-- Test full flow: Create Household → Add HouseholdMember → Create Task → Query by Household
-- Verify soft-delete doesn't break task assignment queries
-- Verify permission checks (user membership) block cross-household access
+- E2E flow: register → create household → try to create 2nd household → get 422 error → frontend shows error or refetch block
+- E2E flow: register → create household → navigate to tasks → task creation works
 
 ### Manual Testing Steps
 
-1. Start app: `bun run dev --backend` (Spring Boot starts, Hibernate generates schema)
-2. Open PostgreSQL console: `psql -U postgres -d done_yet`
-3. Verify tables: `\dt` — see households, household_members, tasks, household_invitations
-4. Verify columns: `\d households` — see id, name, created_by, created_at, updated_at
-5. Verify indexes: `SELECT * FROM pg_indexes WHERE tablename = 'tasks'` — see index on (household_id, deleted_at)
-6. Manual insertion: insert a household, members, tasks; verify queries return correct isolation
+1. **Backend constraint:**
+   - Start app: `bun run dev --backend`
+   - Register a user (e.g., `POST /api/auth/register` with email, password)
+   - Create first household: `POST /api/household` with `{"name": "My Home"}` → 200 OK
+   - Create second household: `POST /api/household` with `{"name": "Second Home"}` → 422 Unprocessable Entity with message "User already has a household. Use the existing household to create tasks."
+
+2. **Frontend flow:**
+   - Register a user via web UI
+   - Navigate to "Create Household" page — see the form
+   - Fill in household name and submit
+   - After creation, page shows household details and "You have one household. Create tasks to get started."
+   - Refresh page — still shows existing household, not create form
+   - Verify "Go to Tasks" button navigates to task creation page
+
+3. **Task creation still works:**
+   - After creating a household, create a task via `POST /api/task`
+   - Verify task is created in the user's household
+   - List tasks via `GET /api/task` — task appears in the list
 
 ## Performance Considerations
 
-- Index on `(householdId, deletedAt)` for fast soft-delete filtering
-- Index on `(householdId, assigneeId)` for task-assignment queries (added if S-02 queries are slow)
-- Connection pool size 5 (HikariCP) — sufficient for MVP; increase if connection timeouts occur
-- No N+1 query issues (use `@ManyToOne(fetch = FetchType.EAGER)` carefully; prefer LAZY + explicit fetch if needed)
+- `existsByCreatedById()` uses a database COUNT query, efficient even with many households (though users should never have more than one)
+- No N+1 query issues (repository method is a single COUNT, not a fetch-all)
+- Frontend fetch of households on mount is a single GET call (already implemented in existing code)
 
 ## Migration Notes
 
-**Schema evolution:** Hibernate `create-drop` mode is for MVP speed only. Before production or scaling to multiple environments:
-1. Add Flyway migration framework (dependency + config in pom.xml, application.properties)
-2. Convert entities to migrations: `V1__initial_schema.sql` with CREATE TABLE statements
-3. Switch `spring.jpa.hibernate.ddl-auto` to `validate` (Hibernate validates but doesn't modify schema)
+**No data migration needed:** This is a service-level constraint on new household creation. Existing households in the database are unaffected. If somehow multiple households already exist in the database, the constraint only prevents creating more; existing multiples remain. Future work migrating to HouseholdMember can enforce database-level uniqueness and clean up any existing duplicates.
 
-**Data backfill:** No existing household or task data; schema is greenfield. When migrating from other systems, add data migration scripts in a `V2__backfill_*.sql` phase.
+**Backward compatibility:** All existing API contracts remain unchanged. The new constraint only changes the behavior: users who attempt to create a 2nd household will now get a 422 error instead of succeeding. This is the intended fix.
 
 ## References
 
-- Spring Data JPA docs: https://spring.io/projects/spring-data-jpa
-- Hibernate annotations: https://hibernate.org/orm/documentation/
-- PostgreSQL JDBC driver: https://jdbc.postgresql.org/
-- PRD: `context/foundation/prd.md` (FR-003, FR-004, NFR data isolation)
-- Roadmap: `context/foundation/roadmap.md` (F-02 dependencies and unknowns)
+- Existing plan (Phase 1-3, complete): `context/changes/household-schema/plan.md` (the full HouseholdMember model design)
+- GlobalExceptionHandler config: `src/main/java/com/example/doneyet/exception/GlobalExceptionHandler.java` (ValidationException → 422 mapping at line 14-18)
+- Spring Data JPA query methods: https://spring.io/projects/spring-data-jpa
+- PRD household model: `context/foundation/prd.md`
 
 ## Progress
 
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles. See `references/progress-format.md`.
 
-### Phase 1: Core Entity Definitions
+### Phase 1: Backend Validation
 
 #### Automated
 
-- [x] 1.1 Type checking passes — 25235bf
-- [x] 1.2 Linting passes — 25235bf
-- [x] 1.3 App starts without errors — 25235bf
-- [x] 1.4 Entity relationship tests pass — 25235bf
+- [x] 1.1 Type checking passes
+- [x] 1.2 Linting passes
+- [x] 1.3 App starts without errors
+- [x] 1.4 HouseholdServiceTest compiles
 
 #### Manual
 
-- [x] 1.5 PostgreSQL schema verified (tables exist with correct columns) — 25235bf
-- [x] 1.6 Unique constraints exist — 25235bf
-- [x] 1.7 Foreign key relationships verified — 25235bf
+- [ ] 1.5 Repository query existsByCreatedById() works correctly
+- [ ] 1.6 Constraint prevents 2nd household creation with correct error message
 
-### Phase 2: Data Access Layer & Query Methods
+### Phase 2: Unit Tests for the Constraint
 
 #### Automated
 
-- [x] 2.1 Type checking passes — 0e59f7d
-- [x] 2.2 Linting passes — 0e59f7d
-- [x] 2.3 Repository tests pass — 0e59f7d
-- [x] 2.4 Soft-delete filtering tests pass — 0e59f7d
+- [x] 2.1 Type checking passes
+- [x] 2.2 Linting passes
+- [x] 2.3 Duplicate household prevention test passes
+- [x] 2.4 First household creation test passes
+- [x] 2.5 All HouseholdServiceTest tests pass
 
 #### Manual
 
-- [x] 2.5 Repository queries return expected results — 0e59f7d
-- [x] 2.6 Household isolation verified — 0e59f7d
-- [x] 2.7 Cross-household queries blocked — 0e59f7d
+- [ ] 2.6 Full test suite passes
 
-### Phase 3: Schema Verification & Testing
+### Phase 3: Frontend UI Update
 
 #### Automated
 
-- [x] 3.1 Full test suite passes — 8a79eec
-- [x] 3.2 Coverage >80% — 8a79eec
-- [x] 3.3 Constraint tests pass — 8a79eec
+- [ ] 3.1 TypeScript compilation passes
+- [ ] 3.2 Linting passes
+- [ ] 3.3 Component renders without errors
 
 #### Manual
 
-- [x] 3.4 Schema dump verified against spec — 8a79eec
-- [x] 3.5 Indexes present on performance columns — 8a79eec
-- [x] 3.6 No Hibernate DDL generation warnings — 8a79eec
+- [ ] 3.4 Create form shown when no households exist
+- [ ] 3.5 Existing household details shown after creation
+- [ ] 3.6 Page refresh still shows existing household (not create form)
+- [ ] 3.7 Task creation flow works after household exists

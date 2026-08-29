@@ -12,4 +12,5 @@ import java.util.UUID;
 @Repository
 public interface HouseholdRepository extends JpaRepository<Household, UUID> {
     List<Household> findByCreatedById(UUID userId);
+    boolean existsByCreatedById(UUID userId);
 }

@@ -30,6 +30,10 @@ public class HouseholdService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ValidationException("User not found"));
 
+        if (householdRepository.existsByCreatedById(userId)) {
+            throw new ValidationException("User already has a household. Use the existing household to create tasks.");
+        }
+
         Household household = new Household(name, user);
         Household savedHousehold = householdRepository.save(household);
 

@@ -72,31 +72,29 @@ class HouseholdServiceTest {
 
     @Test
     void testGetUserHouseholds() {
-        // Create multiple households
-        HouseholdDto.HouseholdResponse household1 = householdService.createHousehold(testUserId, "Household 1");
-        HouseholdDto.HouseholdResponse household2 = householdService.createHousehold(testUserId, "Household 2");
+        // Create one household (users can only have one)
+        HouseholdDto.HouseholdResponse household1 = householdService.createHousehold(testUserId, "Test Household");
 
         // Get user households
         List<HouseholdDto.HouseholdResponse> households = householdService.getUserHouseholds(testUserId);
 
-        assertEquals(2, households.size());
-        assertTrue(households.stream().anyMatch(h -> h.getName().equals("Household 1")));
-        assertTrue(households.stream().anyMatch(h -> h.getName().equals("Household 2")));
+        assertEquals(1, households.size());
+        assertEquals("Test Household", households.get(0).getName());
     }
 
     @Test
-    void testGetUserHouseholdsOrdered() {
-        // Create households with small delay to ensure different timestamps
-        HouseholdDto.HouseholdResponse household1 = householdService.createHousehold(testUserId, "Household 1");
-        try { Thread.sleep(10); } catch (InterruptedException e) { }
-        HouseholdDto.HouseholdResponse household2 = householdService.createHousehold(testUserId, "Household 2");
+    void testCreateSecondHouseholdThrows() {
+        // Given: a user with one household already created
+        HouseholdDto.HouseholdResponse first = householdService.createHousehold(testUserId, "First Household");
+        assertNotNull(first);
 
-        // Get user households
-        List<HouseholdDto.HouseholdResponse> households = householdService.getUserHouseholds(testUserId);
-
-        assertEquals(2, households.size());
-        assertEquals("Household 2", households.get(0).getName());
-        assertEquals("Household 1", households.get(1).getName());
+        // When: attempting to create a second household
+        // Then: ValidationException is thrown with the correct message
+        ValidationException exception = assertThrows(
+            ValidationException.class,
+            () -> householdService.createHousehold(testUserId, "Second Household")
+        );
+        assertEquals("User already has a household. Use the existing household to create tasks.", exception.getMessage());
     }
 
     @Test
