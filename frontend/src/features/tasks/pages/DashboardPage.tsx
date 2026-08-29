@@ -54,23 +54,6 @@ export default function DashboardPage() {
           <p className="text-gray-600">Today&apos;s tasks will appear here in S-06.</p>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-2">👥 Household</h2>
-          {currentHousehold && (
-            <div className="space-y-3">
-              <p className="text-gray-600">
-                Household: <strong>{currentHousehold.name}</strong>
-              </p>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => navigate(`/household/${currentHousehold.householdId}/invite`)}
-              >
-                Invite Partner
-              </Button>
-            </div>
-          )}
-        </div>
       </div>
     </div>
   )

@@ -3,15 +3,12 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Button, Input } from '@shared/components'
 import { getTask, updateTask, Task, UpdateTaskRequest, TaskCategory } from '../api'
 import { categoryLabel, CATEGORIES } from '../utils/categoryUtils'
-import { HouseholdMemberSelect } from '../components/HouseholdMemberSelect'
 import { useAuth } from '@features/auth/context/AuthContext'
-import { getHouseholdDetailsApi, HouseholdMember } from '@features/household/api'
 
 interface FormErrors {
   title?: string
   category?: string
   dueDate?: string
-  assigneeId?: string
 }
 
 export default function TaskEditPage() {
@@ -20,7 +17,6 @@ export default function TaskEditPage() {
   const { currentHousehold } = useAuth()
   const [task, setTask] = useState<Task | null>(null)
   const [formData, setFormData] = useState<UpdateTaskRequest>({})
-  const [householdMembers, setHouseholdMembers] = useState<HouseholdMember[]>([])
   const [errors, setErrors] = useState<FormErrors>({})
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -40,16 +36,7 @@ export default function TaskEditPage() {
           description: result.data.description,
           category: result.data.category,
           dueDate: result.data.dueDate,
-          assigneeId: result.data.assignee?.id,
         })
-
-        // Fetch household members
-        if (currentHousehold) {
-          const membersResult = await getHouseholdDetailsApi(currentHousehold.householdId)
-          if (membersResult.ok && membersResult.data.members) {
-            setHouseholdMembers(membersResult.data.members)
-          }
-        }
       } else {
         setMessage({
           type: 'error',
@@ -221,21 +208,6 @@ export default function TaskEditPage() {
                 ))}
               </select>
               {errors.category && <p className="mt-1 text-sm text-red-600">{errors.category}</p>}
-            </div>
-
-            {/* Assignee */}
-            <div>
-              <HouseholdMemberSelect
-                members={householdMembers}
-                value={formData.assigneeId}
-                onChange={(id) => {
-                  setFormData({ ...formData, assigneeId: id })
-                  if (errors.assigneeId) setErrors({ ...errors, assigneeId: undefined })
-                }}
-                label="Assign to"
-                disabled={isSubmitting}
-              />
-              {errors.assigneeId && <p className="mt-1 text-sm text-red-600">{errors.assigneeId}</p>}
             </div>
 
             {/* Due Date */}

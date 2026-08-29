@@ -1,18 +1,13 @@
 import { useState } from 'react'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Button, Input } from '@shared/components'
 import { useAuth } from '../context/AuthContext'
-import { acceptInvitationApi } from '@features/household/api'
 
 export default function RegisterPage() {
   const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
-  const { register: authRegister, clearError, refetchHouseholds } = useAuth()
+  const { register: authRegister, clearError } = useAuth()
 
-  const inviteEmail = searchParams.get('email') || ''
-  const inviteToken = searchParams.get('inviteToken') || ''
-
-  const [email, setEmail] = useState(inviteEmail)
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -40,22 +35,7 @@ export default function RegisterPage() {
 
     setLoading(true)
     try {
-      // Register using auth context (this will also fetch households)
       await authRegister(email, password)
-
-      // If there's an invitation token, accept it automatically
-      if (inviteToken) {
-        const inviteResult = await acceptInvitationApi(inviteToken)
-        if (!inviteResult.ok) {
-          console.error('Failed to accept invitation:', inviteResult.message)
-          // Still redirect to dashboard even if invitation acceptance fails
-        } else {
-          // Refetch households to include the newly accepted one
-          await refetchHouseholds()
-        }
-      }
-
-      // Redirect to dashboard - it will handle the logic
       navigate('/dashboard')
     } catch (err) {
       const message = err instanceof Error ? err.message : 'An unexpected error occurred'
@@ -72,11 +52,6 @@ export default function RegisterPage() {
           <div className="text-center">
             <h1 className="text-3xl font-bold text-gray-900">done yet?</h1>
             <p className="text-gray-600 mt-2">Create your account</p>
-            {inviteEmail && (
-              <p className="text-sm text-gray-500 mt-1">
-                Joining via invitation to <strong>{inviteEmail}</strong>
-              </p>
-            )}
           </div>
 
           <form className="space-y-4" onSubmit={handleSubmit}>
@@ -96,7 +71,7 @@ export default function RegisterPage() {
                 placeholder="your@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                disabled={loading || !!inviteEmail}
+                disabled={loading}
                 className="mt-1"
               />
             </div>

@@ -38,7 +38,7 @@ export default function HouseholdCreatePage() {
         }
       }
 
-      navigate(`/household/${result.data.householdId}/invite`)
+      navigate('/dashboard')
     } catch (err) {
       setError('An unexpected error occurred')
     } finally {
@@ -54,7 +54,7 @@ export default function HouseholdCreatePage() {
             Create Your Household
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            Set up your household and invite your partner
+            Set up your household
           </p>
         </div>
 

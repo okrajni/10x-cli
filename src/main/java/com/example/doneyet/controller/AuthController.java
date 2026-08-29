@@ -53,7 +53,6 @@ public class AuthController {
         }
 
         try {
-            rateLimiter.recordLoginAttempt(request.getEmail(), ipAddress);
             AuthDto.AuthResponse response = loginService.login(request, httpRequest);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {

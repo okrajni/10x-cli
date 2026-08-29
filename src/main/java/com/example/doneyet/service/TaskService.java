@@ -123,7 +123,6 @@ public class TaskService {
                 task.getDueDate(),
                 task.getCompletedAt(),
                 task.getDeletedAt(),
-                null,
                 task.getCreatedAt(),
                 task.getUpdatedAt()
         );

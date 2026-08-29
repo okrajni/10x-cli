@@ -13,8 +13,6 @@ const TaskCreatePage = lazy(() => import('@features/tasks/pages/TaskCreatePage')
 const TaskEditPage = lazy(() => import('@features/tasks/pages/TaskEditPage'))
 const SettingsPage = lazy(() => import('@features/auth/pages/SettingsPage'))
 const HouseholdCreatePage = lazy(() => import('@features/household/pages/HouseholdCreatePage'))
-const InvitePartnerPage = lazy(() => import('@features/household/pages/InvitePartnerPage'))
-const InvitationAcceptPage = lazy(() => import('@features/household/pages/InvitationAcceptPage'))
 
 // eslint-disable-next-line react-refresh/only-export-components
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
@@ -79,15 +77,6 @@ export const router = createBrowserRouter([
           </SuspenseWrapper>
         ),
       },
-      {
-        path: 'invitation/accept/:token',
-        element: (
-          <SuspenseWrapper>
-            <InvitationAcceptPage />
-          </SuspenseWrapper>
-        ),
-      },
-
       // Protected routes
       {
         path: 'household/create',
@@ -95,16 +84,6 @@ export const router = createBrowserRouter([
           <ProtectedRoute>
             <SuspenseWrapper>
               <HouseholdCreatePage />
-            </SuspenseWrapper>
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: 'household/:householdId/invite',
-        element: (
-          <ProtectedRoute>
-            <SuspenseWrapper>
-              <InvitePartnerPage />
             </SuspenseWrapper>
           </ProtectedRoute>
         ),

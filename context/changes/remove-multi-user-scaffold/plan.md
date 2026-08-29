@@ -408,14 +408,14 @@ Removing multi-user code reduces complexity:
 
 #### Automated
 
-- [x] 2.1 Update Household entity (remove members relationship) — 611df04
-- [x] 2.2 Refactor HouseholdService methods — 611df04
-- [x] 2.3 Delete InvitationController and sendInvitation endpoint — 611df04
-- [x] 2.4 Update SecurityConfig — 611df04
-- [x] 2.5 Add findByCreatedById() to HouseholdRepository — 611df04
-- [x] 2.6 Simplify HouseholdDto — 611df04
-- [x] 2.7 `mvn clean compile` passes — 611df04
-- [x] 2.8 `mvn test` passes — 611df04
+- [x] 2.1 Update Household entity (remove members relationship) — 3409c45
+- [x] 2.2 Refactor HouseholdService methods — 3409c45
+- [x] 2.3 Delete InvitationController and sendInvitation endpoint — 3409c45
+- [x] 2.4 Update SecurityConfig — 3409c45
+- [x] 2.5 Add findByCreatedById() to HouseholdRepository — 3409c45
+- [x] 2.6 Simplify HouseholdDto — 3409c45
+- [x] 2.7 `mvn clean compile` passes — 3409c45
+- [x] 2.8 `mvn test` passes — 3409c45
 
 #### Manual
 
@@ -426,12 +426,12 @@ Removing multi-user code reduces complexity:
 
 #### Automated
 
-- [ ] 3.1 Delete InvitePartnerPage.tsx, InvitationAcceptPage.tsx, HouseholdMemberSelect.tsx
-- [ ] 3.2 Update router.tsx to remove routes and imports
-- [ ] 3.3 Update household/api.ts to remove invitation functions
-- [ ] 3.4 Update RegisterPage, HouseholdCreatePage, DashboardPage
-- [ ] 3.5 `npm run typecheck` passes
-- [ ] 3.6 `npm run build` passes
+- [x] 3.1 Delete InvitePartnerPage.tsx, InvitationAcceptPage.tsx, HouseholdMemberSelect.tsx
+- [x] 3.2 Update router.tsx to remove routes and imports
+- [x] 3.3 Update household/api.ts to remove invitation functions
+- [x] 3.4 Update RegisterPage, HouseholdCreatePage, DashboardPage
+- [x] 3.5 `npm run typecheck` passes
+- [x] 3.6 `npm run build` passes
 
 #### Manual
 

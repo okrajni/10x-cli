@@ -13,7 +13,6 @@ public class TaskDto {
         private String description;
         private TaskCategory category;
         private LocalDate dueDate;
-        private UUID assigneeId;
 
         public CreateTaskRequest() {
         }
@@ -55,14 +54,6 @@ public class TaskDto {
         public void setDueDate(LocalDate dueDate) {
             this.dueDate = dueDate;
         }
-
-        public UUID getAssigneeId() {
-            return assigneeId;
-        }
-
-        public void setAssigneeId(UUID assigneeId) {
-            this.assigneeId = assigneeId;
-        }
     }
 
     public static class UpdateTaskRequest {
@@ -71,7 +62,6 @@ public class TaskDto {
         private TaskCategory category;
         private LocalDate dueDate;
         private LocalDateTime completedAt;
-        private UUID assigneeId;
 
         public UpdateTaskRequest() {
         }
@@ -115,14 +105,6 @@ public class TaskDto {
         public void setCompletedAt(LocalDateTime completedAt) {
             this.completedAt = completedAt;
         }
-
-        public UUID getAssigneeId() {
-            return assigneeId;
-        }
-
-        public void setAssigneeId(UUID assigneeId) {
-            this.assigneeId = assigneeId;
-        }
     }
 
     public static class TaskResponse {
@@ -134,14 +116,13 @@ public class TaskDto {
         private LocalDate dueDate;
         private LocalDateTime completedAt;
         private LocalDateTime deletedAt;
-        private AssigneeDTO assignee;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
 
         public TaskResponse() {
         }
 
-        public TaskResponse(UUID id, UUID householdId, String title, String description, TaskCategory category, LocalDate dueDate, LocalDateTime completedAt, LocalDateTime deletedAt, AssigneeDTO assignee, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        public TaskResponse(UUID id, UUID householdId, String title, String description, TaskCategory category, LocalDate dueDate, LocalDateTime completedAt, LocalDateTime deletedAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
             this.id = id;
             this.householdId = householdId;
             this.title = title;
@@ -150,7 +131,6 @@ public class TaskDto {
             this.dueDate = dueDate;
             this.completedAt = completedAt;
             this.deletedAt = deletedAt;
-            this.assignee = assignee;
             this.createdAt = createdAt;
             this.updatedAt = updatedAt;
         }
@@ -217,14 +197,6 @@ public class TaskDto {
 
         public void setDeletedAt(LocalDateTime deletedAt) {
             this.deletedAt = deletedAt;
-        }
-
-        public AssigneeDTO getAssignee() {
-            return assignee;
-        }
-
-        public void setAssignee(AssigneeDTO assignee) {
-            this.assignee = assignee;
         }
 
         public LocalDateTime getCreatedAt() {

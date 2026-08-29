@@ -18,8 +18,6 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
 
     List<Task> findByHouseholdIdAndDeletedAtIsNull(UUID householdId);
 
-    List<Task> findByHouseholdIdAndAssigneeIdAndDeletedAtIsNull(UUID householdId, UUID assigneeId);
-
     List<Task> findByHouseholdIdAndDueDateAndDeletedAtIsNull(UUID householdId, LocalDate dueDate);
 
     List<Task> findByHouseholdIdAndCompletedAndDeletedAtIsNull(UUID householdId, boolean completed);
