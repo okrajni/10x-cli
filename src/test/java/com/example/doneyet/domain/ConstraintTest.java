@@ -73,13 +73,16 @@ class ConstraintTest {
     }
 
     @Test
-    void taskWithNullAssigneeId_ThrowsConstraintViolation() {
-        Task task = new Task("Test", household, null, user);
+    void taskWithNullAssigneeId_SucceedsNoConstraintViolation() {
+        Task task = new Task("Test", household, user);
 
-        assertThrows(Exception.class, () -> {
+        assertDoesNotThrow(() -> {
             taskRepository.save(task);
             taskRepository.flush();
         });
+
+        assertTrue(taskRepository.existsById(task.getId()));
+        assertNull(taskRepository.findById(task.getId()).get().getAssignee());
     }
 
     @Test

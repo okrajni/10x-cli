@@ -33,7 +33,7 @@ public class Task {
     private TaskCategory category;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assignee_id", nullable = false)
+    @JoinColumn(name = "assignee_id")
     private User assignee;
 
     @Column(name = "due_date")
@@ -68,6 +68,12 @@ public class Task {
     private LocalDateTime updatedAt;
 
     public Task() {
+    }
+
+    public Task(String title, Household household, User createdBy) {
+        this.title = title;
+        this.household = household;
+        this.createdBy = createdBy;
     }
 
     public Task(String title, Household household, User assignee, User createdBy) {
