@@ -9,15 +9,25 @@ export default function DashboardPage() {
 
   useEffect(() => {
     // If user has no households, redirect to creation
-    if (households.length === 0) {
+    if (households && households.length === 0) {
       navigate('/household/create', { replace: true })
     }
   }, [households, navigate])
 
-  if (!currentHousehold && households.length > 0) {
+  // If households exist but currentHousehold isn't set yet, wait for it
+  if (households && households.length > 0 && !currentHousehold) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center h-full min-h-96">
         <p className="text-gray-500">Loading household data...</p>
+      </div>
+    )
+  }
+
+  // If no households at all, this will redirect via useEffect above
+  if (!households || households.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-full min-h-96">
+        <p className="text-gray-500">Loading...</p>
       </div>
     )
   }

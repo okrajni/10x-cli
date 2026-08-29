@@ -43,7 +43,7 @@ export function authReducer(state: AuthState, action: AuthAction): AuthState {
     case 'CLEAR_ERROR':
       return { ...state, error: null }
     case 'RESTORE_SESSION':
-      return action.payload
+      return { ...action.payload, isLoading: false, error: null }
     case 'SET_HOUSEHOLDS':
       return {
         ...state,
