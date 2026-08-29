@@ -21,7 +21,7 @@ export interface CreateHouseholdResponse {
 export async function createHouseholdApi(
   request: CreateHouseholdRequest
 ): Promise<ApiResult<CreateHouseholdResponse>> {
-  return apiClient('/api/household', {
+  return apiClient('/household', {
     method: 'POST',
     body: JSON.stringify(request),
   })
@@ -41,7 +41,7 @@ export async function sendInvitationApi(
   householdId: string,
   request: SendInvitationRequest
 ): Promise<ApiResult<SendInvitationResponse>> {
-  return apiClient(`/api/household/${householdId}/invite`, {
+  return apiClient(`/household/${householdId}/invite`, {
     method: 'POST',
     body: JSON.stringify(request),
   })
@@ -50,13 +50,13 @@ export async function sendInvitationApi(
 export async function acceptInvitationApi(
   token: string
 ): Promise<ApiResult<CreateHouseholdResponse>> {
-  return apiClient(`/api/invitation/${token}/accept`, {
+  return apiClient(`/invitation/${token}/accept`, {
     method: 'POST',
   })
 }
 
 export async function getUserHouseholdsApi(): Promise<ApiResult<Household[]>> {
-  return apiClient('/api/household', {
+  return apiClient('/household', {
     method: 'GET',
   })
 }

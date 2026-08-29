@@ -17,6 +17,7 @@ export function authReducer(state: AuthState, action: AuthAction): AuthState {
     case 'LOGIN_START':
       return { ...state, isLoading: true, error: null }
     case 'LOGIN_SUCCESS':
+    case 'REGISTER_SUCCESS':
       return {
         ...state,
         user: action.payload.user,

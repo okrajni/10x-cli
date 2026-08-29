@@ -1,14 +1,13 @@
 import { useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { Button, Input } from '@shared/components'
-import { registerApi } from '../api'
 import { useAuth } from '../context/AuthContext'
-import { acceptInvitationApi, getUserHouseholdsApi } from '@features/household/api'
+import { acceptInvitationApi } from '@features/household/api'
 
 export default function RegisterPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const { clearError } = useAuth()
+  const { register: authRegister, clearError } = useAuth()
 
   const inviteEmail = searchParams.get('email') || ''
   const inviteToken = searchParams.get('inviteToken') || ''
@@ -41,14 +40,8 @@ export default function RegisterPage() {
 
     setLoading(true)
     try {
-      const result = await registerApi({ email, password })
-      if (!result.ok) {
-        setError(result.message || 'Registration failed')
-        return
-      }
-
-      // Store token in localStorage similar to how login does it
-      localStorage.setItem('authToken', result.data.token)
+      // Register using auth context (this will also fetch households)
+      await authRegister(email, password)
 
       // If there's an invitation token, accept it automatically
       if (inviteToken) {
@@ -59,16 +52,11 @@ export default function RegisterPage() {
         }
       }
 
-      // Fetch households to decide where to redirect
-      const householdsResult = await getUserHouseholdsApi()
-      if (householdsResult.ok && householdsResult.data.length === 0) {
-        // If no households, redirect to creation
-        navigate('/household/create')
-      } else {
-        navigate('/dashboard')
-      }
+      // Redirect to dashboard - it will handle the logic
+      navigate('/dashboard')
     } catch (err) {
-      setError('An unexpected error occurred')
+      const message = err instanceof Error ? err.message : 'An unexpected error occurred'
+      setError(message)
     } finally {
       setLoading(false)
     }

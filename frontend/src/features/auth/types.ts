@@ -27,6 +27,7 @@ export interface AuthState {
 export type AuthAction =
   | { type: 'LOGIN_START' }
   | { type: 'LOGIN_SUCCESS'; payload: { user: User; token: string; refreshToken: string | null; expiresAt: number } }
+  | { type: 'REGISTER_SUCCESS'; payload: { user: User; token: string; refreshToken: string | null; expiresAt: number } }
   | { type: 'LOGIN_ERROR'; payload: string }
   | { type: 'LOGOUT' }
   | { type: 'REFRESH_TOKEN_START' }

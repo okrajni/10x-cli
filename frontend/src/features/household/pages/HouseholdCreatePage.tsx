@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button, Input } from '@shared/components'
-import { createHouseholdApi } from '../api'
+import { createHouseholdApi, getUserHouseholdsApi } from '../api'
+import { useAuth } from '@features/auth/context/AuthContext'
 
 export default function HouseholdCreatePage() {
   const navigate = useNavigate()
+  const { setCurrentHousehold } = useAuth()
   const [name, setName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -12,7 +14,7 @@ export default function HouseholdCreatePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    
+
     if (!name.trim()) {
       setError('Household name is required')
       return
@@ -24,6 +26,16 @@ export default function HouseholdCreatePage() {
       if (!result.ok) {
         setError(result.message || 'Failed to create household')
         return
+      }
+
+      // Refetch households to update auth context
+      const householdsResult = await getUserHouseholdsApi()
+      if (householdsResult.ok && householdsResult.data.length > 0) {
+        // Set the current household to the newly created one
+        const newHousehold = householdsResult.data.find((h) => h.householdId === result.data.householdId)
+        if (newHousehold) {
+          setCurrentHousehold(newHousehold)
+        }
       }
 
       navigate(`/household/${result.data.householdId}/invite`)

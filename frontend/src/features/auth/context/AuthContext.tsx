@@ -1,7 +1,7 @@
 import { createContext, useContext, useReducer, useCallback, useEffect, ReactNode } from 'react'
 import { authReducer, initialState } from '../reducer'
 import { AuthState, Household } from '../types'
-import { loginApi } from '../api'
+import { loginApi, registerApi } from '../api'
 import { getUserHouseholdsApi } from '@features/household/api'
 
 interface AuthContextValue {
@@ -14,6 +14,7 @@ interface AuthContextValue {
   households: AuthState['households']
   currentHousehold: AuthState['currentHousehold']
   login: (email: string, password: string) => Promise<void>
+  register: (email: string, password: string) => Promise<void>
   logout: () => Promise<void>
   refreshToken: () => Promise<void>
   clearError: () => void
@@ -69,6 +70,55 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Login failed'
+      dispatch({ type: 'LOGIN_ERROR', payload: message })
+      throw error
+    }
+  }, [])
+
+  // Register action
+  const register = useCallback(async (email: string, password: string) => {
+    dispatch({ type: 'LOGIN_START' })
+    try {
+      const result = await registerApi({ email, password })
+
+      if (!result.ok) {
+        throw new Error(result.message)
+      }
+
+      const expiresAt = new Date(result.data.expiresAt).getTime()
+
+      dispatch({
+        type: 'REGISTER_SUCCESS',
+        payload: {
+          user: {
+            id: result.data.userId,
+            email: result.data.email,
+          },
+          token: result.data.token,
+          refreshToken: null,
+          expiresAt,
+        },
+      })
+
+      // Fetch households after successful registration
+      try {
+        const householdsResult = await getUserHouseholdsApi()
+        if (householdsResult.ok && Array.isArray(householdsResult.data)) {
+          const households = householdsResult.data
+          const currentHousehold: Household | null = households.length > 0 ? (households[0] ?? null) : null
+          dispatch({
+            type: 'SET_HOUSEHOLDS',
+            payload: {
+              households,
+              currentHousehold,
+            },
+          })
+        }
+      } catch {
+        // Silently fail if household fetch fails
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Registration failed'
       dispatch({ type: 'LOGIN_ERROR', payload: message })
       throw error
     }
@@ -145,6 +195,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           // Check if token is not expired
           if (parsed.expiresAt > Date.now()) {
             dispatch({ type: 'RESTORE_SESSION', payload: parsed })
+
+            // Refetch households after session restore
+            getUserHouseholdsApi().then((householdsResult) => {
+              if (householdsResult.ok && Array.isArray(householdsResult.data)) {
+                const households = householdsResult.data
+                const currentHousehold: Household | null = households.length > 0 ? (households[0] ?? null) : null
+                dispatch({
+                  type: 'SET_HOUSEHOLDS',
+                  payload: {
+                    households,
+                    currentHousehold,
+                  },
+                })
+              }
+            }).catch(() => {
+              // Silently fail if household fetch fails
+            })
           }
         }
       } catch (err) {
@@ -182,6 +249,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     households: state.households,
     currentHousehold: state.currentHousehold,
     login,
+    register,
     logout,
     refreshToken: refreshTokenAsync,
     clearError,
