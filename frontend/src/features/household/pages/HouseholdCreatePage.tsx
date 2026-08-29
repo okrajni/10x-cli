@@ -54,14 +54,16 @@ export default function HouseholdCreatePage() {
         return
       }
 
-      // Refetch households to update the UI
+      // Refetch households to update the UI and auth context
       const householdsResult = await getUserHouseholdsApi()
-      if (householdsResult.ok && householdsResult.data.length > 0) {
+      if (householdsResult.ok && householdsResult.data && householdsResult.data.length > 0) {
         setHouseholds(householdsResult.data)
         // Set the current household to the newly created one
         const newHousehold = householdsResult.data.find((h) => h.householdId === result.data.householdId)
         if (newHousehold) {
           setCurrentHousehold(newHousehold)
+          // Redirect to dashboard after successful creation
+          navigate('/dashboard', { replace: true })
         }
       }
     } catch (err) {
