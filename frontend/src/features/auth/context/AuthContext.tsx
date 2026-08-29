@@ -31,14 +31,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error(result.message)
       }
 
-      const expiresAt = Date.now() + 3600000 // 1 hour from now
+      const expiresAt = new Date(result.data.expiresAt).getTime()
 
       dispatch({
         type: 'LOGIN_SUCCESS',
         payload: {
-          user: result.data.user,
+          user: {
+            id: result.data.userId,
+            email: result.data.email,
+            householdId: undefined,
+          },
           token: result.data.token,
-          refreshToken: result.data.refreshToken,
+          refreshToken: undefined,
           expiresAt,
         },
       })
