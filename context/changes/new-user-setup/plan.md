@@ -398,41 +398,41 @@ None for MVP. On v1.1 upgrade to real email provider:
 
 #### Automated
 
-- [x] 1.1 Create Email Service interface and mock implementation
-- [x] 1.2 Create HouseholdController with create, invite, accept, and list endpoints
-- [x] 1.3 Create HouseholdService with business logic for household and invitation operations
-- [x] 1.4 Create Household DTOs (request/response shapes)
-- [x] 1.5 Update application.properties with email service configuration
-- [x] 1.6 Update SecurityConfig to permit public invitation acceptance
-- [x] 1.7 Unit tests pass for HouseholdService
-- [x] 1.8 Integration tests pass for all endpoints
-- [x] 1.9 Compilation and type checking pass
+- [x] 1.1 Create Email Service interface and mock implementation — 4accec2
+- [x] 1.2 Create HouseholdController with create, invite, accept, and list endpoints — 4accec2
+- [x] 1.3 Create HouseholdService with business logic for household and invitation operations — 4accec2
+- [x] 1.4 Create Household DTOs (request/response shapes) — 4accec2
+- [x] 1.5 Update application.properties with email service configuration — 4accec2
+- [x] 1.6 Update SecurityConfig to permit public invitation acceptance — 4accec2
+- [x] 1.7 Unit tests pass for HouseholdService — 4accec2
+- [x] 1.8 Integration tests pass for all endpoints — 4accec2
+- [x] 1.9 Compilation and type checking pass — 4accec2
 
 #### Manual
 
-- [x] 1.10 Create household via curl/Postman → receive 200 with householdId
-- [x] 1.11 Send invitation via curl/Postman → email appears in logs with correct link
-- [x] 1.12 Accept valid invitation token → 200, user added to household
-- [x] 1.13 Accept expired token → 410 Gone with clear error
-- [x] 1.14 Accept already-accepted token → 409 Conflict
-- [x] 1.15 List households returns all user's households ordered by most recent
+- [x] 1.10 Create household via curl/Postman → receive 200 with householdId — 4accec2
+- [x] 1.11 Send invitation via curl/Postman → email appears in logs with correct link — 4accec2
+- [x] 1.12 Accept valid invitation token → 200, user added to household — 4accec2
+- [x] 1.13 Accept expired token → 410 Gone with clear error — 4accec2
+- [x] 1.14 Accept already-accepted token → 409 Conflict — 4accec2
+- [x] 1.15 List households returns all user's households ordered by most recent — 4accec2
 
 ### Phase 2: Frontend Household Creation & Invitation Forms
 
 #### Automated
 
-- [ ] 2.1 TypeScript compilation passes
-- [ ] 2.2 ESLint passes all checks
-- [ ] 2.3 App starts without console errors
-- [ ] 2.4 Frontend components render without errors
+- [x] 2.1 TypeScript compilation passes
+- [x] 2.2 ESLint passes all checks
+- [x] 2.3 App starts without console errors
+- [x] 2.4 Frontend components render without errors
 
 #### Manual
 
-- [ ] 2.5 Register user → redirected to household creation form
-- [ ] 2.6 Create household → success message, redirect to invite form
-- [ ] 2.7 Send invitation → success message, see "Invitation sent"
-- [ ] 2.8 Accept invitation via link (unauthenticated) → register form with email pre-filled
-- [ ] 2.9 Register via invitation → auto-join household, redirect to dashboard
-- [ ] 2.10 Dashboard shows current household with tasks/assignments
-- [ ] 2.11 Multi-household user sees picker; selection switches household
-- [ ] 2.12 Error scenarios: expired invite shows "Invitation expired", already-accepted shows "Already joined"
+- [x] 2.5 Register user → redirected to household creation form
+- [x] 2.6 Create household → success message, redirect to invite form
+- [x] 2.7 Send invitation → success message, see "Invitation sent"
+- [x] 2.8 Accept invitation via link (unauthenticated) → register form with email pre-filled
+- [x] 2.9 Register via invitation → auto-join household, redirect to dashboard
+- [x] 2.10 Dashboard shows current household with tasks/assignments
+- [x] 2.11 Multi-household user sees picker; selection switches household
+- [x] 2.12 Error scenarios: expired invite shows "Invitation expired", already-accepted shows "Already joined"

@@ -40,13 +40,12 @@ export async function refreshTokenApi(
 export interface RegisterRequest {
   email: string
   password: string
-  name: string
 }
 
 export interface RegisterResponse {
   user: User
   token: string
-  refreshToken: string
+  refreshToken?: string
 }
 
 export async function registerApi(request: RegisterRequest): Promise<ApiResult<RegisterResponse>> {
