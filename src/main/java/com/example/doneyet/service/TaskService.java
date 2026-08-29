@@ -1,14 +1,12 @@
 package com.example.doneyet.service;
 
 import com.example.doneyet.domain.Household;
-import com.example.doneyet.domain.HouseholdMember;
 import com.example.doneyet.domain.Task;
 import com.example.doneyet.domain.User;
 import com.example.doneyet.dto.TaskDto;
 import com.example.doneyet.exception.ForbiddenException;
 import com.example.doneyet.exception.NotFoundException;
 import com.example.doneyet.exception.ValidationException;
-import com.example.doneyet.repository.HouseholdMemberRepository;
 import com.example.doneyet.repository.HouseholdRepository;
 import com.example.doneyet.repository.TaskRepository;
 import com.example.doneyet.repository.UserRepository;
@@ -23,21 +21,18 @@ import java.util.UUID;
 public class TaskService {
     private final TaskRepository taskRepository;
     private final HouseholdRepository householdRepository;
-    private final HouseholdMemberRepository householdMemberRepository;
     private final UserRepository userRepository;
 
     public TaskService(TaskRepository taskRepository, HouseholdRepository householdRepository,
-                      HouseholdMemberRepository householdMemberRepository, UserRepository userRepository) {
+                      UserRepository userRepository) {
         this.taskRepository = taskRepository;
         this.householdRepository = householdRepository;
-        this.householdMemberRepository = householdMemberRepository;
         this.userRepository = userRepository;
     }
 
     @Transactional
     public TaskDto.TaskResponse createTask(UUID householdId, TaskDto.CreateTaskRequest request, UUID userId) {
-        validateHouseholdExists(householdId);
-        validateUserIsMember(householdId, userId);
+        validateHouseholdOwner(householdId, userId);
 
         Household household = householdRepository.findById(householdId)
                 .orElseThrow(() -> new NotFoundException("Household not found"));
@@ -45,15 +40,7 @@ public class TaskService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ValidationException("User not found"));
 
-        UUID assigneeId = request.getAssigneeId() != null
-                ? request.getAssigneeId()
-                : householdMemberRepository.findByHouseholdIdAndUserId(householdId, userId)
-                    .map(HouseholdMember::getId)
-                    .orElseThrow(() -> new ValidationException("User is not a member of this household"));
-
-        HouseholdMember assignee = validateAndFetchAssignee(householdId, assigneeId);
-
-        Task task = new Task(request.getTitle(), household, assignee, user);
+        Task task = new Task(request.getTitle(), household, user);
         task.setDescription(request.getDescription());
         task.setCategory(request.getCategory());
         task.setDueDate(request.getDueDate());
@@ -64,7 +51,7 @@ public class TaskService {
 
     @Transactional(readOnly = true)
     public TaskDto.TaskResponse getTask(UUID taskId, UUID householdId, UUID userId) {
-        validateUserIsMember(householdId, userId);
+        validateHouseholdOwner(householdId, userId);
 
         Task task = taskRepository.findByIdAndHouseholdId(taskId, householdId)
                 .orElseThrow(() -> new NotFoundException("Task not found"));
@@ -74,8 +61,7 @@ public class TaskService {
 
     @Transactional(readOnly = true)
     public List<TaskDto.TaskResponse> listTasks(UUID householdId, UUID userId) {
-        validateHouseholdExists(householdId);
-        validateUserIsMember(householdId, userId);
+        validateHouseholdOwner(householdId, userId);
 
         List<Task> tasks = taskRepository.findActiveByHouseholdId(householdId);
         return tasks.stream().map(this::mapToResponse).toList();
@@ -83,7 +69,7 @@ public class TaskService {
 
     @Transactional
     public TaskDto.TaskResponse updateTask(UUID taskId, UUID householdId, TaskDto.UpdateTaskRequest request, UUID userId) {
-        validateUserIsMember(householdId, userId);
+        validateHouseholdOwner(householdId, userId);
 
         Task task = taskRepository.findByIdAndHouseholdId(taskId, householdId)
                 .orElseThrow(() -> new NotFoundException("Task not found"));
@@ -103,10 +89,6 @@ public class TaskService {
         if (request.getCompletedAt() != null) {
             task.setCompletedAt(request.getCompletedAt());
         }
-        if (request.getAssigneeId() != null) {
-            HouseholdMember assignee = validateAndFetchAssignee(householdId, request.getAssigneeId());
-            task.setAssignee(assignee);
-        }
 
         Task updatedTask = taskRepository.save(task);
         return mapToResponse(updatedTask);
@@ -114,7 +96,7 @@ public class TaskService {
 
     @Transactional
     public void deleteTask(UUID taskId, UUID householdId, UUID userId) {
-        validateUserIsMember(householdId, userId);
+        validateHouseholdOwner(householdId, userId);
 
         Task task = taskRepository.findByIdAndHouseholdId(taskId, householdId)
                 .orElseThrow(() -> new NotFoundException("Task not found"));
@@ -123,22 +105,12 @@ public class TaskService {
         taskRepository.save(task);
     }
 
-    private void validateHouseholdExists(UUID householdId) {
-        if (!householdRepository.existsById(householdId)) {
-            throw new NotFoundException("Household not found");
+    private void validateHouseholdOwner(UUID householdId, UUID userId) {
+        Household household = householdRepository.findById(householdId)
+                .orElseThrow(() -> new NotFoundException("Household not found"));
+        if (!household.getCreatedBy().getId().equals(userId)) {
+            throw new ForbiddenException("User is not the owner of this household");
         }
-    }
-
-    private void validateUserIsMember(UUID householdId, UUID userId) {
-        boolean isMember = householdMemberRepository.findByHouseholdIdAndUserId(householdId, userId).isPresent();
-        if (!isMember) {
-            throw new ForbiddenException("User is not a member of this household");
-        }
-    }
-
-    private HouseholdMember validateAndFetchAssignee(UUID householdId, UUID assigneeId) {
-        return householdMemberRepository.findByIdAndHouseholdId(assigneeId, householdId)
-                .orElseThrow(() -> new ValidationException("Invalid assignee: not a member of this household"));
     }
 
     private TaskDto.TaskResponse mapToResponse(Task task) {
@@ -151,7 +123,7 @@ public class TaskService {
                 task.getDueDate(),
                 task.getCompletedAt(),
                 task.getDeletedAt(),
-                task.getAssigneeDTO(),
+                null,
                 task.getCreatedAt(),
                 task.getUpdatedAt()
         );

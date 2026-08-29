@@ -32,10 +32,6 @@ public class Task {
     @Enumerated(EnumType.STRING)
     private TaskCategory category;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assignee_id", nullable = false)
-    private HouseholdMember assignee;
-
     @Column(name = "due_date")
     private LocalDate dueDate;
 
@@ -73,13 +69,6 @@ public class Task {
     public Task(String title, Household household, User createdBy) {
         this.title = title;
         this.household = household;
-        this.createdBy = createdBy;
-    }
-
-    public Task(String title, Household household, HouseholdMember assignee, User createdBy) {
-        this.title = title;
-        this.household = household;
-        this.assignee = assignee;
         this.createdBy = createdBy;
     }
 
@@ -121,26 +110,6 @@ public class Task {
 
     public void setCategory(TaskCategory category) {
         this.category = category;
-    }
-
-    public HouseholdMember getAssignee() {
-        return assignee;
-    }
-
-    public void setAssignee(HouseholdMember assignee) {
-        this.assignee = assignee;
-    }
-
-    public com.example.doneyet.dto.AssigneeDTO getAssigneeDTO() {
-        if (assignee == null) {
-            return null;
-        }
-        User user = assignee.getUser();
-        return new com.example.doneyet.dto.AssigneeDTO(
-                assignee.getId(),
-                user.getEmail(),
-                user.getEmail()
-        );
     }
 
     public LocalDate getDueDate() {

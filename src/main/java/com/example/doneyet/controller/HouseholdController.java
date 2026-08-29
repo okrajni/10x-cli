@@ -30,21 +30,6 @@ public class HouseholdController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @PostMapping("/{householdId}/invite")
-    public ResponseEntity<HouseholdDto.InvitationResponse> sendInvitation(
-            @PathVariable UUID householdId,
-            @RequestBody HouseholdDto.InvitationRequest request,
-            Authentication authentication
-    ) {
-        User user = (User) authentication.getPrincipal();
-        HouseholdDto.InvitationResponse response = householdService.sendInvitation(
-                householdId,
-                request.getInvitedEmail(),
-                user.getEmail()
-        );
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
     @GetMapping
     public ResponseEntity<List<HouseholdDto.HouseholdResponse>> getUserHouseholds(
             Authentication authentication

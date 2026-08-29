@@ -396,26 +396,26 @@ Removing multi-user code reduces complexity:
 
 #### Automated
 
-- [x] 1.1 Delete HouseholdMember.java, HouseholdInvitation.java, HouseholdMemberRole.java
-- [x] 1.2 Delete HouseholdMemberRepository.java, HouseholdInvitationRepository.java
-- [x] 1.3 Verify compilation fails with expected errors
+- [x] 1.1 Delete HouseholdMember.java, HouseholdInvitation.java, HouseholdMemberRole.java — 611df04
+- [x] 1.2 Delete HouseholdMemberRepository.java, HouseholdInvitationRepository.java — 611df04
+- [x] 1.3 Verify compilation fails with expected errors — 611df04
 
 #### Manual
 
-- [x] 1.4 Verify all 5 entity/repository files are deleted
+- [x] 1.4 Verify all 5 entity/repository files are deleted — 611df04
 
 ### Phase 2: Refactor Services & Controllers
 
 #### Automated
 
-- [ ] 2.1 Update Household entity (remove members relationship)
-- [ ] 2.2 Refactor HouseholdService methods
-- [ ] 2.3 Delete InvitationController and sendInvitation endpoint
-- [ ] 2.4 Update SecurityConfig
-- [ ] 2.5 Add findByCreatedById() to HouseholdRepository
-- [ ] 2.6 Simplify HouseholdDto
-- [ ] 2.7 `mvn clean compile` passes
-- [ ] 2.8 `mvn test` passes
+- [x] 2.1 Update Household entity (remove members relationship) — 611df04
+- [x] 2.2 Refactor HouseholdService methods — 611df04
+- [x] 2.3 Delete InvitationController and sendInvitation endpoint — 611df04
+- [x] 2.4 Update SecurityConfig — 611df04
+- [x] 2.5 Add findByCreatedById() to HouseholdRepository — 611df04
+- [x] 2.6 Simplify HouseholdDto — 611df04
+- [x] 2.7 `mvn clean compile` passes — 611df04
+- [x] 2.8 `mvn test` passes — 611df04
 
 #### Manual
 

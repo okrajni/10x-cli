@@ -11,9 +11,5 @@ import java.util.UUID;
 
 @Repository
 public interface HouseholdRepository extends JpaRepository<Household, UUID> {
-    @Query("SELECT h FROM Household h WHERE h.createdBy.id = :userId")
-    List<Household> findByCreatedBy(@Param("userId") UUID userId);
-
-    @Query("SELECT DISTINCT h FROM Household h JOIN HouseholdMember hm ON h.id = hm.household.id WHERE hm.user.id = :userId")
-    List<Household> findHouseholdsByMemberId(@Param("userId") UUID userId);
+    List<Household> findByCreatedById(UUID userId);
 }

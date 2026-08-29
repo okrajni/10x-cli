@@ -8,8 +8,6 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import com.example.doneyet.domain.HouseholdMember;
-import com.example.doneyet.domain.HouseholdMemberRole;
 
 class EntityRelationshipTest {
 
@@ -21,13 +19,10 @@ class EntityRelationshipTest {
         Household household = new Household("Test Household", creator);
         household.setId(UUID.randomUUID());
 
-        HouseholdMember creatorMember = new HouseholdMember(household, creator, HouseholdMemberRole.CREATOR);
-        creatorMember.setId(UUID.randomUUID());
-
-        Task task1 = new Task("Task 1", household, creatorMember, creator);
+        Task task1 = new Task("Task 1", household, creator);
         task1.setId(UUID.randomUUID());
 
-        Task task2 = new Task("Task 2", household, creatorMember, creator);
+        Task task2 = new Task("Task 2", household, creator);
         task2.setId(UUID.randomUUID());
 
         household.getTasks().add(task1);
@@ -37,57 +32,30 @@ class EntityRelationshipTest {
     }
 
     @Test
-    void householdCanHaveMultipleMembers() {
+    void householdLinksToCreator() {
         User creator = new User("creator@example.com", "hash");
         creator.setId(UUID.randomUUID());
 
-        User partner = new User("partner@example.com", "hash");
-        partner.setId(UUID.randomUUID());
-
         Household household = new Household("Test Household", creator);
-        household.setId(UUID.randomUUID());
 
-        HouseholdMember creatorMember = new HouseholdMember(household, creator, HouseholdMemberRole.CREATOR);
-        creatorMember.setId(UUID.randomUUID());
-
-        HouseholdMember partnerMember = new HouseholdMember(household, partner, HouseholdMemberRole.PARTNER);
-        partnerMember.setId(UUID.randomUUID());
-
-        household.getMembers().add(creatorMember);
-        household.getMembers().add(partnerMember);
-
-        assertEquals(2, household.getMembers().size());
+        assertEquals(creator, household.getCreatedBy());
     }
 
     @Test
-    void householdMemberLinksCorrectUserAndHousehold() {
-        User user = new User("user@example.com", "hash");
-        Household household = new Household("Test Household", user);
-        HouseholdMember member = new HouseholdMember(household, user, HouseholdMemberRole.CREATOR);
-
-        assertEquals(household, member.getHousehold());
-        assertEquals(user, member.getUser());
-        assertEquals(HouseholdMemberRole.CREATOR, member.getRole());
-    }
-
-    @Test
-    void taskAssigneeReferenceIsCorrect() {
-        User assignee = new User("assignee@example.com", "hash");
+    void taskBelongsToHousehold() {
         User creator = new User("creator@example.com", "hash");
         Household household = new Household("Test Household", creator);
-        HouseholdMember assigneeMember = new HouseholdMember(household, assignee, HouseholdMemberRole.PARTNER);
-        Task task = new Task("Test Task", household, assigneeMember, creator);
+        Task task = new Task("Test Task", household, creator);
 
-        assertEquals(assigneeMember, task.getAssignee());
         assertEquals(household, task.getHousehold());
+        assertEquals(creator, task.getCreatedBy());
     }
 
     @Test
     void taskSoftDeleteFieldExists() {
         User creator = new User("creator@example.com", "hash");
         Household household = new Household("Test Household", creator);
-        HouseholdMember creatorMember = new HouseholdMember(household, creator, HouseholdMemberRole.CREATOR);
-        Task task = new Task("Test Task", household, creatorMember, creator);
+        Task task = new Task("Test Task", household, creator);
 
         assertNull(task.getDeletedAt());
 
@@ -98,39 +66,17 @@ class EntityRelationshipTest {
     }
 
     @Test
-    void householdInvitationHasExpiryAndToken() {
-        User creator = new User("creator@example.com", "hash");
-        Household household = new Household("Test Household", creator);
-
-        LocalDateTime expiresAt = LocalDateTime.now().plusHours(24);
-        String token = UUID.randomUUID().toString();
-        HouseholdInvitation invitation = new HouseholdInvitation(
-                household,
-                "partner@example.com",
-                token,
-                expiresAt
-        );
-
-        assertEquals("partner@example.com", invitation.getInvitedEmail());
-        assertEquals(token, invitation.getInvitationToken());
-        assertEquals(expiresAt, invitation.getExpiresAt());
-        assertFalse(invitation.isAccepted());
-    }
-
-    @Test
     void taskFieldsMapCorrectly() {
         User creator = new User("creator@example.com", "hash");
-        User assignee = new User("assignee@example.com", "hash");
         Household household = new Household("Test Household", creator);
-        HouseholdMember assigneeMember = new HouseholdMember(household, assignee, HouseholdMemberRole.PARTNER);
 
-        Task task = new Task("Clean kitchen", household, assigneeMember, creator);
+        Task task = new Task("Clean kitchen", household, creator);
         task.setDescription("Clean the kitchen thoroughly");
         task.setCategory(TaskCategory.CLEANING);
         task.setDueDate(LocalDate.now().plusDays(1));
         task.setReminderTime(LocalTime.of(10, 0));
         task.setCompleted(true);
-        task.setCompletedBy(assignee);
+        task.setCompletedBy(creator);
         task.setCompletedAt(LocalDateTime.now());
 
         assertEquals("Clean kitchen", task.getTitle());

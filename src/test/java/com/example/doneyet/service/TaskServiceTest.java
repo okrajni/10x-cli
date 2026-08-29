@@ -4,7 +4,6 @@ import com.example.doneyet.domain.*;
 import com.example.doneyet.dto.TaskDto;
 import com.example.doneyet.exception.ForbiddenException;
 import com.example.doneyet.exception.NotFoundException;
-import com.example.doneyet.exception.ValidationException;
 import com.example.doneyet.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,138 +30,116 @@ class TaskServiceTest {
     private HouseholdRepository householdRepository;
 
     @Autowired
-    private HouseholdMemberRepository householdMemberRepository;
-
-    @Autowired
     private UserRepository userRepository;
 
     private Household testHousehold;
-    private User user1;
-    private User user2;
-    private HouseholdMember member1;
-    private HouseholdMember member2;
+    private User testUser;
+    private User otherUser;
     private UUID householdId;
-    private UUID user1Id;
-    private UUID user2Id;
-    private UUID member1Id;
-    private UUID member2Id;
+    private UUID userId;
+    private UUID otherUserId;
 
     @BeforeEach
     void setUp() {
         taskRepository.deleteAll();
-        householdMemberRepository.deleteAll();
         householdRepository.deleteAll();
         userRepository.deleteAll();
 
-        user1 = new User("user1@test.com", "password");
-        user2 = new User("user2@test.com", "password");
-        userRepository.save(user1);
-        userRepository.save(user2);
-        user1Id = user1.getId();
-        user2Id = user2.getId();
+        testUser = new User("user1@test.com", "password");
+        otherUser = new User("user2@test.com", "password");
+        userRepository.save(testUser);
+        userRepository.save(otherUser);
+        userId = testUser.getId();
+        otherUserId = otherUser.getId();
 
-        testHousehold = new Household("Test Household", user1);
+        testHousehold = new Household("Test Household", testUser);
         householdRepository.save(testHousehold);
         householdId = testHousehold.getId();
-
-        member1 = new HouseholdMember(testHousehold, user1, HouseholdMemberRole.CREATOR);
-        member2 = new HouseholdMember(testHousehold, user2, HouseholdMemberRole.PARTNER);
-        householdMemberRepository.save(member1);
-        householdMemberRepository.save(member2);
-        member1Id = member1.getId();
-        member2Id = member2.getId();
     }
 
     @Test
-    void testCreateTaskWithExplicitAssigneeId() {
+    void testCreateTask() {
         TaskDto.CreateTaskRequest request = new TaskDto.CreateTaskRequest();
         request.setTitle("Test Task");
+        request.setDescription("Test description");
         request.setCategory(TaskCategory.CLEANING);
         request.setDueDate(LocalDate.now().plusDays(1));
-        request.setAssigneeId(member2Id);
 
-        TaskDto.TaskResponse response = taskService.createTask(householdId, request, user1Id);
+        TaskDto.TaskResponse response = taskService.createTask(householdId, request, userId);
 
         assertNotNull(response);
+        assertNotNull(response.getId());
         assertEquals("Test Task", response.getTitle());
-        assertNotNull(response.getAssignee());
-        assertEquals(member2Id, response.getAssignee().getId());
-        assertEquals("user2@test.com", response.getAssignee().getEmail());
+        assertEquals("Test description", response.getDescription());
+        assertEquals(TaskCategory.CLEANING, response.getCategory());
+        assertEquals(householdId, response.getHouseholdId());
     }
 
     @Test
-    void testCreateTaskWithoutAssigneeIdDefaultsToCreator() {
+    void testListTasks() {
+        TaskDto.CreateTaskRequest request1 = new TaskDto.CreateTaskRequest();
+        request1.setTitle("Task 1");
+        request1.setCategory(TaskCategory.CLEANING);
+        request1.setDueDate(LocalDate.now().plusDays(1));
+
+        TaskDto.CreateTaskRequest request2 = new TaskDto.CreateTaskRequest();
+        request2.setTitle("Task 2");
+        request2.setCategory(TaskCategory.SHOPPING);
+        request2.setDueDate(LocalDate.now().plusDays(2));
+
+        taskService.createTask(householdId, request1, userId);
+        taskService.createTask(householdId, request2, userId);
+
+        List<TaskDto.TaskResponse> tasks = taskService.listTasks(householdId, userId);
+
+        assertEquals(2, tasks.size());
+        assertTrue(tasks.stream().anyMatch(t -> t.getTitle().equals("Task 1")));
+        assertTrue(tasks.stream().anyMatch(t -> t.getTitle().equals("Task 2")));
+    }
+
+    @Test
+    void testUpdateTask() {
+        TaskDto.CreateTaskRequest createRequest = new TaskDto.CreateTaskRequest();
+        createRequest.setTitle("Original Title");
+        createRequest.setCategory(TaskCategory.CLEANING);
+        createRequest.setDueDate(LocalDate.now().plusDays(1));
+
+        TaskDto.TaskResponse created = taskService.createTask(householdId, createRequest, userId);
+        UUID taskId = created.getId();
+
+        TaskDto.UpdateTaskRequest updateRequest = new TaskDto.UpdateTaskRequest();
+        updateRequest.setTitle("Updated Title");
+
+        TaskDto.TaskResponse updated = taskService.updateTask(taskId, householdId, updateRequest, userId);
+
+        assertEquals("Updated Title", updated.getTitle());
+    }
+
+    @Test
+    void testDeleteTask() {
         TaskDto.CreateTaskRequest request = new TaskDto.CreateTaskRequest();
-        request.setTitle("Default Assignee Task");
-        request.setCategory(TaskCategory.SHOPPING);
-        request.setDueDate(LocalDate.now().plusDays(2));
-        request.setAssigneeId(null);
+        request.setTitle("Task to Delete");
+        request.setCategory(TaskCategory.CLEANING);
+        request.setDueDate(LocalDate.now().plusDays(1));
 
-        TaskDto.TaskResponse response = taskService.createTask(householdId, request, user1Id);
+        TaskDto.TaskResponse created = taskService.createTask(householdId, request, userId);
+        UUID taskId = created.getId();
 
-        assertNotNull(response);
-        assertEquals("Default Assignee Task", response.getTitle());
-        assertNotNull(response.getAssignee());
-        assertEquals(member1Id, response.getAssignee().getId());
-        assertEquals("user1@test.com", response.getAssignee().getEmail());
+        taskService.deleteTask(taskId, householdId, userId);
+
+        List<TaskDto.TaskResponse> tasks = taskService.listTasks(householdId, userId);
+        assertFalse(tasks.stream().anyMatch(t -> t.getId().equals(taskId)));
     }
 
     @Test
-    void testCreateTaskWithInvalidAssigneeIdThrowsValidationException() {
-        TaskDto.CreateTaskRequest request = new TaskDto.CreateTaskRequest();
-        request.setTitle("Invalid Assignee Task");
-        request.setCategory(TaskCategory.LAUNDRY);
-        request.setDueDate(LocalDate.now().plusDays(3));
-        request.setAssigneeId(UUID.randomUUID());
-
-        assertThrows(ValidationException.class, () ->
-            taskService.createTask(householdId, request, user1Id)
-        );
-    }
-
-    @Test
-    void testUpdateTaskWithValidReassignment() {
-        Task task = new Task("Task to Reassign", testHousehold, member1, user1);
-        taskRepository.save(task);
-        UUID taskId = task.getId();
-
-        TaskDto.UpdateTaskRequest request = new TaskDto.UpdateTaskRequest();
-        request.setAssigneeId(member2Id);
-
-        TaskDto.TaskResponse response = taskService.updateTask(taskId, householdId, request, user1Id);
-
-        assertNotNull(response);
-        assertNotNull(response.getAssignee());
-        assertEquals(member2Id, response.getAssignee().getId());
-        assertEquals("user2@test.com", response.getAssignee().getEmail());
-    }
-
-    @Test
-    void testUpdateTaskWithInvalidAssigneeIdThrowsValidationException() {
-        Task task = new Task("Task to Fail", testHousehold, member1, user1);
-        taskRepository.save(task);
-        UUID taskId = task.getId();
-
-        TaskDto.UpdateTaskRequest request = new TaskDto.UpdateTaskRequest();
-        request.setAssigneeId(UUID.randomUUID());
-
-        assertThrows(ValidationException.class, () ->
-            taskService.updateTask(taskId, householdId, request, user1Id)
-        );
-    }
-
-    @Test
-    void testCreateTaskUserNotMemberThrowsForbiddenException() {
-        User outsideUser = new User("outside@test.com", "password");
-        userRepository.save(outsideUser);
-
+    void testAccessDeniedForNonOwner() {
         TaskDto.CreateTaskRequest request = new TaskDto.CreateTaskRequest();
         request.setTitle("Task");
         request.setCategory(TaskCategory.MAINTENANCE);
         request.setDueDate(LocalDate.now().plusDays(1));
 
         assertThrows(ForbiddenException.class, () ->
-            taskService.createTask(householdId, request, outsideUser.getId())
+            taskService.createTask(householdId, request, otherUserId)
         );
     }
 }

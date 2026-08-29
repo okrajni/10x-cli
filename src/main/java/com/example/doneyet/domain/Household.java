@@ -25,9 +25,6 @@ public class Household {
     private User createdBy;
 
     @OneToMany(mappedBy = "household", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<HouseholdMember> members = new HashSet<>();
-
-    @OneToMany(mappedBy = "household", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Task> tasks = new HashSet<>();
 
     @CreationTimestamp
@@ -68,14 +65,6 @@ public class Household {
 
     public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
-    }
-
-    public Set<HouseholdMember> getMembers() {
-        return members;
-    }
-
-    public void setMembers(Set<HouseholdMember> members) {
-        this.members = members;
     }
 
     public Set<Task> getTasks() {

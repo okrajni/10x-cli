@@ -6,8 +6,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import com.example.doneyet.domain.HouseholdMember;
-import com.example.doneyet.domain.HouseholdMemberRole;
 
 class SchemaVerificationTest {
     @Test
@@ -24,36 +22,14 @@ class SchemaVerificationTest {
     }
 
     @Test
-    void householdMemberHasCorrectColumns() {
-        User creator = new User("creator@example.com", "hash");
-        creator.setId(UUID.randomUUID());
-
-        Household household = new Household("Test Household", creator);
-        household.setId(UUID.randomUUID());
-
-        HouseholdMember member = new HouseholdMember(household, creator, HouseholdMemberRole.CREATOR);
-        member.setId(UUID.randomUUID());
-
-        assertEquals(household.getId(), member.getHousehold().getId());
-        assertEquals(creator.getId(), member.getUser().getId());
-        assertEquals(HouseholdMemberRole.CREATOR, member.getRole());
-    }
-
-    @Test
     void taskTableHasAllRequiredColumns() {
         User creator = new User("creator@example.com", "hash");
         creator.setId(UUID.randomUUID());
 
-        User assignee = new User("assignee@example.com", "hash");
-        assignee.setId(UUID.randomUUID());
-
         Household household = new Household("Test Household", creator);
         household.setId(UUID.randomUUID());
 
-        HouseholdMember assigneeMember = new HouseholdMember(household, assignee, HouseholdMemberRole.PARTNER);
-        assigneeMember.setId(UUID.randomUUID());
-
-        Task task = new Task("Clean kitchen", household, assigneeMember, creator);
+        Task task = new Task("Clean kitchen", household, creator);
         task.setId(UUID.randomUUID());
         task.setDescription("Deep clean");
         task.setCategory(TaskCategory.CLEANING);
@@ -66,7 +42,6 @@ class SchemaVerificationTest {
         assertEquals("Deep clean", task.getDescription());
         assertEquals(TaskCategory.CLEANING, task.getCategory());
         assertEquals(household.getId(), task.getHousehold().getId());
-        assertEquals(assigneeMember.getId(), task.getAssignee().getId());
         assertEquals(creator.getId(), task.getCreatedBy().getId());
         assertFalse(task.isCompleted());
         assertNull(task.getDeletedAt());
@@ -80,10 +55,7 @@ class SchemaVerificationTest {
         Household household = new Household("Test Household", creator);
         household.setId(UUID.randomUUID());
 
-        HouseholdMember creatorMember = new HouseholdMember(household, creator, HouseholdMemberRole.CREATOR);
-        creatorMember.setId(UUID.randomUUID());
-
-        Task task = new Task("Test", household, creatorMember, creator);
+        Task task = new Task("Test", household, creator);
         task.setId(UUID.randomUUID());
 
         assertNull(task.getDeletedAt());
@@ -91,41 +63,6 @@ class SchemaVerificationTest {
         LocalDateTime now = LocalDateTime.now();
         task.setDeletedAt(now);
         assertEquals(now, task.getDeletedAt());
-    }
-
-    @Test
-    void householdInvitationHasCorrectColumns() {
-        User creator = new User("creator@example.com", "hash");
-        creator.setId(UUID.randomUUID());
-
-        Household household = new Household("Test Household", creator);
-        household.setId(UUID.randomUUID());
-
-        String token = UUID.randomUUID().toString();
-        LocalDateTime expiresAt = LocalDateTime.now().plusHours(24);
-
-        HouseholdInvitation invitation = new HouseholdInvitation(
-                household,
-                "partner@example.com",
-                token,
-                expiresAt
-        );
-        invitation.setId(UUID.randomUUID());
-
-        assertEquals(household.getId(), invitation.getHousehold().getId());
-        assertEquals("partner@example.com", invitation.getInvitedEmail());
-        assertEquals(token, invitation.getInvitationToken());
-        assertEquals(expiresAt, invitation.getExpiresAt());
-        assertFalse(invitation.isAccepted());
-        assertNull(invitation.getAcceptedAt());
-        assertNull(invitation.getAcceptedByUser());
-    }
-
-    @Test
-    void householdMemberRoleEnumHasAllValues() {
-        assertEquals(2, HouseholdMemberRole.values().length);
-        assertTrue(enumValueExists(HouseholdMemberRole.class, "CREATOR"));
-        assertTrue(enumValueExists(HouseholdMemberRole.class, "PARTNER"));
     }
 
     @Test

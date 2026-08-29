@@ -3,7 +3,7 @@ package com.example.doneyet.controller;
 import com.example.doneyet.domain.User;
 import com.example.doneyet.dto.TaskDto;
 import com.example.doneyet.exception.ValidationException;
-import com.example.doneyet.repository.HouseholdMemberRepository;
+import com.example.doneyet.repository.HouseholdRepository;
 import com.example.doneyet.service.TaskService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,19 +17,19 @@ import java.util.UUID;
 @RequestMapping("/api/task")
 public class TaskController {
     private final TaskService taskService;
-    private final HouseholdMemberRepository householdMemberRepository;
+    private final HouseholdRepository householdRepository;
 
-    public TaskController(TaskService taskService, HouseholdMemberRepository householdMemberRepository) {
+    public TaskController(TaskService taskService, HouseholdRepository householdRepository) {
         this.taskService = taskService;
-        this.householdMemberRepository = householdMemberRepository;
+        this.householdRepository = householdRepository;
     }
 
     private UUID getUserHouseholdId(UUID userId) {
-        return householdMemberRepository.findByUserId(userId)
+        return householdRepository.findByCreatedById(userId)
                 .stream()
-                .map(member -> member.getHousehold().getId())
+                .map(household -> household.getId())
                 .findFirst()
-                .orElseThrow(() -> new ValidationException("User is not associated with a household"));
+                .orElseThrow(() -> new ValidationException("User does not have a household"));
     }
 
     @PostMapping
