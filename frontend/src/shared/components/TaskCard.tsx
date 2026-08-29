@@ -45,11 +45,16 @@ export function TaskCard({
         <p className="text-sm text-gray-600 mb-3 line-clamp-2">{task.description}</p>
       )}
 
-      {/* Due Date */}
+      {/* Due Date and Assignee */}
       <div className="flex gap-4 text-sm text-gray-500 mb-4">
         <span className={clsx(isOverdue && 'text-red-600 font-medium')}>
           {dueDate.toLocaleDateString()}
         </span>
+        {task.assignee && (
+          <span className="text-gray-600">
+            Assigned to: <span className="font-medium">{task.assignee.name}</span>
+          </span>
+        )}
       </div>
 
       {/* Action Buttons */}

@@ -2,6 +2,12 @@ import { apiClient, ApiResult } from '@lib/api/client'
 
 export type TaskCategory = 'CLEANING' | 'SHOPPING' | 'LAUNDRY' | 'MAINTENANCE' | 'BILLS'
 
+export interface AssigneeDTO {
+  id: string
+  name: string
+  email: string
+}
+
 export interface Task {
   id: string
   householdId: string
@@ -11,6 +17,7 @@ export interface Task {
   dueDate: string
   completedAt?: string
   deletedAt?: string
+  assignee: AssigneeDTO
   createdAt: string
   updatedAt: string
 }
@@ -20,6 +27,7 @@ export interface CreateTaskRequest {
   description?: string
   category: TaskCategory
   dueDate: string
+  assigneeId?: string
 }
 
 export interface UpdateTaskRequest {
@@ -28,6 +36,7 @@ export interface UpdateTaskRequest {
   category?: TaskCategory
   dueDate?: string
   completedAt?: string
+  assigneeId?: string
 }
 
 export async function createTask(request: CreateTaskRequest): Promise<ApiResult<Task>> {

@@ -1,26 +1,64 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button, Input } from '@shared/components'
 import { createTask, CreateTaskRequest, TaskCategory } from '../api'
 import { categoryLabel, CATEGORIES } from '../utils/categoryUtils'
+import { HouseholdMemberSelect } from '../components/HouseholdMemberSelect'
+import { useAuth } from '@features/auth/context/AuthContext'
+import { getHouseholdDetailsApi, HouseholdMember } from '@features/household/api'
 
 interface FormErrors {
   title?: string
   category?: string
   dueDate?: string
+  assigneeId?: string
 }
 
 export default function TaskCreatePage() {
   const navigate = useNavigate()
+  const { currentHousehold, user } = useAuth()
   const [formData, setFormData] = useState<CreateTaskRequest>({
     title: '',
     description: '',
     category: 'CLEANING',
     dueDate: '',
+    assigneeId: undefined,
   })
+  const [householdMembers, setHouseholdMembers] = useState<HouseholdMember[]>([])
+  const [membersLoading, setMembersLoading] = useState(true)
   const [errors, setErrors] = useState<FormErrors>({})
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+
+  useEffect(() => {
+    const fetchMembers = async () => {
+      if (!currentHousehold) return
+      try {
+        const result = await getHouseholdDetailsApi(currentHousehold.householdId)
+        if (result.ok && result.data.members) {
+          setHouseholdMembers(result.data.members)
+          // Set default assignee to current user if available
+          if (user && !formData.assigneeId) {
+            const currentUserMember = result.data.members.find(
+              (m: HouseholdMember) => m.email === user.email
+            )
+            if (currentUserMember) {
+              setFormData((prev) => ({
+                ...prev,
+                assigneeId: currentUserMember.id,
+              }))
+            }
+          }
+        }
+      } catch {
+        // Silently fail - members optional for MVP
+      } finally {
+        setMembersLoading(false)
+      }
+    }
+
+    fetchMembers()
+  }, [currentHousehold, user])
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {}
@@ -35,6 +73,10 @@ export default function TaskCreatePage() {
 
     if (!formData.dueDate) {
       newErrors.dueDate = 'Due date is required'
+    }
+
+    if (!formData.assigneeId) {
+      newErrors.assigneeId = 'Assignee is required'
     }
 
     setErrors(newErrors)
@@ -56,11 +98,16 @@ export default function TaskCreatePage() {
 
       if (result.ok) {
         setMessage({ type: 'success', text: 'Task created successfully!' })
+        // Reset form but keep assignee as current user
+        const currentUserMember = householdMembers.find(
+          (m: HouseholdMember) => m.email === user?.email
+        )
         setFormData({
           title: '',
           description: '',
           category: 'CLEANING',
           dueDate: '',
+          assigneeId: currentUserMember?.id,
         })
         setErrors({})
         // Keep form on page for next entry instead of navigating
@@ -82,7 +129,7 @@ export default function TaskCreatePage() {
   }
 
   const isFormValid =
-    formData.title.trim() && formData.category && formData.dueDate && !isLoading
+    formData.title.trim() && formData.category && formData.dueDate && formData.assigneeId && !isLoading && !membersLoading
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
@@ -162,6 +209,22 @@ export default function TaskCreatePage() {
                 ))}
               </select>
               {errors.category && <p className="mt-1 text-sm text-red-600">{errors.category}</p>}
+            </div>
+
+            {/* Assignee */}
+            <div>
+              <HouseholdMemberSelect
+                members={householdMembers}
+                value={formData.assigneeId}
+                onChange={(id) => {
+                  setFormData({ ...formData, assigneeId: id })
+                  if (errors.assigneeId) setErrors({ ...errors, assigneeId: undefined })
+                }}
+                label="Assign to *"
+                required={true}
+                disabled={isLoading || membersLoading}
+              />
+              {errors.assigneeId && <p className="mt-1 text-sm text-red-600">{errors.assigneeId}</p>}
             </div>
 
             {/* Due Date */}

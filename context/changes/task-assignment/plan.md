@@ -556,21 +556,21 @@ export interface HouseholdMember {
 
 #### Automated
 
-- [ ] 2.1 HouseholdContext provides household members list (fetched once at app init)
-- [ ] 2.2 HouseholdMemberSelect component renders dropdown with household members
-- [ ] 2.3 TaskCreatePage includes HouseholdMemberSelect dropdown, form includes assigneeId in submission
-- [ ] 2.4 TaskEditPage includes HouseholdMemberSelect, pre-fills from task.assignee
-- [ ] 2.5 TaskCard displays assignee name ("Assigned to: [Name]")
-- [ ] 2.6 TaskListPage fetches and displays tasks with assignee data
-- [ ] 2.7 API client methods updated: createTask() and updateTask() include assigneeId parameter
-- [ ] 2.8 Task TypeScript type definitions include assignee object
-- [ ] 2.9 React component tests pass (dropdown rendering, form submission with assigneeId, card display)
+- [x] 2.1 HouseholdContext provides household members list (fetched once at app init)
+- [x] 2.2 HouseholdMemberSelect component renders dropdown with household members
+- [x] 2.3 TaskCreatePage includes HouseholdMemberSelect dropdown, form includes assigneeId in submission
+- [x] 2.4 TaskEditPage includes HouseholdMemberSelect, pre-fills from task.assignee
+- [x] 2.5 TaskCard displays assignee name ("Assigned to: [Name]")
+- [x] 2.6 TaskListPage fetches and displays tasks with assignee data
+- [x] 2.7 API client methods updated: createTask() and updateTask() include assigneeId parameter
+- [x] 2.8 Task TypeScript type definitions include assignee object
+- [x] 2.9 React component tests pass (dropdown rendering, form submission with assigneeId, card display)
 
 #### Manual
 
-- [ ] 2.10 Create task: select partner from dropdown → task appears with partner's name
-- [ ] 2.11 Create task: leave assignment as default → task appears with current user's name
-- [ ] 2.12 Edit task: change assignee to self → task card updates to show current user
-- [ ] 2.13 Both users view same task → both see identical assignee name
-- [ ] 2.14 Both users view task list → assignee visible on all tasks
-- [ ] 2.15 Form validation: missing assignee (if required) → error shown
+- [ ] 2.10 Create task: select partner from dropdown → task appears with partner's name — **Ready for manual verification**
+- [ ] 2.11 Create task: leave assignment as default → task appears with current user's name — **Ready for manual verification**
+- [ ] 2.12 Edit task: change assignee to self → task card updates to show current user — **Ready for manual verification**
+- [ ] 2.13 Both users view same task → both see identical assignee name — **Ready for manual verification**
+- [ ] 2.14 Both users view task list → assignee visible on all tasks — **Ready for manual verification**
+- [ ] 2.15 Form validation: missing assignee (if required) → error shown — **Ready for manual verification**
