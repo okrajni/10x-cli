@@ -470,13 +470,20 @@ None for MVP. On v1.1 upgrade to real email provider:
   - Dashboard no longer redirects to `/household/create` when user auto-joins household via invitation
   - User is now automatically added to existing household when registering via invitation link
 
-#### Root Cause Fix
+#### Root Cause Fixes
 
 - [x] 3.10 Fix API token not set immediately after auth — d245c58
   - Added setApiToken() function to api/client.ts
   - AuthContext now calls setApiToken() immediately after login/register
   - Subsequent API calls (household fetch) now use correct token
   - This was preventing household list from loading after auth
+
+- [x] 3.14 Fix households not persisted to localStorage — 0f5ea97
+  - AuthContext was not saving households to localStorage
+  - On page refresh or navigation, households list was lost
+  - Now saves households and currentHousehold to localStorage
+  - Session restore correctly restores household state
+  - Fixes: dashboard redirect loop, users stuck on household creation page
 
 #### Verification
 
