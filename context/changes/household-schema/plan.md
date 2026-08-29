@@ -367,9 +367,9 @@ return (
 
 #### Automated
 
-- [x] 3.1 TypeScript compilation passes
-- [x] 3.2 Linting passes
-- [x] 3.3 Component renders without errors
+- [x] 3.1 TypeScript compilation passes — 46dd71a
+- [x] 3.2 Linting passes — 46dd71a
+- [x] 3.3 Component renders without errors — 46dd71a
 
 #### Manual
 
