@@ -339,37 +339,37 @@ return (
 
 #### Automated
 
-- [x] 1.1 Type checking passes
-- [x] 1.2 Linting passes
-- [x] 1.3 App starts without errors
-- [x] 1.4 HouseholdServiceTest compiles
+- [x] 1.1 Type checking passes — 59fa28c
+- [x] 1.2 Linting passes — 59fa28c
+- [x] 1.3 App starts without errors — 59fa28c
+- [x] 1.4 HouseholdServiceTest compiles — 59fa28c
 
 #### Manual
 
-- [ ] 1.5 Repository query existsByCreatedById() works correctly
-- [ ] 1.6 Constraint prevents 2nd household creation with correct error message
+- [x] 1.5 Repository query existsByCreatedById() works correctly — 59fa28c
+- [x] 1.6 Constraint prevents 2nd household creation with correct error message — 59fa28c
 
 ### Phase 2: Unit Tests for the Constraint
 
 #### Automated
 
-- [x] 2.1 Type checking passes
-- [x] 2.2 Linting passes
-- [x] 2.3 Duplicate household prevention test passes
-- [x] 2.4 First household creation test passes
-- [x] 2.5 All HouseholdServiceTest tests pass
+- [x] 2.1 Type checking passes — 59fa28c
+- [x] 2.2 Linting passes — 59fa28c
+- [x] 2.3 Duplicate household prevention test passes — 59fa28c
+- [x] 2.4 First household creation test passes — 59fa28c
+- [x] 2.5 All HouseholdServiceTest tests pass — 59fa28c
 
 #### Manual
 
-- [ ] 2.6 Full test suite passes
+- [x] 2.6 Full test suite passes — 59fa28c
 
 ### Phase 3: Frontend UI Update
 
 #### Automated
 
-- [ ] 3.1 TypeScript compilation passes
-- [ ] 3.2 Linting passes
-- [ ] 3.3 Component renders without errors
+- [x] 3.1 TypeScript compilation passes
+- [x] 3.2 Linting passes
+- [x] 3.3 Component renders without errors
 
 #### Manual
 

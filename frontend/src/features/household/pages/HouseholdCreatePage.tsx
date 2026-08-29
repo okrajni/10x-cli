@@ -1,8 +1,15 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button, Input } from '@shared/components'
 import { createHouseholdApi, getUserHouseholdsApi } from '../api'
 import { useAuth } from '@features/auth/context/AuthContext'
+
+interface Household {
+  householdId: string
+  name: string
+  createdBy: string
+  createdAt: string
+}
 
 export default function HouseholdCreatePage() {
   const navigate = useNavigate()
@@ -10,6 +17,25 @@ export default function HouseholdCreatePage() {
   const [name, setName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [households, setHouseholds] = useState<Household[]>([])
+  const [householdsLoading, setHouseholdsLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchHouseholds = async () => {
+      try {
+        const result = await getUserHouseholdsApi()
+        if (result.ok) {
+          setHouseholds(result.data || [])
+        }
+      } catch (err) {
+        console.error('Failed to fetch households:', err)
+      } finally {
+        setHouseholdsLoading(false)
+      }
+    }
+
+    fetchHouseholds()
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -28,22 +54,71 @@ export default function HouseholdCreatePage() {
         return
       }
 
-      // Refetch households to update auth context
+      // Refetch households to update the UI
       const householdsResult = await getUserHouseholdsApi()
       if (householdsResult.ok && householdsResult.data.length > 0) {
+        setHouseholds(householdsResult.data)
         // Set the current household to the newly created one
         const newHousehold = householdsResult.data.find((h) => h.householdId === result.data.householdId)
         if (newHousehold) {
           setCurrentHousehold(newHousehold)
         }
       }
-
-      navigate('/dashboard')
     } catch (err) {
       setError('An unexpected error occurred')
     } finally {
       setLoading(false)
     }
+  }
+
+  if (householdsLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
+        <div className="w-full max-w-md space-y-8">
+          <div className="text-center">
+            <p className="text-sm text-gray-600">Loading...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (households.length > 0) {
+    const household = households[0]!
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
+        <div className="w-full max-w-md space-y-8">
+          <div className="text-center">
+            <h2 className="mt-6 text-3xl font-bold tracking-tight text-gray-900">
+              Your Household
+            </h2>
+            <p className="mt-2 text-sm text-gray-600">
+              You have one household. Create tasks to get started.
+            </p>
+          </div>
+
+          <div className="mt-8 space-y-6 rounded-lg border border-gray-200 bg-white p-6">
+            <div>
+              <p className="text-sm font-medium text-gray-500">Household Name</p>
+              <p className="mt-1 text-lg font-semibold text-gray-900">{household.name}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-500">Household ID</p>
+              <p className="mt-1 font-mono text-sm text-gray-700">{household.householdId}</p>
+            </div>
+            <div className="pt-4">
+              <Button
+                variant="primary"
+                className="w-full"
+                onClick={() => navigate('/dashboard')}
+              >
+                Go to Dashboard
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
