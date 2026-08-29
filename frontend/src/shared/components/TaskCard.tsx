@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import { Task } from '@features/tasks/api'
+import { categoryColor, categoryLabel } from '@features/tasks/utils/categoryUtils'
 import { Button } from './Button'
 
 interface TaskCardProps {
@@ -10,14 +11,6 @@ interface TaskCardProps {
   isLoading?: boolean
 }
 
-const categoryColors: Record<Task['category'], string> = {
-  cleaning: 'bg-blue-100 text-blue-800',
-  shopping: 'bg-green-100 text-green-800',
-  laundry: 'bg-purple-100 text-purple-800',
-  maintenance: 'bg-yellow-100 text-yellow-800',
-  bills: 'bg-red-100 text-red-800',
-}
-
 export function TaskCard({
   task,
   onComplete,
@@ -25,13 +18,16 @@ export function TaskCard({
   onDelete,
   isLoading = false,
 }: TaskCardProps) {
-  const isCompleted = task.status === 'completed'
+  const isCompleted = !!task.completedAt
+  const dueDate = new Date(task.dueDate)
+  const isOverdue = dueDate < new Date() && !isCompleted
 
   return (
     <div
       className={clsx(
         'p-4 border rounded-lg shadow-sm hover:shadow-md transition bg-white',
-        isCompleted && 'opacity-60'
+        isCompleted && 'opacity-60',
+        isOverdue && 'border-red-300'
       )}
     >
       {/* Header: Title + Category Badge */}
@@ -39,21 +35,20 @@ export function TaskCard({
         <h3 className={clsx('font-semibold text-gray-900', isCompleted && 'line-through')}>
           {task.title}
         </h3>
-        <span className={clsx('text-xs px-2 py-1 rounded-full font-medium', categoryColors[task.category])}>
-          {task.category}
+        <span className={clsx('text-xs px-2 py-1 rounded-full font-medium', categoryColor(task.category))}>
+          {categoryLabel(task.category)}
         </span>
       </div>
 
       {/* Description */}
-      {task.description && <p className="text-sm text-gray-600 mb-3">{task.description}</p>}
+      {task.description && (
+        <p className="text-sm text-gray-600 mb-3 line-clamp-2">{task.description}</p>
+      )}
 
-      {/* Due Date + Assignee */}
+      {/* Due Date */}
       <div className="flex gap-4 text-sm text-gray-500 mb-4">
-        {task.dueDate && (
-          <span>{new Date(task.dueDate).toLocaleDateString()}</span>
-        )}
-        <span className="font-medium text-blue-600">
-          {task.assignedTo === 'me' ? '👤 Me' : '👥 Partner'}
+        <span className={clsx(isOverdue && 'text-red-600 font-medium')}>
+          {dueDate.toLocaleDateString()}
         </span>
       </div>
 

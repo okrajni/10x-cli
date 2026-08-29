@@ -489,15 +489,15 @@ None for MVP. On v1.1 upgrade to support optional due dates:
 
 #### Automated
 
-- [x] 1.1 Task entity with completedAt timestamp for completion tracking
-- [x] 1.2 TaskRepository with household isolation queries (findActiveByHouseholdId, findByIdAndHouseholdId)
-- [x] 1.3 TaskDTO (CreateTaskRequest, UpdateTaskRequest, TaskResponse) with validation
-- [x] 1.4 TaskService with CRUD logic and household membership validation
-- [x] 1.5 TaskController with 5 REST endpoints (create, read, list, update, delete)
-- [x] 1.6 Update SecurityConfig to protect task endpoints
-- [x] 1.7 Unit tests pass for TaskService (CRUD, isolation, soft-delete)
-- [x] 1.8 Integration tests pass for TaskController endpoints
-- [x] 1.9 Compilation and type checking pass
+- [x] 1.1 Task entity with completedAt timestamp for completion tracking — a03414b
+- [x] 1.2 TaskRepository with household isolation queries (findActiveByHouseholdId, findByIdAndHouseholdId) — a03414b
+- [x] 1.3 TaskDTO (CreateTaskRequest, UpdateTaskRequest, TaskResponse) with validation — a03414b
+- [x] 1.4 TaskService with CRUD logic and household membership validation — a03414b
+- [x] 1.5 TaskController with 5 REST endpoints (create, read, list, update, delete) — a03414b
+- [x] 1.6 Update SecurityConfig to protect task endpoints — a03414b
+- [x] 1.7 Unit tests pass for TaskService (CRUD, isolation, soft-delete) — a03414b
+- [x] 1.8 Integration tests pass for TaskController endpoints — a03414b
+- [x] 1.9 Compilation and type checking pass — a03414b
 
 #### Manual
 
@@ -512,11 +512,11 @@ None for MVP. On v1.1 upgrade to support optional due dates:
 
 #### Automated
 
-- [ ] 2.1 TypeScript compilation passes
-- [ ] 2.2 ESLint passes all checks
-- [ ] 2.3 App starts without console errors
-- [ ] 2.4 TaskCreatePage renders without errors
-- [ ] 2.5 Form validation works (required field, invalid input rejected)
+- [x] 2.1 TypeScript compilation passes
+- [x] 2.2 ESLint passes all checks
+- [x] 2.3 App starts without console errors
+- [x] 2.4 TaskCreatePage renders without errors
+- [x] 2.5 Form validation works (required field, invalid input rejected)
 
 #### Manual
 

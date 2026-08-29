@@ -1,14 +1,16 @@
 import { apiClient, ApiResult } from '@lib/api/client'
 
+export type TaskCategory = 'CLEANING' | 'SHOPPING' | 'LAUNDRY' | 'MAINTENANCE' | 'BILLS'
+
 export interface Task {
   id: string
+  householdId: string
   title: string
   description?: string
-  category: 'cleaning' | 'shopping' | 'laundry' | 'maintenance' | 'bills'
-  dueDate?: string
-  assignedTo: string
-  status: 'pending' | 'completed'
-  householdId: string
+  category: TaskCategory
+  dueDate: string
+  completedAt?: string
+  deletedAt?: string
   createdAt: string
   updatedAt: string
 }
@@ -16,54 +18,45 @@ export interface Task {
 export interface CreateTaskRequest {
   title: string
   description?: string
-  category: Task['category']
-  dueDate?: string
-  assignedTo: string
-}
-
-export async function createTaskApi(request: CreateTaskRequest): Promise<ApiResult<Task>> {
-  return apiClient('/tasks', {
-    method: 'POST',
-    body: JSON.stringify(request),
-  })
-}
-
-export async function listTasksApi(): Promise<ApiResult<Task[]>> {
-  return apiClient('/tasks')
-}
-
-export async function getTaskApi(taskId: string): Promise<ApiResult<Task>> {
-  return apiClient(`/tasks/${taskId}`)
+  category: TaskCategory
+  dueDate: string
 }
 
 export interface UpdateTaskRequest {
   title?: string
   description?: string
-  category?: Task['category']
+  category?: TaskCategory
   dueDate?: string
-  assignedTo?: string
-  status?: Task['status']
+  completedAt?: string
 }
 
-export async function updateTaskApi(
-  taskId: string,
-  request: UpdateTaskRequest
-): Promise<ApiResult<Task>> {
-  return apiClient(`/tasks/${taskId}`, {
-    method: 'PATCH',
+export async function createTask(request: CreateTaskRequest): Promise<ApiResult<Task>> {
+  return apiClient('/task', {
+    method: 'POST',
     body: JSON.stringify(request),
   })
 }
 
-export async function deleteTaskApi(taskId: string): Promise<ApiResult<void>> {
-  return apiClient(`/tasks/${taskId}`, {
-    method: 'DELETE',
+export async function listTasks(): Promise<ApiResult<Task[]>> {
+  return apiClient('/task')
+}
+
+export async function getTask(taskId: string): Promise<ApiResult<Task>> {
+  return apiClient(`/task/${taskId}`)
+}
+
+export async function updateTask(
+  taskId: string,
+  request: UpdateTaskRequest
+): Promise<ApiResult<Task>> {
+  return apiClient(`/task/${taskId}`, {
+    method: 'PUT',
+    body: JSON.stringify(request),
   })
 }
 
-export async function completeTaskApi(taskId: string): Promise<ApiResult<Task>> {
-  return apiClient(`/tasks/${taskId}`, {
-    method: 'PATCH',
-    body: JSON.stringify({ status: 'completed' }),
+export async function deleteTask(taskId: string): Promise<ApiResult<void>> {
+  return apiClient(`/task/${taskId}`, {
+    method: 'DELETE',
   })
 }

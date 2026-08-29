@@ -8,6 +8,9 @@ import { Button } from '@shared/components'
 const LoginPage = lazy(() => import('@features/auth/pages/LoginPage'))
 const RegisterPage = lazy(() => import('@features/auth/pages/RegisterPage'))
 const DashboardPage = lazy(() => import('@features/tasks/pages/DashboardPage'))
+const TaskListPage = lazy(() => import('@features/tasks/pages/TaskListPage'))
+const TaskCreatePage = lazy(() => import('@features/tasks/pages/TaskCreatePage'))
+const TaskEditPage = lazy(() => import('@features/tasks/pages/TaskEditPage'))
 const SettingsPage = lazy(() => import('@features/auth/pages/SettingsPage'))
 const HouseholdCreatePage = lazy(() => import('@features/household/pages/HouseholdCreatePage'))
 const InvitePartnerPage = lazy(() => import('@features/household/pages/InvitePartnerPage'))
@@ -112,6 +115,36 @@ export const router = createBrowserRouter([
           <ProtectedRoute>
             <SuspenseWrapper>
               <DashboardPage />
+            </SuspenseWrapper>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'task/create',
+        element: (
+          <ProtectedRoute>
+            <SuspenseWrapper>
+              <TaskCreatePage />
+            </SuspenseWrapper>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'task/:id/edit',
+        element: (
+          <ProtectedRoute>
+            <SuspenseWrapper>
+              <TaskEditPage />
+            </SuspenseWrapper>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'task',
+        element: (
+          <ProtectedRoute>
+            <SuspenseWrapper>
+              <TaskListPage />
             </SuspenseWrapper>
           </ProtectedRoute>
         ),

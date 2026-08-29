@@ -210,16 +210,116 @@ On first run, the CLI prompts you to choose your AI coding tool. Artifacts are w
 
 Override anytime with `--tool <name>`. Your choice is saved in `~/.config/10x-cli/config.json`.
 
+## Project Structure
+
+This is a full-stack application with three components:
+
+- **10x-cli** (`src/`, root) — The main CLI tool (Bun/Node)
+- **Frontend** (`frontend/`) — React + Vite development server (Node, port 5173)
+- **Backend** (`pom.xml`) — Java Spring Boot API server (port 8080)
+
 ## Development
 
+### Prerequisites
+
+- **Node 20+** — for the CLI and frontend
+- **Java 21+** — for the backend (Spring Boot)
+- **Maven** — for building and running the backend
+- **Bun** (recommended) — for the CLI development
+- **PostgreSQL** — for the backend database (running locally or via Docker)
+
+### Database Setup
+
+The backend uses PostgreSQL running on `localhost:5432`.
+
+**Default credentials:**
+- Username: `postgres`
+- Password: `postgres`
+- Database: `done_yet`
+
+Schema is auto-created by Hibernate on startup (`ddl-auto=create-drop`).
+
+**Installation options:**
+
 ```bash
-bun install
+# Option 1: Homebrew (macOS)
+brew install postgresql
+brew services start postgresql
+
+# Option 2: Docker (any platform)
+docker run -d \
+  -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_DB=done_yet \
+  -p 5432:5432 \
+  postgres:latest
+
+# Option 3: PostgreSQL installer
+# Download from https://www.postgresql.org/download/
+```
+
+Customize credentials by setting environment variables:
+```bash
+export DB_USERNAME=your_user
+export DB_PASSWORD=your_password
+```
+
+### Running the Full Stack
+
+Start both backend and frontend together:
+
+```bash
+# Terminal 1: Start backend (Spring Boot on port 8080)
+mvn spring-boot:run
+
+# Terminal 2: Start frontend (Vite dev server on port 5173)
+cd frontend && npm run dev
+
+# Terminal 3: Develop the CLI
+bun run dev -- --help
+```
+
+Access the app at `http://localhost:5173`
+
+### CLI Development
+
+```bash
+bun install                 # Install dependencies
 bun run dev -- --help       # Run CLI from source
 bun run build               # Build dist/index.mjs (node target)
 bun run build:binary        # Build standalone binary (~59MB)
 bun test                    # Run tests
 bun run typecheck           # tsc --noEmit
 bun run lint                # oxlint
+```
+
+### Frontend Development
+
+```bash
+cd frontend
+npm install
+npm run dev                 # Start Vite dev server (port 5173)
+npm run build               # Production build
+npm run typecheck           # Type checking
+npm run lint                # ESLint
+npm run lint:fix            # Auto-fix linting issues
+npm run format              # Prettier formatting
+```
+
+### Backend Development
+
+```bash
+# Run Spring Boot application
+mvn spring-boot:run
+
+# Or build and run JAR
+mvn clean package
+java -jar target/done-yet-*.jar
+
+# Run tests
+mvn test
+
+# Generate types from OpenAPI spec (if needed)
+API_BASE_URL=http://localhost:8080 bun run generate-types
 ```
 
 ## Contributing
