@@ -1,6 +1,6 @@
 # Change: new-user-setup
 
-**Status**: implementing  
+**Status**: implemented  
 **Created**: 2026-08-28  
 **Updated**: 2026-08-29  
 

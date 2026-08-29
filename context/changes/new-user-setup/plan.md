@@ -421,18 +421,18 @@ None for MVP. On v1.1 upgrade to real email provider:
 
 #### Automated
 
-- [x] 2.1 TypeScript compilation passes
-- [x] 2.2 ESLint passes all checks
-- [x] 2.3 App starts without console errors
-- [x] 2.4 Frontend components render without errors
+- [x] 2.1 TypeScript compilation passes — 4b28e32
+- [x] 2.2 ESLint passes all checks — 4b28e32
+- [x] 2.3 App starts without console errors — 4b28e32
+- [x] 2.4 Frontend components render without errors — 4b28e32
 
 #### Manual
 
-- [x] 2.5 Register user → redirected to household creation form
-- [x] 2.6 Create household → success message, redirect to invite form
-- [x] 2.7 Send invitation → success message, see "Invitation sent"
-- [x] 2.8 Accept invitation via link (unauthenticated) → register form with email pre-filled
-- [x] 2.9 Register via invitation → auto-join household, redirect to dashboard
-- [x] 2.10 Dashboard shows current household with tasks/assignments
-- [x] 2.11 Multi-household user sees picker; selection switches household
-- [x] 2.12 Error scenarios: expired invite shows "Invitation expired", already-accepted shows "Already joined"
+- [x] 2.5 Register user → redirected to household creation form — 4b28e32
+- [x] 2.6 Create household → success message, redirect to invite form — 4b28e32
+- [x] 2.7 Send invitation → success message, see "Invitation sent" — 4b28e32
+- [x] 2.8 Accept invitation via link (unauthenticated) → register form with email pre-filled — 4b28e32
+- [x] 2.9 Register via invitation → auto-join household, redirect to dashboard — 4b28e32
+- [x] 2.10 Dashboard shows current household with tasks/assignments — 4b28e32
+- [x] 2.11 Multi-household user sees picker; selection switches household — 4b28e32
+- [x] 2.12 Error scenarios: expired invite shows "Invitation expired", already-accepted shows "Already joined" — 4b28e32
