@@ -1,6 +1,7 @@
 package com.example.doneyet.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public class HouseholdDto {
@@ -127,6 +128,104 @@ public class HouseholdDto {
 
         public void setExpiresAt(LocalDateTime expiresAt) {
             this.expiresAt = expiresAt;
+        }
+    }
+
+    public static class HouseholdDetailsResponse {
+        private UUID householdId;
+        private String name;
+        private UUID createdBy;
+        private LocalDateTime createdAt;
+        private List<HouseholdMemberDto> members;
+
+        public HouseholdDetailsResponse() {
+        }
+
+        public HouseholdDetailsResponse(UUID householdId, String name, UUID createdBy, LocalDateTime createdAt, List<HouseholdMemberDto> members) {
+            this.householdId = householdId;
+            this.name = name;
+            this.createdBy = createdBy;
+            this.createdAt = createdAt;
+            this.members = members;
+        }
+
+        public UUID getHouseholdId() {
+            return householdId;
+        }
+
+        public void setHouseholdId(UUID householdId) {
+            this.householdId = householdId;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public UUID getCreatedBy() {
+            return createdBy;
+        }
+
+        public void setCreatedBy(UUID createdBy) {
+            this.createdBy = createdBy;
+        }
+
+        public LocalDateTime getCreatedAt() {
+            return createdAt;
+        }
+
+        public void setCreatedAt(LocalDateTime createdAt) {
+            this.createdAt = createdAt;
+        }
+
+        public List<HouseholdMemberDto> getMembers() {
+            return members;
+        }
+
+        public void setMembers(List<HouseholdMemberDto> members) {
+            this.members = members;
+        }
+    }
+
+    public static class HouseholdMemberDto {
+        private UUID id;
+        private String name;
+        private String email;
+
+        public HouseholdMemberDto() {
+        }
+
+        public HouseholdMemberDto(UUID id, String name, String email) {
+            this.id = id;
+            this.name = name;
+            this.email = email;
+        }
+
+        public UUID getId() {
+            return id;
+        }
+
+        public void setId(UUID id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
         }
     }
 }

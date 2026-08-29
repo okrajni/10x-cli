@@ -8,7 +8,7 @@ export default function InvitationAcceptPage() {
   const { token } = useParams<{ token: string }>()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, refetchHouseholds } = useAuth()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -44,6 +44,9 @@ export default function InvitationAcceptPage() {
         }
         return
       }
+
+      // Refetch households to get the new household membership
+      await refetchHouseholds()
 
       navigate('/dashboard')
     } catch (err) {

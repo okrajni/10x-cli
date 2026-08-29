@@ -160,6 +160,36 @@ public class HouseholdService {
         return responses;
     }
 
+    @Transactional(readOnly = true)
+    public HouseholdDto.HouseholdDetailsResponse getHouseholdDetails(UUID householdId, UUID userId) {
+        Household household = householdRepository.findById(householdId)
+                .orElseThrow(() -> new ValidationException("Household not found"));
+
+        Optional<HouseholdMember> userMembership = householdMemberRepository.findByHouseholdIdAndUserId(householdId, userId);
+        if (userMembership.isEmpty()) {
+            throw new ValidationException("User is not a member of this household");
+        }
+
+        List<HouseholdMember> householdMembers = householdMemberRepository.findByHouseholdId(householdId);
+        List<HouseholdDto.HouseholdMemberDto> memberDtos = new ArrayList<>();
+        for (HouseholdMember member : householdMembers) {
+            String displayName = member.getUser().getEmail().split("@")[0];
+            memberDtos.add(new HouseholdDto.HouseholdMemberDto(
+                    member.getId(),
+                    displayName,
+                    member.getUser().getEmail()
+            ));
+        }
+
+        return new HouseholdDto.HouseholdDetailsResponse(
+                household.getId(),
+                household.getName(),
+                household.getCreatedBy().getId(),
+                household.getCreatedAt(),
+                memberDtos
+        );
+    }
+
     private void validateHouseholdName(String name) {
         if (name == null || name.isBlank()) {
             throw new ValidationException("Household name is required");

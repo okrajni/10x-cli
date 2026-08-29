@@ -3,6 +3,7 @@ import { authReducer, initialState } from '../reducer'
 import { AuthState, Household } from '../types'
 import { loginApi, registerApi } from '../api'
 import { getUserHouseholdsApi } from '@features/household/api'
+import { setApiToken } from '@lib/api/client'
 
 interface AuthContextValue {
   user: AuthState['user']
@@ -38,6 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       const expiresAt = new Date(result.data.expiresAt).getTime()
+      const token = result.data.token
 
       dispatch({
         type: 'LOGIN_SUCCESS',
@@ -46,11 +48,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             id: result.data.userId,
             email: result.data.email,
           },
-          token: result.data.token,
+          token,
           refreshToken: null,
           expiresAt,
         },
       })
+
+      // Set token immediately for subsequent API calls
+      setApiToken(token)
 
       // Fetch households after successful login
       try {
@@ -87,6 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       const expiresAt = new Date(result.data.expiresAt).getTime()
+      const token = result.data.token
 
       dispatch({
         type: 'REGISTER_SUCCESS',
@@ -95,11 +101,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             id: result.data.userId,
             email: result.data.email,
           },
-          token: result.data.token,
+          token,
           refreshToken: null,
           expiresAt,
         },
       })
+
+      // Set token immediately for subsequent API calls
+      setApiToken(token)
 
       // Fetch households after successful registration
       try {
@@ -139,6 +148,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } finally {
       dispatch({ type: 'LOGOUT' })
+      setApiToken(null)
     }
   }, [state.token])
 
@@ -169,6 +179,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data = await response.json()
       const expiresAt = Date.now() + 3600000 // 1 hour from now
 
+      setApiToken(data.token)
       dispatch({
         type: 'REFRESH_TOKEN_SUCCESS',
         payload: {
@@ -215,6 +226,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (parsed.token && parsed.expiresAt) {
           // Check if token is not expired
           if (parsed.expiresAt > Date.now()) {
+            setApiToken(parsed.token)
             dispatch({ type: 'RESTORE_SESSION', payload: parsed })
 
             // Refetch households after session restore

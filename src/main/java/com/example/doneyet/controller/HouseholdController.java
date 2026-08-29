@@ -53,4 +53,14 @@ public class HouseholdController {
         List<HouseholdDto.HouseholdResponse> households = householdService.getUserHouseholds(user.getId());
         return ResponseEntity.status(HttpStatus.OK).body(households);
     }
+
+    @GetMapping("/{householdId}")
+    public ResponseEntity<HouseholdDto.HouseholdDetailsResponse> getHouseholdDetails(
+            @PathVariable UUID householdId,
+            Authentication authentication
+    ) {
+        User user = (User) authentication.getPrincipal();
+        HouseholdDto.HouseholdDetailsResponse response = householdService.getHouseholdDetails(householdId, user.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }
