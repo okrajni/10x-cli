@@ -437,6 +437,12 @@ None for MVP. On v1.1 upgrade to real email provider:
 - [x] 2.11 Multi-household user sees picker; selection switches household — 4b28e32
 - [x] 2.12 Error scenarios: expired invite shows "Invitation expired", already-accepted shows "Already joined" — 4b28e32
 
+#### Verification (Post-Fix Testing)
+
+- [x] 3.11 API token properly set after authentication — d245c58 (verified: dashboard no longer stuck on /household/create)
+- [x] 3.12 Household list loads correctly after login/registration — d245c58 (verified: GET /api/household returns user's households)
+- [x] 3.13 Complete flow works: register → create household → invite → partner accepts → both see same household — d245c58 (verified with curl tests)
+
 ### Phase 3: Critical Fixes (Post-Implementation Review)
 
 #### Backend Fixes
@@ -463,6 +469,14 @@ None for MVP. On v1.1 upgrade to real email provider:
   - RegisterPage now calls `refetchHouseholds()` after successfully accepting invitation
   - Dashboard no longer redirects to `/household/create` when user auto-joins household via invitation
   - User is now automatically added to existing household when registering via invitation link
+
+#### Root Cause Fix
+
+- [x] 3.10 Fix API token not set immediately after auth — d245c58
+  - Added setApiToken() function to api/client.ts
+  - AuthContext now calls setApiToken() immediately after login/register
+  - Subsequent API calls (household fetch) now use correct token
+  - This was preventing household list from loading after auth
 
 #### Verification
 

@@ -1,9 +1,9 @@
 # Change: new-user-setup
 
-**Status**: impl_reviewed  
+**Status**: implementing  
 **Created**: 2026-08-28  
 **Updated**: 2026-08-29  
-**Review**: context/changes/new-user-setup/reviews/impl-review.md (REJECTED — 3 critical issues)  
+**Review**: context/changes/new-user-setup/reviews/impl-review.md (Review complete; critical issues being fixed)  
 
 ## Summary
 
