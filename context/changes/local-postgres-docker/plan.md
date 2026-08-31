@@ -207,7 +207,7 @@ Update README to make docker-compose the recommended setup path, replacing the r
 
 #### Automated
 
-- [x] 1.1 docker-compose config validates without errors
+- [x] 1.1 docker-compose config validates without errors — b538b86
 - [ ] 1.2 PostgreSQL container starts and listens on port 5432
 - [ ] 1.3 Database credentials work (psql connection succeeds)
 - [ ] 1.4 Named volume created (docker volume ls shows postgres_data)
@@ -222,8 +222,8 @@ Update README to make docker-compose the recommended setup path, replacing the r
 
 #### Automated
 
-- [x] 2.1 README markdown validates (no syntax errors)
-- [x] 2.2 Links are correct
+- [x] 2.1 README markdown validates (no syntax errors) — b538b86
+- [x] 2.2 Links are correct — b538b86
 
 #### Manual
 
