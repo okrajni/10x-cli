@@ -239,21 +239,33 @@ The backend uses PostgreSQL running on `localhost:5432`.
 
 Schema is auto-created by Hibernate on startup (`ddl-auto=create-drop`).
 
-**Installation options:**
+**Recommended: Docker Compose**
+
+Start PostgreSQL with a single command:
+
+```bash
+docker-compose up -d
+```
+
+Verify the connection:
+```bash
+psql -h localhost -U postgres -d done_yet -c "SELECT 1"
+```
+
+To stop and clean up:
+```bash
+docker-compose down
+docker volume rm 10x-cli_postgres_data  # Optional: start fresh next time
+```
+
+**Alternative installations:**
 
 ```bash
 # Option 1: Homebrew (macOS)
 brew install postgresql
 brew services start postgresql
 
-# Option 2: Docker (any platform)
-docker run -d \
-  -e POSTGRES_PASSWORD=postgres \
-  -e POSTGRES_DB=done_yet \
-  -p 5432:5432 \
-  postgres:latest
-
-# Option 3: PostgreSQL installer
+# Option 2: PostgreSQL installer
 # Download from https://www.postgresql.org/download/
 ```
 
@@ -265,16 +277,19 @@ export DB_PASSWORD=your_password
 
 ### Running the Full Stack
 
-Start both backend and frontend together:
+Start the full development stack in three terminals:
 
 ```bash
-# Terminal 1: Start backend (Spring Boot on port 8080)
+# Terminal 1: Start PostgreSQL (runs in background)
+docker-compose up -d
+
+# Terminal 2: Start backend (Spring Boot on port 8080)
 mvn spring-boot:run
 
-# Terminal 2: Start frontend (Vite dev server on port 5173)
+# Terminal 3: Start frontend (Vite dev server on port 5173)
 cd frontend && npm run dev
 
-# Terminal 3: Develop the CLI
+# Terminal 4 (optional): Develop the CLI
 bun run dev -- --help
 ```
 

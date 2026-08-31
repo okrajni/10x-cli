@@ -3,7 +3,7 @@ project: "done yet?"
 version: 1
 status: draft
 created: 2026-08-26
-updated: 2026-08-29
+updated: 2026-08-31
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -49,11 +49,13 @@ The **north star** — the smallest outcome that proves the hypothesis — is AI
 |-------|----------------------------|----------------------------------------------------------|------------------|-------|----------|
 | F-01  | auth-scaffold              | (foundation) Register and log in with email/password     | —                | FR-001, FR-002 | done   |
 | F-02  | household-schema           | (foundation) Single-user household data model (cleaned)  | F-01             | FR-003         | planning |
+| F-03  | local-postgres-docker      | (foundation) Local postgres in Docker; eliminates Fly.io costs | —           | —              | in-progress |
 | F-04  | frontend-scaffold          | (foundation) React app with routing, components, build   | —                | —              | done   |
 | S-01  | new-user-setup             | Register, create household, create first task            | F-01, F-02, F-04 | US-01, FR-001–003 | done |
 | S-02  | basic-task-crud            | Create, view, edit, delete task with title, description, due date | F-01, F-02, F-04 | US-02, FR-006, FR-008, FR-010–013 | done |
 | S-06  | today-dashboard            | View tasks due today or overdue, sorted by due date     | S-02, F-04       | US-02, FR-014  | ready  |
 | S-07  | ai-task-generation         | (NORTH STAR) Describe household, receive AI suggestions, accept/customize | S-02, F-04 | US-03, FR-019–020 | proposed |
+| S-08  | ui-styling-updates         | UI styling is updated and refined; polished appearance   | F-04, S-01, S-02 | —              | proposed |
 
 ## Baseline
 
@@ -93,6 +95,19 @@ What's already in place in the codebase as of 2026-08-29 (auto-researched + user
 - **Unknowns:** —
 - **Risk:** **CLEANUP REQUIRED.** Current schema includes HouseholdMembers and HouseholdInvitations tables (from multi-user design). These must be removed before launch. The cleanup change (see below) handles this. This foundation is marked `ready` pending cleanup completion.
 - **Status:** ready
+
+### F-03: Local postgres docker setup
+
+- **Outcome:** (foundation) PostgreSQL runs in Docker locally for development; eliminates Fly.io hosting costs and enables free local iteration.
+- **Change ID:** `local-postgres-docker`
+- **PRD refs:** —
+- **Unlocks:** S-01 (local task persistence), S-02 (local task operations), S-06 (local dashboard queries), all downstream slices
+- **Prerequisites:** —
+- **Parallel with:** F-01, F-02, F-04
+- **Blockers:** —
+- **Unknowns:** —
+- **Risk:** Low risk — straightforward Docker Compose setup. Must retain parity with Fly.io schema for prod deployment.
+- **Status:** in-progress
 
 ### F-04: Frontend scaffold
 
@@ -159,17 +174,31 @@ What's already in place in the codebase as of 2026-08-29 (auto-researched + user
 - **Risk:** **This is the north star.** If AI suggestions don't feel relevant (>30% rejection), users won't adopt the app. Prompt engineering is the critical unknown. Allocate week 3 to prompt iteration and user testing. If the API rate limit or latency becomes a blocker late in the sprint, fall back to a simpler rule-based suggestion system (e.g., checklist of common household tasks) that doesn't require a real AI call.
 - **Status:** proposed
 
+### S-08: UI styling updates
+
+- **Outcome:** UI styling is updated and refined (colors, spacing, typography, component polish). App has a cohesive, polished visual appearance.
+- **Change ID:** `ui-styling-updates`
+- **PRD refs:** —
+- **Prerequisites:** F-04 (frontend scaffold), S-01 (UI flows exist to style), S-02 (core UI in place)
+- **Parallel with:** S-06, S-07
+- **Blockers:** —
+- **Unknowns:** —
+- **Risk:** Low risk — styling refinement has no impact on core functionality. Can ship as polish pass post-north-star validation.
+- **Status:** proposed
+
 ## Backlog Handoff
 
 | Roadmap ID | Change ID              | Suggested issue title                                 | Ready for `/10x-plan` | Notes |
 |------------|------------------------|-------------------------------------------------------|-----------------------|-------|
 | F-01       | auth-scaffold          | Auth scaffold: email/password registration & login    | no (done)             | Complete; no additional planning needed. |
 | F-02       | household-schema       | Household schema cleanup: remove multi-user tables    | yes                   | Remove HouseholdMembers and HouseholdInvitations tables. Update foreign keys. Plan before S-06. |
+| F-03       | local-postgres-docker  | Local postgres in Docker: eliminate Fly.io costs      | yes                   | Set up Docker Compose with postgres. Retain schema parity with production. |
 | F-04       | frontend-scaffold      | Frontend scaffold: React, routing, build setup        | no (done)             | Complete; no additional planning needed. |
 | S-01       | new-user-setup         | New user setup: register, create household, first task | no (done)             | Complete; removed multi-user partner invitation flow. |
 | S-02       | basic-task-crud        | Basic task CRUD: create, view, edit, delete           | no (done)             | Complete. Task schema supports dashboard queries. |
 | S-06       | today-dashboard        | Today dashboard: tasks due today, sorted by due date  | yes                   | Ready to plan. Depends on F-02 cleanup for clean schema. |
 | S-07       | ai-task-generation     | AI task generation: suggestions, accept/reject/save   | yes (after S-06)      | North star. Plan after dashboard UI is in place; iteration expected week 3. |
+| S-08       | ui-styling-updates     | UI styling updates: colors, spacing, typography       | yes (post-north-star) | Polish pass. Can run parallel to S-06/S-07; ship after core validation. |
 
 ## Open Roadmap Questions
 
