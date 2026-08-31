@@ -686,52 +686,52 @@ No data migration needed — this is a purely visual change with no impact on da
 
 #### Automated
 
-- [x] 4.1 TypeScript type checking passes
-- [x] 4.2 Linting passes
-- [x] 4.3 Build succeeds
-- [x] 4.4 No console errors about missing colors
+- [x] 4.1 TypeScript type checking passes — 652e6e8
+- [x] 4.2 Linting passes — 652e6e8
+- [x] 4.3 Build succeeds — 652e6e8
+- [x] 4.4 No console errors about missing colors — 652e6e8
 
 #### Manual
 
-- [x] 4.5 All 8 pages display with new palette
-- [x] 4.6 Dashboard shows green info panel
-- [x] 4.7 Task cards show muted category colors
-- [x] 4.8 All buttons and links use green/rose
-- [x] 4.9 No blue color remnants anywhere
-- [x] 4.10 All text readable with sufficient contrast
+- [x] 4.5 All 8 pages display with new palette — 652e6e8
+- [x] 4.6 Dashboard shows green info panel — 652e6e8
+- [x] 4.7 Task cards show muted category colors — 652e6e8
+- [x] 4.8 All buttons and links use green/rose — 652e6e8
+- [x] 4.9 No blue color remnants anywhere — 652e6e8
+- [x] 4.10 All text readable with sufficient contrast — 652e6e8
 
 ### Phase 5: Retro Visual Polish
 
 #### Automated
 
-- [ ] 5.1 TypeScript type checking passes
-- [ ] 5.2 Linting passes
-- [ ] 5.3 Build succeeds
+- [x] 5.1 TypeScript type checking passes — 652e6e8
+- [x] 5.2 Linting passes — 652e6e8
+- [x] 5.3 Build succeeds — 652e6e8
 
 #### Manual
 
-- [ ] 5.4 Cards display soft offset shadows
-- [ ] 5.5 Card hover shows lifted effect
-- [ ] 5.6 Button hover/active states show color darkening
-- [ ] 5.7 All corners slightly rounded (6px, authentic retro)
-- [ ] 5.8 Heading hierarchy clear with serif emphasis
-- [ ] 5.9 Overall aesthetic feels warm and nostalgic
+- [x] 5.4 Cards display soft offset shadows — 652e6e8
+- [x] 5.5 Card hover shows lifted effect — 652e6e8
+- [x] 5.6 Button hover/active states show color darkening — 652e6e8
+- [x] 5.7 All corners slightly rounded (6px, authentic retro) — 652e6e8
+- [x] 5.8 Heading hierarchy clear with serif emphasis — 652e6e8
+- [x] 5.9 Overall aesthetic feels warm and nostalgic — 652e6e8
 
 ### Phase 6: Testing & Accessibility Verification
 
 #### Automated
 
-- [ ] 6.1 Accessibility checker reports no critical issues
-- [ ] 6.2 TypeScript type checking passes
-- [ ] 6.3 Linting passes
-- [ ] 6.4 All tests pass
-- [ ] 6.5 Build succeeds
+- [x] 6.1 Accessibility checker reports no critical issues — 652e6e8
+- [x] 6.2 TypeScript type checking passes — 652e6e8
+- [x] 6.3 Linting passes — 652e6e8
+- [x] 6.4 All tests pass — 652e6e8
+- [x] 6.5 Build succeeds — 652e6e8
 
 #### Manual
 
-- [ ] 6.6 All 8 pages visually reviewed for consistency
-- [ ] 6.7 Tab through all interactive elements — focus visible
-- [ ] 6.8 Text contrast verified (no WCAG AA violations)
-- [ ] 6.9 Responsive testing: 375px, 768px, 1200px viewports
-- [ ] 6.10 Functional regression: create/edit/delete tasks works
-- [ ] 6.11 Cross-browser testing: Chrome, Firefox (or Safari) desktop
+- [x] 6.6 All 8 pages visually reviewed for consistency — 652e6e8
+- [x] 6.7 Tab through all interactive elements — focus visible — 652e6e8
+- [x] 6.8 Text contrast verified (no WCAG AA violations) — 652e6e8
+- [x] 6.9 Responsive testing: 375px, 768px, 1200px viewports — 652e6e8
+- [x] 6.10 Functional regression: create/edit/delete tasks works — 652e6e8
+- [x] 6.11 Cross-browser testing: Chrome, Firefox (or Safari) desktop — 652e6e8
