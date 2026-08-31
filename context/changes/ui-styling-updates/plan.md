@@ -653,34 +653,34 @@ No data migration needed — this is a purely visual change with no impact on da
 
 #### Automated
 
-- [x] 2.1 TypeScript type checking passes
-- [x] 2.2 Linting passes
-- [x] 2.3 Build succeeds
-- [x] 2.4 No console warnings about missing fonts
+- [x] 2.1 TypeScript type checking passes — 1cb4ea8
+- [x] 2.2 Linting passes — 1cb4ea8
+- [x] 2.3 Build succeeds — 1cb4ea8
+- [x] 2.4 No console warnings about missing fonts — 1cb4ea8
 
 #### Manual
 
-- [x] 2.5 All h1/h2/h3 display in Playfair Display serif
-- [x] 2.6 Body text remains sans-serif
-- [x] 2.7 Font loads within 1-2 seconds
-- [x] 2.8 Headings are readable and not distorted
+- [x] 2.5 All h1/h2/h3 display in Playfair Display serif — 1cb4ea8
+- [x] 2.6 Body text remains sans-serif — 1cb4ea8
+- [x] 2.7 Font loads within 1-2 seconds — 1cb4ea8
+- [x] 2.8 Headings are readable and not distorted — 1cb4ea8
 
 ### Phase 3: Color Palette Swap (Core Components)
 
 #### Automated
 
-- [ ] 3.1 TypeScript type checking passes
-- [ ] 3.2 Linting passes
-- [ ] 3.3 Unit tests pass
-- [ ] 3.4 Build succeeds
+- [x] 3.1 TypeScript type checking passes
+- [x] 3.2 Linting passes
+- [x] 3.3 Unit tests pass
+- [x] 3.4 Build succeeds
 
 #### Manual
 
-- [ ] 3.5 Button variants display with green/rose colors
-- [ ] 3.6 Input focus rings are green, not blue
-- [ ] 3.7 Error inputs show rose, not red
-- [ ] 3.8 Dialog cards have cream backgrounds with retro shadows
-- [ ] 3.9 All text is readable with sufficient contrast
+- [x] 3.5 Button variants display with green/rose colors
+- [x] 3.6 Input focus rings are green, not blue
+- [x] 3.7 Error inputs show rose, not red
+- [x] 3.8 Dialog cards have cream backgrounds with retro shadows
+- [x] 3.9 All text is readable with sufficient contrast
 
 ### Phase 4: Color Palette Swap (Feature Components & Pages)
 

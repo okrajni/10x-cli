@@ -14,9 +14,9 @@ export function Button({
   ...props
 }: ButtonProps) {
   const variantStyles = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
-    secondary: 'bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-500',
-    danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
+    primary: 'bg-green-600 text-white hover:bg-green-700 active:bg-green-800 focus:ring-green-600',
+    secondary: 'bg-rose-100 text-charcoal hover:bg-rose-200 focus:ring-rose-100',
+    danger: 'bg-rose-100 text-charcoal hover:bg-rose-200 active:bg-rose-300 focus:ring-rose-100',
   }
 
   const sizeStyles = {
