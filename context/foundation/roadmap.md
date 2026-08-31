@@ -48,12 +48,12 @@ The **north star** — the smallest outcome that proves the hypothesis — is AI
 | ID    | Change ID                  | Outcome (user can …)                                     | Prerequisites    | PRD refs       | Status   |
 |-------|----------------------------|----------------------------------------------------------|------------------|-------|----------|
 | F-01  | auth-scaffold              | (foundation) Register and log in with email/password     | —                | FR-001, FR-002 | done   |
-| F-02  | household-schema           | (foundation) Single-user household data model (cleaned)  | F-01             | FR-003         | planning |
-| F-03  | local-postgres-docker      | (foundation) Local postgres in Docker; eliminates Fly.io costs | —           | —              | in-progress |
+| F-02  | household-schema           | (foundation) Single-user household data model (cleaned)  | F-01             | FR-003         | done   |
+| F-03  | local-postgres-docker      | (foundation) Local postgres in Docker; eliminates Fly.io costs | —           | —              | done   |
 | F-04  | frontend-scaffold          | (foundation) React app with routing, components, build   | —                | —              | done   |
 | S-01  | new-user-setup             | Register, create household, create first task            | F-01, F-02, F-04 | US-01, FR-001–003 | done |
 | S-02  | basic-task-crud            | Create, view, edit, delete task with title, description, due date | F-01, F-02, F-04 | US-02, FR-006, FR-008, FR-010–013 | done |
-| S-06  | today-dashboard            | View tasks due today or overdue, sorted by due date     | S-02, F-04       | US-02, FR-014  | ready  |
+| S-06  | today-dashboard            | View tasks due today or overdue, sorted by due date     | S-02, F-04       | US-02, FR-014  | in-progress  |
 | S-07  | ai-task-generation         | (NORTH STAR) Describe household, receive AI suggestions, accept/customize | S-02, F-04 | US-03, FR-019–020 | proposed |
 | S-08  | ui-styling-updates         | UI styling is updated and refined; polished appearance   | F-04, S-01, S-02 | —              | proposed |
 
@@ -85,7 +85,7 @@ What's already in place in the codebase as of 2026-08-29 (auto-researched + user
 
 ### F-02: Household schema (cleaned)
 
-- **Outcome:** (foundation) PostgreSQL schema with users and households tables. Single-user model: each user has one household, with full ownership and isolation enforced.
+- **Outcome:** (foundation) PostgreSQL schema with users and households tables. Single-user model: each user has one household, with full ownership and isolation enforced. Multi-user tables (HouseholdMembers, HouseholdInvitations) removed.
 - **Change ID:** `household-schema`
 - **PRD refs:** FR-003, NFR (data isolation)
 - **Unlocks:** S-01 (household creation), S-02 (task persistence), S-06 (dashboard queries)
@@ -93,12 +93,12 @@ What's already in place in the codebase as of 2026-08-29 (auto-researched + user
 - **Parallel with:** F-04
 - **Blockers:** —
 - **Unknowns:** —
-- **Risk:** **CLEANUP REQUIRED.** Current schema includes HouseholdMembers and HouseholdInvitations tables (from multi-user design). These must be removed before launch. The cleanup change (see below) handles this. This foundation is marked `ready` pending cleanup completion.
-- **Status:** ready
+- **Risk:** Low — schema cleanup complete, multi-user dead code removed.
+- **Status:** done
 
 ### F-03: Local postgres docker setup
 
-- **Outcome:** (foundation) PostgreSQL runs in Docker locally for development; eliminates Fly.io hosting costs and enables free local iteration.
+- **Outcome:** (foundation) PostgreSQL runs in Docker locally for development; eliminates Fly.io hosting costs and enables free local iteration. Docker Compose configured with schema parity to production.
 - **Change ID:** `local-postgres-docker`
 - **PRD refs:** —
 - **Unlocks:** S-01 (local task persistence), S-02 (local task operations), S-06 (local dashboard queries), all downstream slices
@@ -106,8 +106,8 @@ What's already in place in the codebase as of 2026-08-29 (auto-researched + user
 - **Parallel with:** F-01, F-02, F-04
 - **Blockers:** —
 - **Unknowns:** —
-- **Risk:** Low risk — straightforward Docker Compose setup. Must retain parity with Fly.io schema for prod deployment.
-- **Status:** in-progress
+- **Risk:** Low — straightforward Docker Compose setup, schema parity verified.
+- **Status:** done
 
 ### F-04: Frontend scaffold
 
@@ -158,7 +158,7 @@ What's already in place in the codebase as of 2026-08-29 (auto-researched + user
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Low complexity. Query performance matters (must return in <500ms per NFR). Use task table's due-date index; no denormalization needed for single user. React re-render on task completion must be efficient.
-- **Status:** ready
+- **Status:** in-progress
 
 ### S-07: AI task generation (NORTH STAR)
 
@@ -208,12 +208,19 @@ What's already in place in the codebase as of 2026-08-29 (auto-researched + user
 
 3. **Dashboard grouping strategy (deferred):** If time allows post-north-star, should dashboard group tasks by category (cleaning, shopping, etc.)? Currently just sorted by due date. — Owner: product. Block: no.
 
-## Parked
+## Parked / v1.1 Work
 
-- **FR-007, S-03 (Task assignment to partner)** — Multi-user feature, explicitly deferred to v1.1. Single-user MVP has no "partner" to assign tasks to. Can re-enable once multi-user sharing lands.
-- **F-03, S-04, S-05 (Telegram bot and reminders)** — Explicitly deferred to v1.1 per PRD §Non-Goals. Web-based daily check-in is the reminder mechanism for MVP. Telegram integration follows once core product is validated.
-- **FR-009 (Recurring tasks)** — Explicitly deferred to v1.1. Users manually recreate repeating tasks until automation lands.
-- **Task categories/tags** — Deferred to v1.1. Dashboard sorts by due date only.
+### In Progress
+
+- **✅ FR-009 (Recurring tasks) / Task Enhancements v1.1** — Backend phase complete; frontend enhancements (default due date, recurrence UI) complete. Implements daily/weekly/monthly task recurrence with auto-generation on completion. See `context/changes/task-enhancements-v1-1/plan.md`.
+  - Phase 1 (Backend): Complete — RecurrenceFrequency enum, Task entity extension, RecurrenceService, complete-task auto-generation
+  - Phase 2 (Frontend): Complete — Default due date to today, recurrence toggle/frequency selector, weekday picker, recurrence badge on cards, read-only display in edit
+
+### Deferred
+
+- **FR-007, S-03 (Task assignment to partner)** — Multi-user feature, explicitly deferred. Single-user MVP has no "partner" to assign tasks to. Can re-enable once multi-user sharing lands.
+- **F-03, S-04, S-05 (Telegram bot and reminders)** — Explicitly deferred per PRD §Non-Goals. Web-based daily check-in is the reminder mechanism for MVP. Telegram integration follows once core product is validated.
+- **Task categories/tags** — Deferred. Dashboard sorts by due date only.
 - **Advanced observability** — Deferred to post-MVP. Baseline logging (stdout/stderr) only.
 - **Mobile native apps** — Web-only MVP per PRD. Responsive design covers mobile browsers.
 - **External integrations** — Google Calendar, Slack, etc. deferred per PRD §Non-Goals.
@@ -274,10 +281,14 @@ What's already in place in the codebase as of 2026-08-29 (auto-researched + user
   - ✅ Auth scaffold (F-01): Done
   - ✅ Frontend scaffold (F-04): Done
   - ✅ Basic task CRUD (S-01, S-02): Done
-  - ⏳ Household schema cleanup (F-02): Ready — plan removal of multi-user tables
-  - ⏳ Today dashboard (S-06): Ready — plan after cleanup
+  - ✅ Household schema cleanup (F-02): Done
+  - ✅ Local postgres docker (F-03): Done
+  - ⏳ Today dashboard (S-06): Ready — plan and implement
   - ⏳ AI task generation (S-07): Proposed — plan after dashboard; north star validation
+  - ✅ Task enhancements v1.1 (Recurring tasks): Done — Phase 1 & 2 complete, pending manual verification
 
 ---
 
-**Summary:** The pivot from 5-week multi-user + Telegram to 3-week single-user + AI is substantial. Most infrastructure (auth, task CRUD, frontend) is already done. The critical path is: (1) remove multi-user dead code, (2) build dashboard, (3) iterate on AI prompt engineering in week 3. Everything else is parked until v1.1. Ship the core 4 slices and measure the 70% AI acceptance rate.
+**Summary:** All foundations complete (auth, frontend, task CRUD, household schema, local postgres). Remaining MVP path: (1) build today dashboard (S-06), (2) implement AI task generation (S-07) and iterate on prompt engineering. Everything else is parked until v1.1. Ship the core 4 slices and measure the 70% AI acceptance rate.
+
+**V1.1 in progress:** Task enhancements (recurring tasks, default due date) Phase 1-2 code-complete; pending manual verification.

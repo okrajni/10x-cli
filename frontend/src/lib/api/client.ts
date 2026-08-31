@@ -45,6 +45,10 @@ export async function apiClient<T>(
 
       // Success: 2xx status
       if (response.ok) {
+        // Handle 204 No Content (empty response)
+        if (response.status === 204) {
+          return { ok: true, data: undefined as T }
+        }
         const data = await response.json()
         return { ok: true, data }
       }
