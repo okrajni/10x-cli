@@ -4,6 +4,7 @@ import com.example.doneyet.domain.*;
 import com.example.doneyet.dto.TaskDto;
 import com.example.doneyet.exception.ForbiddenException;
 import com.example.doneyet.exception.NotFoundException;
+import com.example.doneyet.exception.ValidationException;
 import com.example.doneyet.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -141,5 +142,110 @@ class TaskServiceTest {
         assertThrows(ForbiddenException.class, () ->
             taskService.createTask(householdId, request, otherUserId)
         );
+    }
+
+    @Test
+    void testCreateRecurringTask() {
+        TaskDto.CreateTaskRequest request = new TaskDto.CreateTaskRequest();
+        request.setTitle("Weekly groceries");
+        request.setCategory(TaskCategory.SHOPPING);
+        request.setDueDate(LocalDate.now().plusDays(1));
+        request.setRecurrenceFrequency(RecurrenceFrequency.WEEKLY);
+        request.setRecurrenceWeekday(1); // Monday
+
+        TaskDto.TaskResponse response = taskService.createTask(householdId, request, userId);
+
+        assertNotNull(response);
+        assertEquals(RecurrenceFrequency.WEEKLY, response.getRecurrenceFrequency());
+        assertEquals(1, response.getRecurrenceWeekday());
+        assertNull(response.getParentTaskId());
+    }
+
+    @Test
+    void testCompleteRecurringTask() {
+        // Create a recurring task
+        TaskDto.CreateTaskRequest createRequest = new TaskDto.CreateTaskRequest();
+        createRequest.setTitle("Daily standup");
+        createRequest.setCategory(TaskCategory.MAINTENANCE);
+        createRequest.setDueDate(LocalDate.of(2026, 9, 1));
+        createRequest.setRecurrenceFrequency(RecurrenceFrequency.DAILY);
+
+        TaskDto.TaskResponse created = taskService.createTask(householdId, createRequest, userId);
+        UUID taskId = created.getId();
+
+        // Complete the task - should generate next instance
+        TaskDto.TaskResponse completed = taskService.completeTask(taskId, householdId, userId);
+
+        assertTrue(completed.getCompletedAt() != null);
+        assertNotNull(completed.getId());
+
+        // Verify next instance was created
+        List<TaskDto.TaskResponse> tasks = taskService.listTasks(householdId, userId);
+        assertEquals(2, tasks.size()); // Completed task + next instance
+        assertTrue(tasks.stream().anyMatch(t ->
+            t.getTitle().equals("Daily standup") &&
+            t.getDueDate().equals(LocalDate.of(2026, 9, 2)) &&
+            t.getCompletedAt() == null
+        ));
+    }
+
+    @Test
+    void testCompleteTaskWithRecurrenceEndDate() {
+        // Create a recurring task with end date
+        TaskDto.CreateTaskRequest createRequest = new TaskDto.CreateTaskRequest();
+        createRequest.setTitle("Limited repeat");
+        createRequest.setCategory(TaskCategory.CLEANING);
+        createRequest.setDueDate(LocalDate.of(2026, 9, 1));
+        createRequest.setRecurrenceFrequency(RecurrenceFrequency.DAILY);
+        createRequest.setRecurrenceEndDate(LocalDate.of(2026, 9, 1)); // End date is today
+
+        TaskDto.TaskResponse created = taskService.createTask(householdId, createRequest, userId);
+        UUID taskId = created.getId();
+
+        // Complete the task - should NOT generate next instance (end date reached)
+        TaskDto.TaskResponse completed = taskService.completeTask(taskId, householdId, userId);
+
+        assertTrue(completed.getCompletedAt() != null);
+
+        // Verify no next instance was created (only completed task remains)
+        List<TaskDto.TaskResponse> tasks = taskService.listTasks(householdId, userId);
+        assertEquals(1, tasks.size());
+        assertTrue(tasks.get(0).getCompletedAt() != null);
+    }
+
+    @Test
+    void testValidateRecurrenceWeeklyRequiresWeekday() {
+        TaskDto.CreateTaskRequest request = new TaskDto.CreateTaskRequest();
+        request.setTitle("Invalid recurring");
+        request.setCategory(TaskCategory.CLEANING);
+        request.setDueDate(LocalDate.now().plusDays(1));
+        request.setRecurrenceFrequency(RecurrenceFrequency.WEEKLY);
+        request.setRecurrenceWeekday(null); // Missing weekday!
+
+        assertThrows(ValidationException.class, () ->
+            taskService.createTask(householdId, request, userId)
+        );
+    }
+
+    @Test
+    void testCompleteNonRecurringTask() {
+        // Create a non-recurring task
+        TaskDto.CreateTaskRequest createRequest = new TaskDto.CreateTaskRequest();
+        createRequest.setTitle("One-time task");
+        createRequest.setCategory(TaskCategory.MAINTENANCE);
+        createRequest.setDueDate(LocalDate.now());
+
+        TaskDto.TaskResponse created = taskService.createTask(householdId, createRequest, userId);
+        UUID taskId = created.getId();
+
+        // Complete the task
+        TaskDto.TaskResponse completed = taskService.completeTask(taskId, householdId, userId);
+
+        assertTrue(completed.getCompletedAt() != null);
+
+        // Verify task is still in list (just marked completed) but no new task was created
+        List<TaskDto.TaskResponse> tasks = taskService.listTasks(householdId, userId);
+        assertEquals(1, tasks.size());
+        assertTrue(tasks.get(0).getCompletedAt() != null);
     }
 }

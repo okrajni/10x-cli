@@ -86,4 +86,15 @@ public class TaskController {
         taskService.deleteTask(id, householdId, user.getId());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+    @PutMapping("/{id}/complete")
+    public ResponseEntity<TaskDto.TaskResponse> completeTask(
+            @PathVariable UUID id,
+            Authentication authentication
+    ) {
+        User user = (User) authentication.getPrincipal();
+        UUID householdId = getUserHouseholdId(user.getId());
+        TaskDto.TaskResponse response = taskService.completeTask(id, householdId, user.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }

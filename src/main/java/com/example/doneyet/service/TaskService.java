@@ -22,17 +22,21 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final HouseholdRepository householdRepository;
     private final UserRepository userRepository;
+    private final RecurrenceService recurrenceService;
 
     public TaskService(TaskRepository taskRepository, HouseholdRepository householdRepository,
-                      UserRepository userRepository) {
+                      UserRepository userRepository, RecurrenceService recurrenceService) {
         this.taskRepository = taskRepository;
         this.householdRepository = householdRepository;
         this.userRepository = userRepository;
+        this.recurrenceService = recurrenceService;
     }
 
     @Transactional
     public TaskDto.TaskResponse createTask(UUID householdId, TaskDto.CreateTaskRequest request, UUID userId) {
         validateHouseholdOwner(householdId, userId);
+
+        validateRecurrenceFields(request.getRecurrenceFrequency(), request.getRecurrenceWeekday());
 
         Household household = householdRepository.findById(householdId)
                 .orElseThrow(() -> new NotFoundException("Household not found"));
@@ -44,6 +48,9 @@ public class TaskService {
         task.setDescription(request.getDescription());
         task.setCategory(request.getCategory());
         task.setDueDate(request.getDueDate());
+        task.setRecurrenceFrequency(request.getRecurrenceFrequency());
+        task.setRecurrenceEndDate(request.getRecurrenceEndDate());
+        task.setRecurrenceWeekday(request.getRecurrenceWeekday());
 
         Task savedTask = taskRepository.save(task);
         return mapToResponse(savedTask);
@@ -71,6 +78,8 @@ public class TaskService {
     public TaskDto.TaskResponse updateTask(UUID taskId, UUID householdId, TaskDto.UpdateTaskRequest request, UUID userId) {
         validateHouseholdOwner(householdId, userId);
 
+        validateRecurrenceFields(request.getRecurrenceFrequency(), request.getRecurrenceWeekday());
+
         Task task = taskRepository.findByIdAndHouseholdId(taskId, householdId)
                 .orElseThrow(() -> new NotFoundException("Task not found"));
 
@@ -88,6 +97,15 @@ public class TaskService {
         }
         if (request.getCompletedAt() != null) {
             task.setCompletedAt(request.getCompletedAt());
+        }
+        if (request.getRecurrenceFrequency() != null) {
+            task.setRecurrenceFrequency(request.getRecurrenceFrequency());
+        }
+        if (request.getRecurrenceEndDate() != null) {
+            task.setRecurrenceEndDate(request.getRecurrenceEndDate());
+        }
+        if (request.getRecurrenceWeekday() != null) {
+            task.setRecurrenceWeekday(request.getRecurrenceWeekday());
         }
 
         Task updatedTask = taskRepository.save(task);
@@ -113,6 +131,48 @@ public class TaskService {
         }
     }
 
+    private void validateRecurrenceFields(com.example.doneyet.domain.RecurrenceFrequency frequency, Integer weekday) {
+        if (frequency == com.example.doneyet.domain.RecurrenceFrequency.WEEKLY && weekday == null) {
+            throw new ValidationException("Weekday is required for WEEKLY recurrence");
+        }
+        if (weekday != null && (weekday < 0 || weekday > 6)) {
+            throw new ValidationException("Weekday must be between 0 (Sunday) and 6 (Saturday)");
+        }
+    }
+
+    @Transactional
+    public TaskDto.TaskResponse completeTask(UUID taskId, UUID householdId, UUID userId) {
+        validateHouseholdOwner(householdId, userId);
+
+        Task task = taskRepository.findByIdAndHouseholdId(taskId, householdId)
+                .orElseThrow(() -> new NotFoundException("Task not found"));
+
+        task.setCompleted(true);
+        task.setCompletedAt(LocalDateTime.now());
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ValidationException("User not found"));
+        task.setCompletedBy(user);
+
+        Task completedTask = taskRepository.save(task);
+
+        // Generate next instance if this is a parent recurring task or an instance of one
+        Task parentTask = task; // Assume this is the parent
+        if (task.getParentTaskId() != null) {
+            // This is an instance of a recurring task, fetch the parent
+            parentTask = taskRepository.findById(task.getParentTaskId())
+                    .orElseThrow(() -> new NotFoundException("Parent task not found"));
+        }
+
+        // Generate next instance if the parent has recurrence and should continue
+        if (parentTask.getRecurrenceFrequency() != null && recurrenceService.shouldGenerateNext(completedTask)) {
+            java.time.LocalDate nextDueDate = recurrenceService.computeNextDueDate(completedTask);
+            recurrenceService.generateNextInstance(parentTask, nextDueDate, user);
+        }
+
+        return mapToResponse(completedTask);
+    }
+
     private TaskDto.TaskResponse mapToResponse(Task task) {
         return new TaskDto.TaskResponse(
                 task.getId(),
@@ -124,7 +184,11 @@ public class TaskService {
                 task.getCompletedAt(),
                 task.getDeletedAt(),
                 task.getCreatedAt(),
-                task.getUpdatedAt()
+                task.getUpdatedAt(),
+                task.getParentTaskId(),
+                task.getRecurrenceFrequency(),
+                task.getRecurrenceEndDate(),
+                task.getRecurrenceWeekday()
         );
     }
 }

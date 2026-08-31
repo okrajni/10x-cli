@@ -1,5 +1,6 @@
 package com.example.doneyet.dto;
 
+import com.example.doneyet.domain.RecurrenceFrequency;
 import com.example.doneyet.domain.TaskCategory;
 
 import java.time.LocalDate;
@@ -13,6 +14,9 @@ public class TaskDto {
         private String description;
         private TaskCategory category;
         private LocalDate dueDate;
+        private RecurrenceFrequency recurrenceFrequency;
+        private LocalDate recurrenceEndDate;
+        private Integer recurrenceWeekday;
 
         public CreateTaskRequest() {
         }
@@ -54,6 +58,30 @@ public class TaskDto {
         public void setDueDate(LocalDate dueDate) {
             this.dueDate = dueDate;
         }
+
+        public RecurrenceFrequency getRecurrenceFrequency() {
+            return recurrenceFrequency;
+        }
+
+        public void setRecurrenceFrequency(RecurrenceFrequency recurrenceFrequency) {
+            this.recurrenceFrequency = recurrenceFrequency;
+        }
+
+        public LocalDate getRecurrenceEndDate() {
+            return recurrenceEndDate;
+        }
+
+        public void setRecurrenceEndDate(LocalDate recurrenceEndDate) {
+            this.recurrenceEndDate = recurrenceEndDate;
+        }
+
+        public Integer getRecurrenceWeekday() {
+            return recurrenceWeekday;
+        }
+
+        public void setRecurrenceWeekday(Integer recurrenceWeekday) {
+            this.recurrenceWeekday = recurrenceWeekday;
+        }
     }
 
     public static class UpdateTaskRequest {
@@ -62,6 +90,9 @@ public class TaskDto {
         private TaskCategory category;
         private LocalDate dueDate;
         private LocalDateTime completedAt;
+        private RecurrenceFrequency recurrenceFrequency;
+        private LocalDate recurrenceEndDate;
+        private Integer recurrenceWeekday;
 
         public UpdateTaskRequest() {
         }
@@ -105,6 +136,30 @@ public class TaskDto {
         public void setCompletedAt(LocalDateTime completedAt) {
             this.completedAt = completedAt;
         }
+
+        public RecurrenceFrequency getRecurrenceFrequency() {
+            return recurrenceFrequency;
+        }
+
+        public void setRecurrenceFrequency(RecurrenceFrequency recurrenceFrequency) {
+            this.recurrenceFrequency = recurrenceFrequency;
+        }
+
+        public LocalDate getRecurrenceEndDate() {
+            return recurrenceEndDate;
+        }
+
+        public void setRecurrenceEndDate(LocalDate recurrenceEndDate) {
+            this.recurrenceEndDate = recurrenceEndDate;
+        }
+
+        public Integer getRecurrenceWeekday() {
+            return recurrenceWeekday;
+        }
+
+        public void setRecurrenceWeekday(Integer recurrenceWeekday) {
+            this.recurrenceWeekday = recurrenceWeekday;
+        }
     }
 
     public static class TaskResponse {
@@ -118,11 +173,15 @@ public class TaskDto {
         private LocalDateTime deletedAt;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
+        private UUID parentTaskId;
+        private RecurrenceFrequency recurrenceFrequency;
+        private LocalDate recurrenceEndDate;
+        private Integer recurrenceWeekday;
 
         public TaskResponse() {
         }
 
-        public TaskResponse(UUID id, UUID householdId, String title, String description, TaskCategory category, LocalDate dueDate, LocalDateTime completedAt, LocalDateTime deletedAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        public TaskResponse(UUID id, UUID householdId, String title, String description, TaskCategory category, LocalDate dueDate, LocalDateTime completedAt, LocalDateTime deletedAt, LocalDateTime createdAt, LocalDateTime updatedAt, UUID parentTaskId, RecurrenceFrequency recurrenceFrequency, LocalDate recurrenceEndDate, Integer recurrenceWeekday) {
             this.id = id;
             this.householdId = householdId;
             this.title = title;
@@ -133,6 +192,10 @@ public class TaskDto {
             this.deletedAt = deletedAt;
             this.createdAt = createdAt;
             this.updatedAt = updatedAt;
+            this.parentTaskId = parentTaskId;
+            this.recurrenceFrequency = recurrenceFrequency;
+            this.recurrenceEndDate = recurrenceEndDate;
+            this.recurrenceWeekday = recurrenceWeekday;
         }
 
         public UUID getId() {
@@ -213,6 +276,38 @@ public class TaskDto {
 
         public void setUpdatedAt(LocalDateTime updatedAt) {
             this.updatedAt = updatedAt;
+        }
+
+        public UUID getParentTaskId() {
+            return parentTaskId;
+        }
+
+        public void setParentTaskId(UUID parentTaskId) {
+            this.parentTaskId = parentTaskId;
+        }
+
+        public RecurrenceFrequency getRecurrenceFrequency() {
+            return recurrenceFrequency;
+        }
+
+        public void setRecurrenceFrequency(RecurrenceFrequency recurrenceFrequency) {
+            this.recurrenceFrequency = recurrenceFrequency;
+        }
+
+        public LocalDate getRecurrenceEndDate() {
+            return recurrenceEndDate;
+        }
+
+        public void setRecurrenceEndDate(LocalDate recurrenceEndDate) {
+            this.recurrenceEndDate = recurrenceEndDate;
+        }
+
+        public Integer getRecurrenceWeekday() {
+            return recurrenceWeekday;
+        }
+
+        public void setRecurrenceWeekday(Integer recurrenceWeekday) {
+            this.recurrenceWeekday = recurrenceWeekday;
         }
     }
 }

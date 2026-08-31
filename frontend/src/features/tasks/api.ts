@@ -13,6 +13,10 @@ export interface Task {
   deletedAt?: string
   createdAt: string
   updatedAt: string
+  parentTaskId?: string
+  recurrenceFrequency?: string
+  recurrenceWeekday?: number
+  recurrenceEndDate?: string
 }
 
 export interface CreateTaskRequest {
@@ -20,6 +24,9 @@ export interface CreateTaskRequest {
   description?: string
   category: TaskCategory
   dueDate: string
+  recurrenceFrequency?: string
+  recurrenceWeekday?: number
+  recurrenceEndDate?: string
 }
 
 export interface UpdateTaskRequest {
@@ -28,6 +35,9 @@ export interface UpdateTaskRequest {
   category?: TaskCategory
   dueDate?: string
   completedAt?: string
+  recurrenceFrequency?: string
+  recurrenceWeekday?: number
+  recurrenceEndDate?: string
 }
 
 export async function createTask(request: CreateTaskRequest): Promise<ApiResult<Task>> {

@@ -424,20 +424,20 @@ Add responsive mobile layout, visual indicators for overdue tasks (styling), imp
 
 #### Automated
 
-- [x] 1.1 Component compiles without errors (npm run typecheck)
-- [x] 1.2 No linting issues (npm run lint)
-- [x] 1.3 DashboardPage layout unchanged
+- [x] 1.1 Component compiles without errors (npm run typecheck) — 5a1f1b2
+- [x] 1.2 No linting issues (npm run lint) — 5a1f1b2
+- [x] 1.3 DashboardPage layout unchanged — 5a1f1b2
 
 #### Manual
 
-- [x] 1.4 TodayDashboardContainer displays on dashboard
-- [x] 1.5 Today's tasks filter and display correctly
-- [x] 1.6 Overdue tasks filter and display correctly
-- [x] 1.7 Loading spinner shows during fetch
-- [x] 1.8 Error state displays on API failure
-- [x] 1.9 Empty state shows when no tasks match filter
-- [x] 1.10 Household switching updates task list
-- [x] 1.11 Refresh button exists and is clickable
+- [x] 1.4 TodayDashboardContainer displays on dashboard — 5a1f1b2
+- [x] 1.5 Today's tasks filter and display correctly — 5a1f1b2
+- [x] 1.6 Overdue tasks filter and display correctly — 5a1f1b2
+- [x] 1.7 Loading spinner shows during fetch — 5a1f1b2
+- [x] 1.8 Error state displays on API failure — 5a1f1b2
+- [x] 1.9 Empty state shows when no tasks match filter — 5a1f1b2
+- [x] 1.10 Household switching updates task list — 5a1f1b2
+- [x] 1.11 Refresh button exists and is clickable — 5a1f1b2
 
 ### Phase 2: User Actions & Interactions
 

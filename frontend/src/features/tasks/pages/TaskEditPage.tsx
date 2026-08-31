@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Button, Input } from '@shared/components'
 import { getTask, updateTask, Task, UpdateTaskRequest, TaskCategory } from '../api'
 import { categoryLabel, CATEGORIES } from '../utils/categoryUtils'
+import { formatRecurrence } from '../utils/recurrenceUtils'
 import { useAuth } from '@features/auth/context/AuthContext'
 
 interface FormErrors {
@@ -228,6 +229,19 @@ export default function TaskEditPage() {
               />
               {errors.dueDate && <p className="mt-1 text-sm text-red-600">{errors.dueDate}</p>}
             </div>
+
+            {/* Recurrence Display */}
+            {task?.recurrenceFrequency && (
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Recurrence
+                </label>
+                <p className="text-sm text-gray-700">
+                  {formatRecurrence(task.recurrenceFrequency, task.recurrenceWeekday, task.recurrenceEndDate)}
+                </p>
+                <p className="text-xs text-gray-500 mt-2">(Recurrence is read-only in this version)</p>
+              </div>
+            )}
 
             {/* Submit Button */}
             <div className="flex gap-3 pt-4">

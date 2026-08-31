@@ -12,7 +12,9 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "tasks", indexes = {
-        @Index(name = "idx_household_id_deleted_at", columnList = "household_id,deleted_at")
+        @Index(name = "idx_household_id_deleted_at", columnList = "household_id,deleted_at"),
+        @Index(name = "idx_tasks_parent_task_id", columnList = "parent_task_id"),
+        @Index(name = "idx_tasks_parent_completed", columnList = "parent_task_id,completed")
 })
 public class Task {
     @Id
@@ -54,6 +56,19 @@ public class Task {
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+
+    @Column(name = "parent_task_id")
+    private UUID parentTaskId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "recurrence_frequency")
+    private RecurrenceFrequency recurrenceFrequency;
+
+    @Column(name = "recurrence_end_date")
+    private LocalDate recurrenceEndDate;
+
+    @Column(name = "recurrence_weekday")
+    private Integer recurrenceWeekday;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
@@ -174,6 +189,38 @@ public class Task {
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
+    }
+
+    public UUID getParentTaskId() {
+        return parentTaskId;
+    }
+
+    public void setParentTaskId(UUID parentTaskId) {
+        this.parentTaskId = parentTaskId;
+    }
+
+    public RecurrenceFrequency getRecurrenceFrequency() {
+        return recurrenceFrequency;
+    }
+
+    public void setRecurrenceFrequency(RecurrenceFrequency recurrenceFrequency) {
+        this.recurrenceFrequency = recurrenceFrequency;
+    }
+
+    public LocalDate getRecurrenceEndDate() {
+        return recurrenceEndDate;
+    }
+
+    public void setRecurrenceEndDate(LocalDate recurrenceEndDate) {
+        this.recurrenceEndDate = recurrenceEndDate;
+    }
+
+    public Integer getRecurrenceWeekday() {
+        return recurrenceWeekday;
+    }
+
+    public void setRecurrenceWeekday(Integer recurrenceWeekday) {
+        this.recurrenceWeekday = recurrenceWeekday;
     }
 
     @Override

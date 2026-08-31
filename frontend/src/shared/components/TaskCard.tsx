@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import { Task } from '@features/tasks/api'
 import { categoryColor, categoryLabel } from '@features/tasks/utils/categoryUtils'
+import { formatRecurrence } from '@features/tasks/utils/recurrenceUtils'
 import { Button } from './Button'
 
 interface TaskCardProps {
@@ -45,11 +46,16 @@ export function TaskCard({
         <p className="text-sm text-gray-600 mb-3 line-clamp-2">{task.description}</p>
       )}
 
-      {/* Due Date */}
-      <div className="flex gap-4 text-sm text-gray-500 mb-4">
+      {/* Due Date & Recurrence */}
+      <div className="flex gap-4 text-sm text-gray-500 mb-4 items-center">
         <span className={clsx(isOverdue && 'text-red-600 font-medium')}>
           {dueDate.toLocaleDateString()}
         </span>
+        {task.recurrenceFrequency && (
+          <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs font-medium">
+            {formatRecurrence(task.recurrenceFrequency, task.recurrenceWeekday, task.recurrenceEndDate)}
+          </span>
+        )}
       </div>
 
       {/* Action Buttons */}
