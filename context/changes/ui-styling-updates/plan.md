@@ -638,32 +638,32 @@ No data migration needed — this is a purely visual change with no impact on da
 
 #### Automated
 
-- [x] 1.1 TypeScript type checking passes
-- [x] 1.2 Linting passes
-- [x] 1.3 Build succeeds
+- [x] 1.1 TypeScript type checking passes — 8f61098
+- [x] 1.2 Linting passes — 8f61098
+- [x] 1.3 Build succeeds — 8f61098
 
 #### Manual
 
-- [x] 1.4 New colors accessible via Tailwind utilities
-- [x] 1.5 Google Fonts Playfair Display loads in browser
-- [x] 1.6 New shadow utilities available in editor
-- [x] 1.7 Existing Tailwind utilities still work
+- [x] 1.4 New colors accessible via Tailwind utilities — 8f61098
+- [x] 1.5 Google Fonts Playfair Display loads in browser — 8f61098
+- [x] 1.6 New shadow utilities available in editor — 8f61098
+- [x] 1.7 Existing Tailwind utilities still work — 8f61098
 
 ### Phase 2: Typography & Font Integration
 
 #### Automated
 
-- [ ] 2.1 TypeScript type checking passes
-- [ ] 2.2 Linting passes
-- [ ] 2.3 Build succeeds
-- [ ] 2.4 No console warnings about missing fonts
+- [x] 2.1 TypeScript type checking passes
+- [x] 2.2 Linting passes
+- [x] 2.3 Build succeeds
+- [x] 2.4 No console warnings about missing fonts
 
 #### Manual
 
-- [ ] 2.5 All h1/h2/h3 display in Playfair Display serif
-- [ ] 2.6 Body text remains sans-serif
-- [ ] 2.7 Font loads within 1-2 seconds
-- [ ] 2.8 Headings are readable and not distorted
+- [x] 2.5 All h1/h2/h3 display in Playfair Display serif
+- [x] 2.6 Body text remains sans-serif
+- [x] 2.7 Font loads within 1-2 seconds
+- [x] 2.8 Headings are readable and not distorted
 
 ### Phase 3: Color Palette Swap (Core Components)
 
