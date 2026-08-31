@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button, Input } from '@shared/components'
 import { createTask, CreateTaskRequest, TaskCategory } from '../api'
@@ -15,7 +15,7 @@ interface FormErrors {
 
 export default function TaskCreatePage() {
   const navigate = useNavigate()
-  const { currentHousehold, user } = useAuth()
+  useAuth()
   const [formData, setFormData] = useState<CreateTaskRequest>({
     title: '',
     description: '',
@@ -26,12 +26,6 @@ export default function TaskCreatePage() {
   const [errors, setErrors] = useState<FormErrors>({})
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
-
-  useEffect(() => {
-    if (!formData.dueDate) {
-      setFormData((prev) => ({ ...prev, dueDate: getTodayDate() }))
-    }
-  }, [])
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {}

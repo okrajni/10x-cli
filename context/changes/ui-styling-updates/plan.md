@@ -638,16 +638,16 @@ No data migration needed — this is a purely visual change with no impact on da
 
 #### Automated
 
-- [ ] 1.1 TypeScript type checking passes
-- [ ] 1.2 Linting passes
-- [ ] 1.3 Build succeeds
+- [x] 1.1 TypeScript type checking passes
+- [x] 1.2 Linting passes
+- [x] 1.3 Build succeeds
 
 #### Manual
 
-- [ ] 1.4 New colors accessible via Tailwind utilities
-- [ ] 1.5 Google Fonts Playfair Display loads in browser
-- [ ] 1.6 New shadow utilities available in editor
-- [ ] 1.7 Existing Tailwind utilities still work
+- [x] 1.4 New colors accessible via Tailwind utilities
+- [x] 1.5 Google Fonts Playfair Display loads in browser
+- [x] 1.6 New shadow utilities available in editor
+- [x] 1.7 Existing Tailwind utilities still work
 
 ### Phase 2: Typography & Font Integration
 

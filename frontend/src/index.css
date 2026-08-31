@@ -1,5 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800;900&display=swap');
+
+@layer base {
+  h1, h2, h3 {
+    @apply font-serif font-semibold;
+  }
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Global reset / default styles can go here if needed */

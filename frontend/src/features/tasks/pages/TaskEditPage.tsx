@@ -15,7 +15,7 @@ interface FormErrors {
 export default function TaskEditPage() {
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
-  const { currentHousehold } = useAuth()
+  useAuth()
   const [task, setTask] = useState<Task | null>(null)
   const [formData, setFormData] = useState<UpdateTaskRequest>({})
   const [errors, setErrors] = useState<FormErrors>({})
@@ -52,7 +52,7 @@ export default function TaskEditPage() {
     } finally {
       setIsLoading(false)
     }
-  }, [id, currentHousehold])
+  }, [id])
 
   useEffect(() => {
     fetchTask()

@@ -1,5 +1,4 @@
 import { apiClient, ApiResult } from '@lib/api/client'
-import { User } from './types'
 
 export interface LoginRequest {
   email: string

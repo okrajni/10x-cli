@@ -45,8 +45,8 @@ export default function TodayDashboardContainer() {
     return tasks
       .filter((t) => {
         if (t.completedAt || t.deletedAt) return false
-        const dueStr = t.dueDate.split('T')[0]
-        return dueStr <= todayStr
+        const dueStr = t.dueDate?.split('T')[0]
+        return dueStr && dueStr <= (todayStr ?? '')
       })
       .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
   }

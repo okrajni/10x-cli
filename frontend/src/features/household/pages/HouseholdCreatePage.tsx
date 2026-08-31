@@ -13,7 +13,7 @@ interface Household {
 
 export default function HouseholdCreatePage() {
   const navigate = useNavigate()
-  const { setCurrentHousehold, refetchHouseholds } = useAuth()
+  const { refetchHouseholds } = useAuth()
   const [name, setName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
