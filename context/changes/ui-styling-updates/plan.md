@@ -669,36 +669,36 @@ No data migration needed — this is a purely visual change with no impact on da
 
 #### Automated
 
-- [x] 3.1 TypeScript type checking passes
-- [x] 3.2 Linting passes
-- [x] 3.3 Unit tests pass
-- [x] 3.4 Build succeeds
+- [x] 3.1 TypeScript type checking passes — 8bb0f1d
+- [x] 3.2 Linting passes — 8bb0f1d
+- [x] 3.3 Unit tests pass — 8bb0f1d
+- [x] 3.4 Build succeeds — 8bb0f1d
 
 #### Manual
 
-- [x] 3.5 Button variants display with green/rose colors
-- [x] 3.6 Input focus rings are green, not blue
-- [x] 3.7 Error inputs show rose, not red
-- [x] 3.8 Dialog cards have cream backgrounds with retro shadows
-- [x] 3.9 All text is readable with sufficient contrast
+- [x] 3.5 Button variants display with green/rose colors — 8bb0f1d
+- [x] 3.6 Input focus rings are green, not blue — 8bb0f1d
+- [x] 3.7 Error inputs show rose, not red — 8bb0f1d
+- [x] 3.8 Dialog cards have cream backgrounds with retro shadows — 8bb0f1d
+- [x] 3.9 All text is readable with sufficient contrast — 8bb0f1d
 
 ### Phase 4: Color Palette Swap (Feature Components & Pages)
 
 #### Automated
 
-- [ ] 4.1 TypeScript type checking passes
-- [ ] 4.2 Linting passes
-- [ ] 4.3 Build succeeds
-- [ ] 4.4 No console errors about missing colors
+- [x] 4.1 TypeScript type checking passes
+- [x] 4.2 Linting passes
+- [x] 4.3 Build succeeds
+- [x] 4.4 No console errors about missing colors
 
 #### Manual
 
-- [ ] 4.5 All 8 pages display with new palette
-- [ ] 4.6 Dashboard shows green info panel
-- [ ] 4.7 Task cards show muted category colors
-- [ ] 4.8 All buttons and links use green/rose
-- [ ] 4.9 No blue color remnants anywhere
-- [ ] 4.10 All text readable with sufficient contrast
+- [x] 4.5 All 8 pages display with new palette
+- [x] 4.6 Dashboard shows green info panel
+- [x] 4.7 Task cards show muted category colors
+- [x] 4.8 All buttons and links use green/rose
+- [x] 4.9 No blue color remnants anywhere
+- [x] 4.10 All text readable with sufficient contrast
 
 ### Phase 5: Retro Visual Polish
 

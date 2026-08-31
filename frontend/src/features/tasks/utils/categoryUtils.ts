@@ -13,11 +13,11 @@ export function categoryLabel(category: TaskCategory): string {
 
 export function categoryColor(category: TaskCategory): string {
   const colors: Record<TaskCategory, string> = {
-    CLEANING: 'bg-blue-100 text-blue-800',
-    SHOPPING: 'bg-green-100 text-green-800',
-    LAUNDRY: 'bg-purple-100 text-purple-800',
-    MAINTENANCE: 'bg-orange-100 text-orange-800',
-    BILLS: 'bg-red-100 text-red-800',
+    CLEANING: 'bg-green-50 text-green-700',
+    SHOPPING: 'bg-rose-50 text-rose-200',
+    LAUNDRY: 'bg-cream-100 text-charcoal',
+    MAINTENANCE: 'bg-orange-100 text-orange-700',
+    BILLS: 'bg-rose-50 text-rose-200',
   }
   return colors[category]
 }
