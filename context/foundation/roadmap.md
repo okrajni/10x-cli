@@ -55,7 +55,7 @@ The **north star** — the smallest outcome that proves the hypothesis — is AI
 | S-02  | basic-task-crud            | Create, view, edit, delete task with title, description, due date | F-01, F-02, F-04 | US-02, FR-006, FR-008, FR-010–013 | done |
 | S-06  | today-dashboard            | View tasks due today or overdue, sorted by due date     | S-02, F-04       | US-02, FR-014  | in-progress  |
 | S-07  | ai-task-generation         | (NORTH STAR) Describe household, receive AI suggestions, accept/customize | S-02, F-04 | US-03, FR-019–020 | proposed |
-| S-08  | ui-styling-updates         | UI styling is updated and refined; polished appearance   | F-04, S-01, S-02 | —              | proposed |
+| S-08  | ui-styling-updates         | UI styling is updated and refined; polished appearance   | F-04, S-01, S-02 | —              | planning |
 
 ## Baseline
 
@@ -184,7 +184,7 @@ What's already in place in the codebase as of 2026-08-29 (auto-researched + user
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Low risk — styling refinement has no impact on core functionality. Can ship as polish pass post-north-star validation.
-- **Status:** proposed
+- **Status:** planning
 
 ## Backlog Handoff
 
