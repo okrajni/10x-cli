@@ -54,7 +54,7 @@ The **north star** — the smallest outcome that proves the hypothesis — is AI
 | S-01  | new-user-setup             | Register, create household, create first task            | F-01, F-02, F-04 | US-01, FR-001–003 | done |
 | S-02  | basic-task-crud            | Create, view, edit, delete task with title, description, due date | F-01, F-02, F-04 | US-02, FR-006, FR-008, FR-010–013 | done |
 | S-06  | today-dashboard            | View tasks due today or overdue, sorted by due date     | S-02, F-04       | US-02, FR-014  | in-progress  |
-| S-07  | ai-task-generation         | (NORTH STAR) Describe household, receive AI suggestions, accept/customize | S-02, F-04 | US-03, FR-019–020 | planning |
+| S-07  | ai-task-generation         | (NORTH STAR) Describe household, receive AI suggestions, accept/customize | S-02, F-04 | US-03, FR-019–020 | in-progress |
 | S-08  | ui-styling-updates         | UI styling is updated and refined; polished appearance   | F-04, S-01, S-02 | —              | in-progress |
 
 ## Baseline
@@ -172,7 +172,7 @@ What's already in place in the codebase as of 2026-08-29 (auto-researched + user
   - **Prompt engineering for 70% acceptance:** How to design the prompt so AI suggestions match user expectations? Requires iteration with real users. — Owner: dev team. Block: no (ship with a reasonable prompt; iterate post-MVP).
   - **Household description input format:** Free-form text input, structured form (checkboxes: kids, pets, house/apartment), or multi-turn Q&A? Affects AI input consistency and UX. — Owner: product. Block: no (start with free-form; simplify if time pressure peaks).
 - **Risk:** **This is the north star.** If AI suggestions don't feel relevant (>30% rejection), users won't adopt the app. Prompt engineering is the critical unknown. Allocate week 3 to prompt iteration and user testing. If the API rate limit or latency becomes a blocker late in the sprint, fall back to a simpler rule-based suggestion system (e.g., checklist of common household tasks) that doesn't require a real AI call.
-- **Status:** planning
+- **Status:** in-progress
 
 ### S-08: UI styling updates
 
