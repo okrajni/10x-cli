@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@features/auth/context/AuthContext'
-import { Button } from '@shared/components'
+import { Button, PageHeading, Spinner } from '@shared/components'
 import TodayDashboardContainer from '../components/TodayDashboardContainer'
 
 export default function DashboardPage() {
@@ -17,33 +17,27 @@ export default function DashboardPage() {
 
   // If households exist but currentHousehold isn't set yet, wait for it
   if (households && households.length > 0 && !currentHousehold) {
-    return (
-      <div className="flex items-center justify-center h-full min-h-96">
-        <p className="text-gray-500">Loading household data...</p>
-      </div>
-    )
+    return <Spinner label="Loading household data" />
   }
 
   // If no households at all, this will redirect via useEffect above
   if (!households || households.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-full min-h-96">
-        <p className="text-gray-500">Loading...</p>
-      </div>
-    )
+    return <Spinner />
   }
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">Welcome, {user?.email}!</h1>
+      <PageHeading title="Welcome back" subtitle={user?.email} />
 
       {currentHousehold && (
-        <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <p className="text-sm text-blue-600">
-            <strong>Household:</strong> {currentHousehold.name}
-          </p>
+        <div className="surface-inset mb-10 flex flex-wrap items-center justify-between gap-5 px-6 py-5">
+          <div>
+            <p className="label mb-1">Household</p>
+            <p className="text-sm text-accent">{currentHousehold.name}</p>
+          </div>
+
           {households.length > 1 && (
-            <div className="mt-3 flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {households.map((h) => (
                 <Button
                   key={h.householdId}
@@ -59,17 +53,18 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <TodayDashboardContainer />
 
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-2">📋 Tasks</h2>
-          <p className="text-gray-600 mb-4">Manage your household tasks.</p>
+        <div className="surface flex flex-col items-start gap-4 p-8">
+          <h2 className="text-lg font-semibold text-accent">Tasks</h2>
+          <p className="flex-1 text-sm font-light text-accent/70">
+            Browse, edit and complete every task in your household.
+          </p>
           <Button onClick={() => navigate('/task')} size="sm">
             Go to Tasks
           </Button>
         </div>
-
       </div>
     </div>
   )

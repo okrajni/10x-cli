@@ -26,42 +26,59 @@ export function TaskCard({
   return (
     <div
       className={clsx(
-        'p-4 border rounded-md shadow-retro hover:shadow-retro-lg transition bg-cream-100 border-cream-200',
-        isCompleted && 'opacity-60',
-        isOverdue && 'border-rose-100'
+        'rounded-card border border-accent/30 bg-accent/[0.05] p-5 transition hover:border-accent/60',
+        isCompleted && 'opacity-55',
+        // Overdue is signalled by a solid hairline instead of a warning color.
+        isOverdue && 'border-accent'
       )}
     >
-      {/* Header: Title + Category Badge */}
-      <div className="flex justify-between items-start mb-2">
-        <h3 className={clsx('font-semibold text-charcoal', isCompleted && 'line-through')}>
+      {/* Title + category */}
+      <div className="mb-3 flex items-start justify-between gap-4">
+        <h3
+          className={clsx(
+            'font-serif text-base font-semibold text-accent',
+            isCompleted && 'line-through decoration-accent/60'
+          )}
+        >
           {task.title}
         </h3>
-        <span className={clsx('text-xs px-2 py-1 rounded-full font-medium', categoryColor(task.category))}>
+
+        <span
+          className={clsx(
+            'shrink-0 rounded-pill border px-3 py-0.5 text-[0.65rem] font-medium uppercase tracking-label',
+            categoryColor(task.category)
+          )}
+        >
           {categoryLabel(task.category)}
         </span>
       </div>
 
-      {/* Description */}
       {task.description && (
-        <p className="text-sm text-charcoal mb-3 line-clamp-2">{task.description}</p>
+        <p className="mb-4 line-clamp-2 text-sm font-light text-accent/75">{task.description}</p>
       )}
 
-      {/* Due Date & Recurrence */}
-      <div className="flex gap-4 text-sm text-charcoal mb-4 items-center">
-        <span className={clsx(isOverdue && 'text-rose-200 font-medium')}>
+      {/* Due date + recurrence */}
+      <div className="mb-5 flex flex-wrap items-center gap-3 text-xs">
+        <span className={clsx('font-light text-accent/75', isOverdue && 'font-medium text-accent')}>
+          {isOverdue && <span aria-hidden="true">! </span>}
           {dueDate.toLocaleDateString()}
         </span>
+
         {task.recurrenceFrequency && (
-          <span className="px-2 py-1 bg-cream-200 text-charcoal rounded text-xs font-medium">
-            {formatRecurrence(task.recurrenceFrequency, task.recurrenceWeekday, task.recurrenceEndDate)}
+          <span className="chip">
+            {formatRecurrence(
+              task.recurrenceFrequency,
+              task.recurrenceWeekday,
+              task.recurrenceEndDate
+            )}
           </span>
         )}
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex gap-2 justify-end">
+      {/* Actions */}
+      <div className="flex flex-wrap justify-end gap-2">
         <Button
-          variant="primary"
+          variant={isCompleted ? 'secondary' : 'primary'}
           size="sm"
           onClick={() => onComplete?.(task.id)}
           disabled={isLoading}

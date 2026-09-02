@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Button, TaskCard } from '@shared/components'
+import { Button, TaskCard, Notice, PageHeading } from '@shared/components'
 import { listTasks, Task, updateTask, deleteTask } from '../api'
 import TaskDeleteDialog from '../components/TaskDeleteDialog'
 
@@ -81,87 +81,84 @@ export default function TaskListPage() {
   const displayTasks = showCompleted ? completedTasks : activeTasks
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Tasks</h1>
-          <Button onClick={() => navigate('/task/create')}>
-            + New Task
-          </Button>
-        </div>
+    <div>
+      <PageHeading
+        title="Tasks"
+        subtitle="Everything your household is keeping track of."
+        action={<Button onClick={() => navigate('/task/create')}>+ New Task</Button>}
+      />
 
-        {/* Error Message */}
-        {error && (
-          <div className="mb-4 p-4 bg-red-50 text-red-800 border border-red-200 rounded-lg">
-            {error}
-            <button
-              onClick={() => setError(null)}
-              className="ml-2 font-medium underline"
-            >
-              Dismiss
-            </button>
-          </div>
-        )}
+      {error && (
+        <Notice tone="error" className="mb-6" onDismiss={() => setError(null)}>
+          {error}
+        </Notice>
+      )}
 
-        {/* Toggle for Completed Tasks */}
-        <div className="mb-6 flex items-center gap-4">
-          <button
-            onClick={() => setShowCompleted(!showCompleted)}
-            className="text-sm font-medium text-blue-600 hover:text-blue-700"
-          >
-            {showCompleted
-              ? `← Back to Active (${activeTasks.length})`
-              : `Show Completed (${completedTasks.length})`}
-          </button>
-        </div>
-
-        {/* Loading State */}
-        {isLoading && (
-          <div className="text-center py-12">
-            <p className="text-gray-500">Loading tasks...</p>
-          </div>
-        )}
-
-        {/* Task List */}
-        {!isLoading && (
-          <>
-            {displayTasks.length === 0 ? (
-              <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
-                <p className="text-gray-500 mb-4">
-                  {showCompleted ? 'No completed tasks yet' : 'No active tasks'}
-                </p>
-                {!showCompleted && (
-                  <Button onClick={() => navigate('/task/create')}>
-                    Create Your First Task
-                  </Button>
-                )}
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {displayTasks
-                  .sort(
-                    (a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
-                  )
-                  .map((task) => (
-                    <TaskCard
-                      key={task.id}
-                      task={task}
-                      onComplete={() => handleComplete(task.id)}
-                      onEdit={() => navigate(`/task/${task.id}/edit`)}
-                      onDelete={() =>
-                        setDeleteDialog({
-                          taskId: task.id,
-                          taskTitle: task.title,
-                        })
-                      }
-                    />
-                  ))}
-              </div>
-            )}
-          </>
-        )}
+      {/* Active / completed switch — pill segmented control */}
+      <div className="mb-8 inline-flex rounded-pill border border-accent/40 p-1">
+        <button
+          onClick={() => setShowCompleted(false)}
+          aria-pressed={!showCompleted}
+          className={
+            !showCompleted
+              ? 'rounded-pill bg-accent px-5 py-1.5 text-xs font-medium text-canvas transition'
+              : 'rounded-pill px-5 py-1.5 text-xs font-light text-accent transition hover:bg-accent/10'
+          }
+        >
+          Active ({activeTasks.length})
+        </button>
+        <button
+          onClick={() => setShowCompleted(true)}
+          aria-pressed={showCompleted}
+          className={
+            showCompleted
+              ? 'rounded-pill bg-accent px-5 py-1.5 text-xs font-medium text-canvas transition'
+              : 'rounded-pill px-5 py-1.5 text-xs font-light text-accent transition hover:bg-accent/10'
+          }
+        >
+          Completed ({completedTasks.length})
+        </button>
       </div>
+
+      {isLoading && (
+        <p className="py-16 text-center text-xs font-light uppercase tracking-label text-accent/70">
+          Loading tasks
+        </p>
+      )}
+
+      {!isLoading && (
+        <>
+          {displayTasks.length === 0 ? (
+            <div className="surface space-y-5 py-16 text-center">
+              <p className="text-sm font-light text-accent/75">
+                {showCompleted ? 'No completed tasks yet.' : 'No active tasks.'}
+              </p>
+              {!showCompleted && (
+                <Button onClick={() => navigate('/task/create')}>Create Your First Task</Button>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {displayTasks
+                .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
+                .map((task) => (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    onComplete={() => handleComplete(task.id)}
+                    onEdit={() => navigate(`/task/${task.id}/edit`)}
+                    onDelete={() =>
+                      setDeleteDialog({
+                        taskId: task.id,
+                        taskTitle: task.title,
+                      })
+                    }
+                  />
+                ))}
+            </div>
+          )}
+        </>
+      )}
 
       {/* Delete Dialog */}
       {deleteDialog && (

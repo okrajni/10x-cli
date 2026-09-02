@@ -25,26 +25,19 @@ export default function TaskDeleteDialog({
 
   return (
     <Dialog open={true} onOpenChange={(open) => !open && onCancel()} title="Delete Task">
-      <div className="space-y-4">
-        <p className="text-gray-600">
-          Are you sure you want to delete <span className="font-semibold">&quot;{taskTitle}&quot;</span>?
-          This action can be recovered later.
+      <div className="space-y-8">
+        <p className="text-sm font-light text-accent/85">
+          Are you sure you want to delete{' '}
+          <span className="font-medium text-accent">&quot;{taskTitle}&quot;</span>? This action can
+          be recovered later.
         </p>
 
-        <div className="flex gap-3 justify-end pt-4">
-          <Button
-            variant="secondary"
-            onClick={onCancel}
-            disabled={isDeleting}
-          >
+        <div className="flex justify-end gap-3">
+          <Button variant="secondary" onClick={onCancel} disabled={isDeleting}>
             Cancel
           </Button>
-          <Button
-            variant="danger"
-            onClick={handleConfirm}
-            disabled={isDeleting}
-          >
-            {isDeleting ? 'Deleting...' : 'Delete'}
+          <Button variant="danger" onClick={handleConfirm} disabled={isDeleting}>
+            {isDeleting ? 'Deleting…' : 'Delete'}
           </Button>
         </div>
       </div>

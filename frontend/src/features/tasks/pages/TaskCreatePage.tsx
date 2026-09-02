@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Button, Input } from '@shared/components'
+import clsx from 'clsx'
+import { Button, Input, Notice, PageHeading } from '@shared/components'
 import { createTask, CreateTaskRequest, TaskCategory } from '../api'
 import { categoryLabel, CATEGORIES } from '../utils/categoryUtils'
 import { getTodayDate, FREQUENCY_OPTIONS } from '../utils/recurrenceUtils'
@@ -42,7 +43,11 @@ export default function TaskCreatePage() {
       newErrors.dueDate = 'Due date is required'
     }
 
-    if (hasRecurrence && formData.recurrenceFrequency === 'WEEKLY' && formData.recurrenceWeekday === undefined) {
+    if (
+      hasRecurrence &&
+      formData.recurrenceFrequency === 'WEEKLY' &&
+      formData.recurrenceWeekday === undefined
+    ) {
       newErrors.recurrenceWeekday = 'Weekday is required for weekly recurrence'
     }
 
@@ -71,7 +76,7 @@ export default function TaskCreatePage() {
       const result = await createTask(submitData)
 
       if (result.ok) {
-        setMessage({ type: 'success', text: 'Task created successfully!' })
+        setMessage({ type: 'success', text: 'Task created successfully.' })
         setFormData({
           title: '',
           description: '',
@@ -97,240 +102,209 @@ export default function TaskCreatePage() {
     }
   }
 
-  const isFormValid =
-    formData.title.trim() && formData.category && formData.dueDate && !isLoading
+  const isFormValid = formData.title.trim() && formData.category && formData.dueDate && !isLoading
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-6">Create New Task</h1>
+    <div className="mx-auto max-w-2xl">
+      <PageHeading title="Create New Task" subtitle="Add something for the household to do." />
 
-          {message && (
-            <div
-              className={clsx(
-                'mb-4 p-4 rounded-lg',
-                message.type === 'success'
-                  ? 'bg-green-50 text-green-800 border border-green-200'
-                  : 'bg-red-50 text-red-800 border border-red-200'
-              )}
+      <div className="surface p-8 sm:p-10">
+        {message && (
+          <Notice tone={message.type} className="mb-8">
+            {message.text}
+          </Notice>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Title */}
+          <Input
+            id="title"
+            label="Task Title *"
+            type="text"
+            value={formData.title}
+            onChange={(e) => {
+              setFormData({ ...formData, title: e.target.value })
+              if (errors.title) setErrors({ ...errors, title: undefined })
+            }}
+            placeholder="e.g., Buy groceries, Clean kitchen"
+            disabled={isLoading}
+            error={errors.title}
+          />
+
+          {/* Description */}
+          <div>
+            <label htmlFor="description" className="label">
+              Description (optional)
+            </label>
+            <textarea
+              id="description"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              placeholder="Add details about this task…"
+              disabled={isLoading}
+              rows={3}
+              className="field-multiline"
+            />
+          </div>
+
+          {/* Category */}
+          <div>
+            <label htmlFor="category" className="label">
+              Category *
+            </label>
+            <select
+              id="category"
+              value={formData.category}
+              onChange={(e) => {
+                setFormData({ ...formData, category: e.target.value as TaskCategory })
+                if (errors.category) setErrors({ ...errors, category: undefined })
+              }}
+              disabled={isLoading}
+              className={clsx('field', errors.category && 'field-invalid')}
             >
-              {message.text}
+              {CATEGORIES.map((cat) => (
+                <option key={cat} value={cat}>
+                  {categoryLabel(cat)}
+                </option>
+              ))}
+            </select>
+            {errors.category && (
+              <p className="mt-2 pl-1 text-xs font-medium text-accent">! {errors.category}</p>
+            )}
+          </div>
+
+          {/* Due Date */}
+          <Input
+            id="dueDate"
+            label="Due Date *"
+            type="date"
+            value={formData.dueDate}
+            onChange={(e) => {
+              setFormData({ ...formData, dueDate: e.target.value })
+              if (errors.dueDate) setErrors({ ...errors, dueDate: undefined })
+            }}
+            disabled={isLoading}
+            error={errors.dueDate}
+          />
+
+          {/* Recurrence toggle */}
+          <label className="flex cursor-pointer items-center gap-3">
+            <input
+              type="checkbox"
+              checked={hasRecurrence}
+              onChange={(e) => {
+                setHasRecurrence(e.target.checked)
+                if (!e.target.checked) {
+                  setFormData({
+                    ...formData,
+                    recurrenceFrequency: undefined,
+                    recurrenceWeekday: undefined,
+                    recurrenceEndDate: undefined,
+                  })
+                }
+              }}
+              disabled={isLoading}
+              className="control-check"
+            />
+            <span className="text-sm text-accent">Repeat this task</span>
+          </label>
+
+          {hasRecurrence && (
+            <div className="surface-inset space-y-8 p-6">
+              {/* Frequency */}
+              <div>
+                <p className="label">Frequency *</p>
+                <div className="space-y-3">
+                  {FREQUENCY_OPTIONS.map((option) => (
+                    <label
+                      key={option.value}
+                      className="flex cursor-pointer items-center gap-3 text-sm font-light text-accent"
+                    >
+                      <input
+                        type="radio"
+                        name="frequency"
+                        value={option.value}
+                        checked={formData.recurrenceFrequency === option.value}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            recurrenceFrequency: e.target.value,
+                            recurrenceWeekday: undefined,
+                          })
+                        }
+                        disabled={isLoading}
+                        className="control-radio"
+                      />
+                      {option.label}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Weekday */}
+              {formData.recurrenceFrequency === 'WEEKLY' && (
+                <div>
+                  <p className="label">Day of Week *</p>
+                  <div className="flex flex-wrap gap-2">
+                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => setFormData({ ...formData, recurrenceWeekday: index })}
+                        disabled={isLoading}
+                        className={clsx(
+                          'rounded-pill border px-4 py-1.5 text-xs transition',
+                          formData.recurrenceWeekday === index
+                            ? 'border-accent bg-accent font-medium text-canvas'
+                            : 'border-accent/40 font-light text-accent hover:bg-accent/10'
+                        )}
+                      >
+                        {day}
+                      </button>
+                    ))}
+                  </div>
+                  {errors.recurrenceWeekday && (
+                    <p className="mt-2 pl-1 text-xs font-medium text-accent">
+                      ! {errors.recurrenceWeekday}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* End date */}
+              <Input
+                id="recurrenceEndDate"
+                label="End Date (optional)"
+                type="date"
+                value={formData.recurrenceEndDate || ''}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    recurrenceEndDate: e.target.value || undefined,
+                  })
+                }
+                disabled={isLoading}
+                helpText="Leave empty for no end date."
+              />
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Title */}
-            <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-                Task Title *
-              </label>
-              <Input
-                id="title"
-                type="text"
-                value={formData.title}
-                onChange={(e) => {
-                  setFormData({ ...formData, title: e.target.value })
-                  if (errors.title) setErrors({ ...errors, title: undefined })
-                }}
-                placeholder="e.g., Buy groceries, Clean kitchen"
-                disabled={isLoading}
-                className={errors.title ? 'border-red-500' : ''}
-              />
-              {errors.title && <p className="mt-1 text-sm text-red-600">{errors.title}</p>}
-            </div>
-
-            {/* Description */}
-            <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-                Description (optional)
-              </label>
-              <textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Add details about this task..."
-                disabled={isLoading}
-                rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            {/* Category */}
-            <div>
-              <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
-                Category *
-              </label>
-              <select
-                id="category"
-                value={formData.category}
-                onChange={(e) => {
-                  setFormData({ ...formData, category: e.target.value as TaskCategory })
-                  if (errors.category) setErrors({ ...errors, category: undefined })
-                }}
-                disabled={isLoading}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                {CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {categoryLabel(cat)}
-                  </option>
-                ))}
-              </select>
-              {errors.category && <p className="mt-1 text-sm text-red-600">{errors.category}</p>}
-            </div>
-
-            {/* Due Date */}
-            <div>
-              <label htmlFor="dueDate" className="block text-sm font-medium text-gray-700 mb-2">
-                Due Date *
-              </label>
-              <Input
-                id="dueDate"
-                type="date"
-                value={formData.dueDate}
-                onChange={(e) => {
-                  setFormData({ ...formData, dueDate: e.target.value })
-                  if (errors.dueDate) setErrors({ ...errors, dueDate: undefined })
-                }}
-                disabled={isLoading}
-                className={errors.dueDate ? 'border-red-500' : ''}
-              />
-              {errors.dueDate && <p className="mt-1 text-sm text-red-600">{errors.dueDate}</p>}
-            </div>
-
-            {/* Recurrence Toggle */}
-            <div>
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={hasRecurrence}
-                  onChange={(e) => {
-                    setHasRecurrence(e.target.checked)
-                    if (!e.target.checked) {
-                      setFormData({
-                        ...formData,
-                        recurrenceFrequency: undefined,
-                        recurrenceWeekday: undefined,
-                        recurrenceEndDate: undefined,
-                      })
-                    }
-                  }}
-                  disabled={isLoading}
-                  className="w-4 h-4 rounded border-gray-300"
-                />
-                <span className="text-sm font-medium text-gray-700">Repeat this task?</span>
-              </label>
-            </div>
-
-            {/* Recurrence Frequency */}
-            {hasRecurrence && (
-              <>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Frequency *
-                  </label>
-                  <div className="space-y-2">
-                    {FREQUENCY_OPTIONS.map((option) => (
-                      <label key={option.value} className="flex items-center gap-2">
-                        <input
-                          type="radio"
-                          name="frequency"
-                          value={option.value}
-                          checked={formData.recurrenceFrequency === option.value}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              recurrenceFrequency: e.target.value,
-                              recurrenceWeekday: undefined,
-                            })
-                          }
-                          disabled={isLoading}
-                          className="w-4 h-4 border-gray-300"
-                        />
-                        <span className="text-sm text-gray-700">{option.label}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Weekday Selector */}
-                {formData.recurrenceFrequency === 'WEEKLY' && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">
-                      Day of Week *
-                    </label>
-                    <div className="grid grid-cols-4 gap-2">
-                      {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => (
-                        <button
-                          key={index}
-                          type="button"
-                          onClick={() => setFormData({ ...formData, recurrenceWeekday: index })}
-                          disabled={isLoading}
-                          className={clsx(
-                            'py-2 px-3 rounded-md text-sm font-medium transition-colors',
-                            formData.recurrenceWeekday === index
-                              ? 'bg-blue-500 text-white'
-                              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                          )}
-                        >
-                          {day}
-                        </button>
-                      ))}
-                    </div>
-                    {errors.recurrenceWeekday && (
-                      <p className="mt-1 text-sm text-red-600">{errors.recurrenceWeekday}</p>
-                    )}
-                  </div>
-                )}
-
-                {/* Recurrence End Date */}
-                <div>
-                  <label htmlFor="recurrenceEndDate" className="block text-sm font-medium text-gray-700 mb-2">
-                    End Date (optional)
-                  </label>
-                  <Input
-                    id="recurrenceEndDate"
-                    type="date"
-                    value={formData.recurrenceEndDate || ''}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        recurrenceEndDate: e.target.value || undefined,
-                      })
-                    }
-                    disabled={isLoading}
-                  />
-                  <p className="mt-1 text-xs text-gray-500">Leave empty for no end date</p>
-                </div>
-              </>
-            )}
-
-            {/* Submit Button */}
-            <div className="flex gap-3 pt-4">
-              <Button
-                type="submit"
-                disabled={!isFormValid}
-                className="flex-1"
-              >
-                {isLoading ? 'Creating...' : 'Create Task'}
-              </Button>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => navigate('/task')}
-                disabled={isLoading}
-              >
-                Go to List
-              </Button>
-            </div>
-          </form>
-        </div>
+          {/* Actions */}
+          <div className="divider flex flex-wrap gap-3 pt-8">
+            <Button type="submit" disabled={!isFormValid} className="flex-1">
+              {isLoading ? 'Creating…' : 'Create Task'}
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => navigate('/task')}
+              disabled={isLoading}
+            >
+              Go to List
+            </Button>
+          </div>
+        </form>
       </div>
     </div>
   )
-}
-
-function clsx(...args: (string | undefined | false)[]) {
-  return args.filter(Boolean).join(' ')
 }

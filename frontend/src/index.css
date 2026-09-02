@@ -1,11 +1,235 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@300;400;500&display=swap');
 
-@layer base {
-  h1, h2, h3 {
-    @apply font-serif font-semibold;
-  }
-}
-
+/**
+ * Rammetto One — the application wordmark typeface.
+ * SIL Open Font License 1.1 (Copyright 2011 The Rammetto Project Authors):
+ * free for commercial use, embeddable and redistributable, so unlike the
+ * previous candidates the file IS committed to the repo — no per-developer
+ * download, no CI setup, nothing to buy.
+ *
+ * Self-hosted rather than pulled from the Google Fonts CDN: one less
+ * third-party request on first paint, and no external dependency for the
+ * wordmark. See frontend/public/fonts/README.md.
+ */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+  font-family: 'Rammetto One';
+  src:
+    url('/fonts/rammetto-one.woff2') format('woff2'),
+    url('/fonts/rammetto-one.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---------------------------------------------------------------------------
+   Base layer — the canvas (#445225) and the accent (#D29C9A) are the only
+   two colors in the interface. Text defaults to accent everywhere, so any
+   element that forgets to declare a color still lands inside the palette.
+   --------------------------------------------------------------------------- */
+@layer base {
+  :root {
+    /* Makes native controls (date pickers, scrollbars, autofill) render
+       against a dark ground instead of forcing white chrome into the UI. */
+    color-scheme: dark;
+  }
+
+  /* Tailwind's ring defaults are a blue glow on a white offset. Rebind them
+     to the palette so a focus ring can never introduce an off-palette color,
+     even if a utility forgets to name one. */
+  *,
+  ::before,
+  ::after {
+    --tw-ring-color: rgb(210 156 154 / 0.7);
+    --tw-ring-offset-color: #445225;
+  }
+
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+
+  body {
+    background-color: #445225;
+    font-family: 'Inter', 'system-ui', '-apple-system', sans-serif;
+    color: #D29C9A;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: 'Playfair Display', 'Georgia', serif;
+    font-weight: 700;
+    color: #D29C9A;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+  }
+
+  a {
+    color: #D29C9A;
+  }
+
+  strong {
+    font-weight: 500;
+    color: #D29C9A;
+  }
+
+  ::placeholder {
+    color: rgb(210 156 154 / 0.45);
+  }
+
+  ::selection {
+    background-color: #d29c9a;
+    color: #445225;
+  }
+
+  /* Native selects and their options stay inside the palette. */
+  select,
+  option {
+    background-color: #445225;
+    color: #d29c9a;
+  }
+
+  /* The native date-picker glyph is white. Replace it outright with an inline
+     SVG stroked in the accent, so the color is exact rather than approximated
+     by a filter chain (which would drift whenever the palette changes). */
+  input[type='date']::-webkit-calendar-picker-indicator {
+    opacity: 0.7;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23D29C9A' stroke-width='1.75' stroke-linecap='round'%3E%3Crect x='3' y='5' width='18' height='16' rx='3'/%3E%3Cpath d='M3 10h18M8 3v4M16 3v4'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  input[type='date']::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+  }
+
+  /* Light, unobtrusive scrollbars. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(210 156 154 / 0.35) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: rgb(210 156 154 / 0.3);
+    border-radius: 9999px;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(210 156 154 / 0.5);
+  }
+
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px rgb(210 156 154 / 0.7), 0 0 0 4px #445225;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Component layer — the shared primitives every screen composes from.
+   Thin accent hairlines, generous rounding, no shadows, no gradients.
+   --------------------------------------------------------------------------- */
+@layer components {
+  /* Cards, sections, panels, larger modules. */
+  .surface {
+    @apply rounded-card border border-accent/35 bg-accent/[0.06] p-6;
+  }
+
+  /* A quieter surface for nested blocks inside a .surface. */
+  .surface-inset {
+    @apply rounded-field border border-accent/25 bg-accent/[0.04] p-4;
+  }
+
+  /* Single-line inputs and selects — pill, matching the buttons. */
+  .field {
+    @apply w-full rounded-pill border border-accent/45 bg-transparent px-5 py-2.5 text-accent
+      transition placeholder:text-accent/45 hover:border-accent/70
+      focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent
+      disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  /* Textareas keep the same language with a softer radius. */
+  .field-multiline {
+    @apply field rounded-field px-5 py-3;
+  }
+
+  .field-invalid {
+    @apply border-accent bg-accent/10;
+  }
+
+  .label {
+    @apply mb-2 block text-[0.7rem] font-medium uppercase tracking-label text-accent/75;
+  }
+
+  .hint {
+    @apply text-xs font-light text-accent/65;
+  }
+
+  /* Inline notices — errors, confirmations, empty-state notes.
+     Distinguished by weight and an icon, never by a second color. */
+  .notice {
+    @apply flex items-start gap-3 rounded-field border border-accent/45 bg-accent/10 px-4 py-3 text-sm;
+  }
+
+  .notice-strong {
+    @apply border-accent bg-accent/[0.14] font-normal;
+  }
+
+  .link {
+    @apply font-normal text-accent underline decoration-accent/40 decoration-1 underline-offset-4
+      transition hover:decoration-accent;
+  }
+
+  /* The application wordmark — using Playfair Display as display face. */
+  .wordmark {
+    font-family: 'Playfair Display', 'Georgia', serif;
+    font-weight: 700;
+    color: #D29C9A;
+    letter-spacing: 0.01em;
+    line-height: 1.3;
+  }
+
+  /* Small metadata chips. */
+  .chip {
+    @apply inline-flex items-center rounded-pill border border-accent/40 px-3 py-1 text-xs font-normal text-accent;
+  }
+
+  .divider {
+    @apply border-t border-accent/25;
+  }
+
+  /* Native checkbox / radio, restyled to the palette. */
+  .control {
+    @apply h-4 w-4 shrink-0 cursor-pointer appearance-none border border-accent/60 bg-transparent
+      transition checked:border-accent checked:bg-accent hover:border-accent
+      disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .control-check {
+    @apply control rounded-[0.3rem];
+  }
+
+  .control-radio {
+    @apply control rounded-pill;
+  }
+}

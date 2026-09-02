@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Button, Input } from '@shared/components'
+import { Button, Input, Notice } from '@shared/components'
 import { useAuth } from '../context/AuthContext'
 
 export default function RegisterPage() {
@@ -46,78 +46,58 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-lg shadow-lg p-8 space-y-6">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900">done yet?</h1>
-            <p className="text-gray-600 mt-2">Create your account</p>
-          </div>
-
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            {error && (
-              <div className="rounded-md bg-red-50 p-3">
-                <p className="text-sm text-red-800">{error}</p>
-              </div>
-            )}
-
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email
-              </label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="your@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={loading}
-                className="mt-1"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={loading}
-                className="mt-1"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                Confirm Password
-              </label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                placeholder="••••••••"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                disabled={loading}
-                className="mt-1"
-              />
-            </div>
-
-            <Button variant="primary" disabled={loading} className="w-full">
-              {loading ? 'Creating account...' : 'Sign Up'}
-            </Button>
-          </form>
-
-          <p className="text-center text-sm text-gray-600">
-            Already have an account?{' '}
-            <Link to="/login" className="text-blue-600 hover:underline font-medium">
-              Sign in
-            </Link>
-          </p>
+    <div className="flex min-h-screen items-center justify-center bg-canvas px-4 py-8">
+      <div className="w-full max-w-md space-y-6">
+        <div className="space-y-2 text-center">
+          <h1 className="wordmark text-5xl sm:text-6xl">Done yet?</h1>
+          <p className="text-xs sm:text-sm font-light text-accent/70">Create your account</p>
         </div>
+
+        <form className="surface space-y-5 p-6 sm:p-8" onSubmit={handleSubmit}>
+          {error && <Notice tone="error">{error}</Notice>}
+
+          <Input
+            id="email"
+            label="Email"
+            type="email"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={loading}
+          />
+
+          <Input
+            id="password"
+            label="Password"
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            disabled={loading}
+            helpText="At least 8 characters."
+          />
+
+          <Input
+            id="confirmPassword"
+            label="Confirm Password"
+            type="password"
+            placeholder="••••••••"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            disabled={loading}
+          />
+
+          <Button type="submit" variant="primary" disabled={loading} className="w-full">
+            {loading ? 'Creating account…' : 'Sign Up'}
+          </Button>
+        </form>
+
+        <p className="text-center text-sm font-light text-accent/75">
+          Already have an account?{' '}
+          <Link to="/login" className="link">
+            Sign in
+          </Link>
+        </p>
       </div>
     </div>
   )

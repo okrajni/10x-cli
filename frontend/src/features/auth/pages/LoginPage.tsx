@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { Input, Button } from '@shared/components'
+import { Input, Button, Notice } from '@shared/components'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -22,33 +22,28 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-      <div className="w-full max-w-md">
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white rounded-lg shadow-lg p-8 space-y-6"
-        >
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900">done yet?</h1>
-            <p className="text-gray-600 mt-2">Sign in to your account</p>
-          </div>
+    <div className="flex min-h-screen items-center justify-center bg-canvas px-4 py-8">
+      <div className="w-full max-w-md space-y-6">
+        <div className="space-y-2 text-center">
+          <h1 className="wordmark text-5xl sm:text-6xl">Done yet?</h1>
+          <p className="text-xs sm:text-sm font-light text-accent/70">Sign in to your account</p>
+        </div>
 
-          {error && (
-            <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
-              {error}
-            </div>
-          )}
+        <form onSubmit={handleSubmit} className="surface space-y-5 p-6 sm:p-8">
+          {error && <Notice tone="error">{error}</Notice>}
 
           <Input
+            id="email"
             label="Email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="test@example.com"
+            placeholder="you@example.com"
             required
           />
 
           <Input
+            id="password"
             label="Password"
             type="password"
             value={password}
@@ -57,22 +52,17 @@ export default function LoginPage() {
             required
           />
 
-          <Button
-            type="submit"
-            variant="primary"
-            disabled={isLoading}
-            className="w-full"
-          >
-            {isLoading ? 'Signing in...' : 'Sign In'}
+          <Button type="submit" variant="primary" disabled={isLoading} className="w-full">
+            {isLoading ? 'Signing in…' : 'Sign In'}
           </Button>
-
-          <p className="text-center text-sm text-gray-600">
-            Don&apos;t have an account?{' '}
-            <Link to="/register" className="text-blue-600 hover:underline font-medium">
-              Sign up
-            </Link>
-          </p>
         </form>
+
+        <p className="text-center text-sm font-light text-accent/75">
+          Don&apos;t have an account?{' '}
+          <Link to="/register" className="link">
+            Sign up
+          </Link>
+        </p>
       </div>
     </div>
   )

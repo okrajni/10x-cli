@@ -12,14 +12,15 @@ export default function Layout() {
   const showLayout = isAuthenticated && !isPublicPage
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div className="flex h-screen flex-col bg-canvas text-accent">
       {showLayout && <Header />}
 
       <div className="flex flex-1 overflow-hidden">
         {showLayout && <Sidebar />}
 
         <main className="flex-1 overflow-auto">
-          <div className="p-6">
+          {/* Generous, consistent page padding — the layout breathes. */}
+          <div className="mx-auto max-w-content px-6 py-10 sm:px-10 sm:py-14">
             <Outlet />
           </div>
         </main>

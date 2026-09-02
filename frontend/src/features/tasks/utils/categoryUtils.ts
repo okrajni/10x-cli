@@ -11,15 +11,20 @@ export function categoryLabel(category: TaskCategory): string {
   return labels[category]
 }
 
+/**
+ * Categories are told apart by how much accent fills the chip — not by hue.
+ * Every step stays inside the two-color palette (accent over canvas), which
+ * keeps the badges legible without introducing a third or fourth color.
+ */
 export function categoryColor(category: TaskCategory): string {
-  const colors: Record<TaskCategory, string> = {
-    CLEANING: 'bg-green-50 text-green-700',
-    SHOPPING: 'bg-rose-50 text-rose-200',
-    LAUNDRY: 'bg-cream-100 text-charcoal',
-    MAINTENANCE: 'bg-orange-100 text-orange-700',
-    BILLS: 'bg-rose-50 text-rose-200',
+  const fills: Record<TaskCategory, string> = {
+    CLEANING: 'border-accent/40 bg-transparent text-accent',
+    SHOPPING: 'border-accent/40 bg-accent/10 text-accent',
+    LAUNDRY: 'border-accent/50 bg-accent/20 text-accent',
+    MAINTENANCE: 'border-accent/70 bg-accent/30 text-accent',
+    BILLS: 'border-accent bg-accent text-canvas',
   }
-  return colors[category]
+  return fills[category]
 }
 
 export const CATEGORIES: TaskCategory[] = ['CLEANING', 'SHOPPING', 'LAUNDRY', 'MAINTENANCE', 'BILLS']

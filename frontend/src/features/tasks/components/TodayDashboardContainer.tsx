@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Button, TaskCard } from '@shared/components'
+import { Button, TaskCard, Notice } from '@shared/components'
 import { listTasks, Task, updateTask, deleteTask } from '../api'
 import TaskDeleteDialog from './TaskDeleteDialog'
 
@@ -96,61 +96,46 @@ export default function TodayDashboardContainer() {
   }
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow">
-      {/* Header with Title and Refresh Button */}
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">📅 Today & Overdue</h2>
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={fetchTasks}
-          disabled={isLoading}
-        >
-          {isLoading ? 'Refreshing...' : 'Refresh'}
+    <div className="surface p-8">
+      {/* Header */}
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-lg font-semibold text-accent">Today &amp; Overdue</h2>
+          {lastRefresh && (
+            <p className="hint mt-1">Last updated {lastRefresh.toLocaleTimeString()}</p>
+          )}
+        </div>
+
+        <Button variant="secondary" size="sm" onClick={fetchTasks} disabled={isLoading}>
+          {isLoading ? 'Refreshing…' : 'Refresh'}
         </Button>
       </div>
 
-      {lastRefresh && (
-        <p className="text-xs text-gray-500 mb-4">
-          Last updated: {lastRefresh.toLocaleTimeString()}
+      {error && (
+        <Notice tone="error" className="mb-6" onDismiss={() => setError(null)}>
+          {error}
+        </Notice>
+      )}
+
+      {isLoading && (
+        <p className="py-10 text-center text-xs font-light uppercase tracking-label text-accent/70">
+          Loading today&apos;s tasks
         </p>
       )}
 
-      {/* Error State */}
-      {error && (
-        <div className="mb-4 p-4 bg-red-50 text-red-800 border border-red-200 rounded-lg flex justify-between items-center">
-          <span>{error}</span>
-          <button
-            onClick={() => setError(null)}
-            className="font-medium underline hover:no-underline"
-          >
-            Dismiss
-          </button>
-        </div>
-      )}
-
-      {/* Loading State */}
-      {isLoading && (
-        <div className="text-center py-8">
-          <p className="text-gray-500">Loading today&apos;s tasks...</p>
-        </div>
-      )}
-
-      {/* Task List */}
       {!isLoading && (
         <>
           {todayAndOverdue.length === 0 ? (
-            <div className="text-center py-12 bg-gray-50 rounded-lg border border-gray-200">
-              <p className="text-gray-500 mb-4">✓ All caught up! No tasks for today.</p>
-              <Button
-                onClick={() => navigate('/task/create')}
-                size="sm"
-              >
+            <div className="surface-inset space-y-5 py-12 text-center">
+              <p className="text-sm font-light text-accent/75">
+                All caught up — no tasks for today.
+              </p>
+              <Button onClick={() => navigate('/task/create')} size="sm">
                 Create a new task
               </Button>
             </div>
           ) : (
-            <div className="max-h-96 overflow-y-auto space-y-3 pr-2">
+            <div className="max-h-96 space-y-3 overflow-y-auto pr-2">
               {todayAndOverdue.map((task) => (
                 <TaskCard
                   key={task.id}
@@ -165,7 +150,6 @@ export default function TodayDashboardContainer() {
         </>
       )}
 
-      {/* Delete Dialog */}
       {deleteDialog && (
         <TaskDeleteDialog
           taskTitle={deleteDialog.taskTitle}

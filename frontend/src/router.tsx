@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react'
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { ProtectedRoute } from '@lib/router/ProtectedRoute'
 import Layout from '@shared/Layout'
-import { Button } from '@shared/components'
+import { Button, Spinner } from '@shared/components'
 
 // Lazy-loaded pages (code-splitting)
 const LoginPage = lazy(() => import('@features/auth/pages/LoginPage'))
@@ -16,24 +16,18 @@ const HouseholdCreatePage = lazy(() => import('@features/household/pages/Househo
 
 // eslint-disable-next-line react-refresh/only-export-components
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
-  <Suspense
-    fallback={
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-gray-500">Loading...</p>
-      </div>
-    }
-  >
-    {children}
-  </Suspense>
+  <Suspense fallback={<Spinner />}>{children}</Suspense>
 )
 
 // eslint-disable-next-line react-refresh/only-export-components
 function ErrorPage() {
   return (
-    <div className="flex items-center justify-center h-screen">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-red-600 mb-2">Error</h1>
-        <p className="text-gray-600">Something went wrong. Please try again.</p>
+    <div className="flex min-h-screen items-center justify-center bg-canvas px-6">
+      <div className="surface max-w-md space-y-3 p-10 text-center">
+        <h1 className="text-3xl font-semibold text-accent">Something went wrong</h1>
+        <p className="text-sm font-light text-accent/70">
+          The page could not be loaded. Please try again.
+        </p>
       </div>
     </div>
   )
@@ -42,10 +36,12 @@ function ErrorPage() {
 // eslint-disable-next-line react-refresh/only-export-components
 function NotFoundPage() {
   return (
-    <div className="flex items-center justify-center h-screen">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold mb-2">404</h1>
-        <p className="text-gray-600 mb-4">Page not found</p>
+    <div className="flex min-h-screen items-center justify-center bg-canvas px-6">
+      <div className="surface max-w-md space-y-5 p-10 text-center">
+        <p className="font-serif text-5xl font-semibold text-accent">404</p>
+        <p className="text-sm font-light text-accent/70">
+          We couldn&apos;t find the page you were looking for.
+        </p>
         <Button variant="primary" onClick={() => (window.location.href = '/dashboard')}>
           Go Home
         </Button>

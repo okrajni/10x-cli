@@ -2,6 +2,11 @@ import { ButtonHTMLAttributes, ReactNode } from 'react'
 import clsx from 'clsx'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  /**
+   * primary   — filled accent pill, canvas-colored label (the default action)
+   * secondary — hairline accent outline, accent label (quiet action)
+   * danger    — hairline outline that fills to accent on hover (destructive)
+   */
   variant?: 'primary' | 'secondary' | 'danger'
   size?: 'sm' | 'md' | 'lg'
   children: ReactNode
@@ -14,19 +19,24 @@ export function Button({
   ...props
 }: ButtonProps) {
   const variantStyles = {
-    primary: 'bg-green-600 text-white hover:bg-green-700 active:bg-green-800 focus:ring-green-600',
-    secondary: 'bg-rose-100 text-charcoal hover:bg-rose-200 focus:ring-rose-100',
-    danger: 'bg-rose-100 text-charcoal hover:bg-rose-200 active:bg-rose-300 focus:ring-rose-100',
+    primary: 'bg-accent text-canvas border border-accent hover:bg-accent/85 active:bg-accent/75',
+    secondary:
+      'bg-transparent text-accent border border-accent/50 hover:border-accent hover:bg-accent/10 active:bg-accent/15',
+    danger:
+      'bg-transparent text-accent border border-accent/70 hover:bg-accent hover:text-canvas active:bg-accent/85',
   }
 
   const sizeStyles = {
-    sm: 'px-2 py-1 text-sm',
-    md: 'px-4 py-2 text-base',
-    lg: 'px-6 py-3 text-lg',
+    sm: 'px-4 py-1.5 text-xs',
+    md: 'px-6 py-2.5 text-sm',
+    lg: 'px-8 py-3 text-base',
   }
 
+  // Pill geometry, hairline border, no shadow — the button reads as light.
   const baseStyles =
-    'font-medium rounded-md transition focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
+    'inline-flex items-center justify-center gap-2 rounded-pill font-medium tracking-wide transition ' +
+    'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 ' +
+    'focus-visible:ring-offset-canvas disabled:opacity-40 disabled:cursor-not-allowed'
 
   return (
     <button

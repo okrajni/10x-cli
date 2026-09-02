@@ -12,14 +12,14 @@ export default function Header() {
   }
 
   return (
-    <header className="bg-cream-100 border-b border-cream-200 shadow-sm">
-      <div className="px-6 py-4 flex justify-between items-center">
-        <Link to="/" className="text-2xl font-bold text-green-600">
-          done yet?
+    <header className="border-b border-accent/30 bg-canvas">
+      <div className="flex items-center justify-between gap-6 px-6 py-5 sm:px-10">
+        <Link to="/" className="wordmark text-lg transition hover:opacity-80 sm:text-xl">
+          Done yet?
         </Link>
 
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-charcoal">{user?.email}</span>
+        <div className="flex items-center gap-5">
+          <span className="hidden text-xs font-light text-accent/75 sm:inline">{user?.email}</span>
           <Button variant="secondary" size="sm" onClick={handleLogout}>
             Logout
           </Button>
