@@ -601,17 +601,17 @@ Integrate suggestions into the today dashboard container and polish the overall 
 
 #### Automated
 
-- [x] 1.1 Backend compiles without errors
-- [x] 1.2 Unit tests for SuggestionService pass
+- [x] 1.1 Backend compiles without errors — 45f386f
+- [x] 1.2 Unit tests for SuggestionService pass — 45f386f
 
 #### Manual
 
-- [x] 1.3 Domain tasks constant defined (20–30 tasks)
-- [x] 1.4 SuggestionService scoring algorithm works correctly
-- [x] 1.5 Suggestion API endpoint returns 3–5 tasks
-- [x] 1.6 Seasonal filtering works
-- [x] 1.7 Frequency-based scoring works
-- [x] 1.8 Multiple households return different suggestions
+- [x] 1.3 Domain tasks constant defined (20–30 tasks) — 45f386f
+- [x] 1.4 SuggestionService scoring algorithm works correctly — 45f386f
+- [x] 1.5 Suggestion API endpoint returns 3–5 tasks — 45f386f
+- [x] 1.6 Seasonal filtering works — 45f386f
+- [x] 1.7 Frequency-based scoring works — 45f386f
+- [x] 1.8 Multiple households return different suggestions — 45f386f
 
 ### Phase 2: Frontend Suggestions Component & Accept Flow
 
