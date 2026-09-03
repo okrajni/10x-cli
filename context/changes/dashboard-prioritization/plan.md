@@ -1,18 +1,16 @@
-# Today Dashboard Container — Implementation Plan
+# Dashboard Prioritization & Sorting — Implementation Plan
 
-**STATUS: SUPERSEDED — See S-06A & S-06B split below**
+**Split from:** S-06 (Today's Dashboard Enhanced) — part 1 of 2
 
-This plan has been divided into two complementary tasks for reduced scope and parallel execution:
-- **S-06A (dashboard-prioritization):** Sorting logic, container structure, user's own tasks → [plan](../dashboard-prioritization/plan.md)
-- **S-06B (suggested-household-tasks):** Domain heuristics, suggestions component, integration → [plan](../suggested-household-tasks/plan.md)
+**Relationship:** This plan extracts the sorting/prioritization logic from [today-dashboard/plan.md](../today-dashboard/plan.md). Both plans implement the same `TodayDashboardContainer` component but with distinct responsibilities:
+- **dashboard-prioritization (this plan):** Sorting algorithm, container structure, user's own tasks, empty state, mobile responsiveness
+- **suggested-household-tasks:** Domain heuristics engine, suggestion component, accept/dismiss flow, integration into container
 
-Both plans work together to deliver the north-star dashboard. **Refer to the split plans for current implementation details.**
+**Implementation:** Start with dashboard-prioritization Phase 1–3, then integrate suggested-household-tasks as a new section within the container (Phase 4 of this plan becomes coordination with S-06B).
 
----
+## Overview
 
-## Overview (Original)
-
-Build a dashboard container displaying today's tasks (due today) and overdue tasks in a single merged list with visual indicators, enabling quick access to urgent/due work and faster task management from the main dashboard landing page.
+Build a dashboard container displaying today's tasks (due today) and overdue tasks in a single merged list with visual indicators and smart sorting, enabling quick access to urgent/due work from the dashboard landing page.
 
 ## Current State Analysis
 
@@ -47,6 +45,7 @@ Users land on the dashboard and immediately see:
 
 ## What We're NOT Doing
 
+- Implementing task suggestion/heuristics (see suggested-household-tasks change)
 - Changing the dashboard layout or top-level structure (container is an addition, not a redesign)
 - Adding persistent filtering or search to this container (today/overdue is fixed scope)
 - Implementing recurring task auto-generation on completion (handled by backend RecurrenceService)
@@ -63,10 +62,11 @@ Users land on the dashboard and immediately see:
 4. **Data fetching in container** — useState/useEffect pattern following TaskListPage conventions
 5. **Action callbacks** — wire complete/delete to backend via existing API, implement move-to-tomorrow as updateTask call
 6. **Date filtering logic** — simple comparison: today = dueDate equals today (ISO format), overdue = dueDate < today
+7. **Sorting strategy** — overdue first (visually top), then by due date ascending, then by priority descending
 
 ## Key Discoveries
 
-- TaskListPage (frontend/src/features/tasks/pages/TaskListPage.tsx:1-176) shows the established pattern for task lists: useState for loading/error/tasks, useEffect for fetching, toggle filtering logic, TaskCard composition
+- TaskListPage (frontend/src/features/tasks/pages/TaskListPage.tsx:1-176) shows the established pattern for task lists: useState for loading/error/tasks, toggle filtering logic, TaskCard composition
 - TaskCard (frontend/src/shared/components/TaskCard.tsx:7-13) accepts optional onComplete/onEdit/onDelete callbacks — extend with onMoveToTomorrow callback
 - API response format (frontend/src/features/tasks/api.ts:5-20) includes dueDate as ISO string; filtering requires no backend changes
 - Utility functions (frontend/src/features/tasks/utils/categoryUtils.ts) provide category label/color mappings — reuse for consistent styling
@@ -77,7 +77,22 @@ Users land on the dashboard and immediately see:
 
 **Date Comparison in JavaScript:** Task.dueDate comes from backend as ISO string (e.g., "2026-08-31"). Convert to Date object only for comparison; store original string for display. Use `new Date(dueDate).toDateString() === new Date().toDateString()` for "today" check to avoid timezone issues.
 
-**Action: Move to Tomorrow:** Reschedule task by calling `updateTask(taskId, { dueDate: tomorrow })`. Tomorrow is calculated as `new Date(today.getTime() + 86400000)` (one day in ms). Call existing updateTask API endpoint (no new backend changes needed).
+**Sorting Strategy:**
+1. Partition tasks into overdue and today buckets
+2. Sort overdue by dueDate ascending (oldest first)
+3. Sort today's tasks by priority descending (high → medium → low)
+4. Combine: [overdue sorted] + [today sorted]
+
+```javascript
+const today = new Date().toISOString().split('T')[0]  // YYYY-MM-DD
+const overdue = tasks.filter(t => t.dueDate < today && !t.completed)
+  .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+const todayOnly = tasks.filter(t => t.dueDate === today && !t.completed)
+  .sort((a, b) => (b.priority || 0) - (a.priority || 0))
+const todayAndOverdue = [...overdue, ...todayOnly]
+```
+
+**Action: Move to Tomorrow:** Reschedule task by calling `updateTask(taskId, { dueDate: tomorrow })`. Tomorrow is calculated as `new Date(new Date().getTime() + 86400000)` (one day in ms). Call existing updateTask API endpoint (no new backend changes needed).
 
 **Empty State Conditional:** Show only when `tasks.length === 0 && !isLoading && !error`. Include inline link or button to navigate to TaskCreatePage (use React Router navigate).
 
@@ -103,17 +118,22 @@ Create the TodayDashboardContainer component with task fetching logic, date filt
 - Side effect: Fetch on mount via useEffect (household context from useAuth)
 - Returns JSX with: container div, header "Today & Overdue", refresh button, loading spinner, error message, task list, empty state
 
-**Filtering logic:**
+**Filtering and Sorting logic:**
 ```
 const today = new Date()
 const todayStr = today.toISOString().split('T')[0]  // YYYY-MM-DD
-const todayAndOverdue = tasks.filter(t => {
+const overdue = tasks.filter(t => {
   const dueStr = t.dueDate.split('T')[0]
-  return dueStr <= todayStr && !t.completed
-})
-```
+  return dueStr < todayStr && !t.completed
+}).sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
 
-Sort overdue first: `todayAndOverdue.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))`
+const todayOnly = tasks.filter(t => {
+  const dueStr = t.dueDate.split('T')[0]
+  return dueStr === todayStr && !t.completed
+}).sort((a, b) => (b.priority || 0) - (a.priority || 0))
+
+const todayAndOverdue = [...overdue, ...todayOnly]
+```
 
 #### 2. Integrate Container into DashboardPage
 
@@ -145,6 +165,7 @@ Sort overdue first: `todayAndOverdue.sort((a, b) => new Date(a.dueDate) - new Da
 - TodayDashboardContainer displays on `/dashboard` page
 - Today's tasks appear in the list (tasks with dueDate = today)
 - Overdue tasks appear (tasks with dueDate < today)
+- Overdue tasks appear ABOVE today's tasks (visual ordering correct)
 - Loading spinner shows briefly during fetch
 - Error state displays if API fails (can test by offline mode)
 - Empty state shows if no tasks match filter
@@ -211,22 +232,6 @@ Implement all task actions: mark complete, edit (navigate), delete, move to tomo
 - Show loading spinner during refresh
 - Disable button while loading
 
-#### 5. Implement Quick-Add Task
-
-**File**: `frontend/src/features/tasks/components/TodayDashboardContainer.tsx` + potentially new file for quick-add form
-
-**Intent**: Allow user to add new task for today directly from the dashboard container without navigating to TaskCreatePage.
-
-**Contract**:
-- Add a "Quick Add Task" input or modal at top or bottom of task list
-- Input captures: title (required), category (optional, default to first category)
-- On submit: call `createTask({ title, category, dueDate: today, householdId })`
-- Add new task to list optimistically, restore on error
-- Clear input field after success, show brief success message
-- For MVP: simple inline input with button; modal can come later
-
-**Note**: If quick-add feels too complex for Phase 2, defer to Phase 3 and keep a "New Task" link to TaskCreatePage.
-
 ### Success Criteria
 
 #### Automated Verification
@@ -243,8 +248,6 @@ Implement all task actions: mark complete, edit (navigate), delete, move to tomo
 - Delete cancel: Dialog cancel button keeps task in list
 - Move to tomorrow: Task no longer shows in today/overdue after action (moved to future)
 - Refresh button: Clicking refresh fetches fresh data and updates list
-- Quick-add: Type task title, click add → new task appears in list with today's due date
-- Quick-add error: Show error message if title empty or API fails
 - All actions work while handling isLoading state (buttons disabled during request)
 
 ---
@@ -331,11 +334,11 @@ Add responsive mobile layout, visual indicators for overdue tasks (styling), imp
    - Verify TodayDashboardContainer appears below household selector
    - Confirm household selector still works (switch household → task list updates)
 
-2. **Today vs Overdue Filtering**
+2. **Today vs Overdue Filtering & Sorting**
    - Create a task with dueDate = today (via TaskCreatePage)
    - Verify it appears in TodayDashboardContainer
    - Create a task with dueDate = yesterday
-   - Verify it appears with overdue styling
+   - Verify it appears with overdue styling and ABOVE today's tasks
    - Create a task with dueDate = tomorrow
    - Verify it does NOT appear in container
 
@@ -365,29 +368,22 @@ Add responsive mobile layout, visual indicators for overdue tasks (styling), imp
    - Click refresh button in container
    - Verify new task appears in list
 
-7. **Quick-Add Flow**
-   - Use quick-add form to create new task
-   - Type "Test task" in title field
-   - Click add
-   - Verify task appears in container with dueDate = today
-   - (Optional: test empty title validation)
-
-8. **Empty State**
+7. **Empty State**
    - Mark all today/overdue tasks as complete
    - Verify container shows "All caught up!" empty state
    - Click "Create a new task" link
    - Verify navigated to TaskCreatePage
 
-9. **Responsive & Styling**
+8. **Responsive & Styling**
    - Resize browser to mobile width (375px)
    - Verify no horizontal scroll, container fits viewport
    - Verify overdue tasks have red styling distinct from today's tasks
 
-10. **Error Scenarios**
-    - Go offline, click refresh
-    - Verify error message appears with retry option
-    - Click retry, come back online
-    - Verify tasks reload successfully
+9. **Error Scenarios**
+   - Go offline, click refresh
+   - Verify error message appears with retry option
+   - Click retry, come back online
+   - Verify tasks reload successfully
 
 ### Edge Cases to Test
 
@@ -396,6 +392,7 @@ Add responsive mobile layout, visual indicators for overdue tasks (styling), imp
 - Task completion during refresh (quick-add one task, refresh simultaneously)
 - Household switch while loading (switch household mid-fetch)
 - Browser back/forward navigation (should preserve state on return)
+- Tasks with no priority field (default to 0 in sort)
 
 ### Notes
 
@@ -422,7 +419,6 @@ Add responsive mobile layout, visual indicators for overdue tasks (styling), imp
 - Task API: `frontend/src/features/tasks/api.ts:43-72`
 - Task type: `frontend/src/features/tasks/api.ts:5-20`
 - Utility functions: `frontend/src/features/tasks/utils/categoryUtils.ts`
-- RecurrenceUtils: `frontend/src/features/tasks/utils/recurrenceUtils.ts`
 
 ---
 
@@ -434,20 +430,21 @@ Add responsive mobile layout, visual indicators for overdue tasks (styling), imp
 
 #### Automated
 
-- [x] 1.1 Component compiles without errors (npm run typecheck) — 5a1f1b2
-- [x] 1.2 No linting issues (npm run lint) — 5a1f1b2
-- [x] 1.3 DashboardPage layout unchanged — 5a1f1b2
+- [ ] 1.1 Component compiles without errors (npm run typecheck)
+- [ ] 1.2 No linting issues (npm run lint)
+- [ ] 1.3 DashboardPage layout unchanged
 
 #### Manual
 
-- [x] 1.4 TodayDashboardContainer displays on dashboard — 5a1f1b2
-- [x] 1.5 Today's tasks filter and display correctly — 5a1f1b2
-- [x] 1.6 Overdue tasks filter and display correctly — 5a1f1b2
-- [x] 1.7 Loading spinner shows during fetch — 5a1f1b2
-- [x] 1.8 Error state displays on API failure — 5a1f1b2
-- [x] 1.9 Empty state shows when no tasks match filter — 5a1f1b2
-- [x] 1.10 Household switching updates task list — 5a1f1b2
-- [x] 1.11 Refresh button exists and is clickable — 5a1f1b2
+- [ ] 1.4 TodayDashboardContainer displays on dashboard
+- [ ] 1.5 Today's tasks filter and display correctly
+- [ ] 1.6 Overdue tasks filter and display correctly
+- [ ] 1.7 Overdue tasks appear above today's tasks
+- [ ] 1.8 Loading spinner shows during fetch
+- [ ] 1.9 Error state displays on API failure
+- [ ] 1.10 Empty state shows when no tasks match filter
+- [ ] 1.11 Household switching updates task list
+- [ ] 1.12 Refresh button exists and is clickable
 
 ### Phase 2: User Actions & Interactions
 
@@ -463,9 +460,7 @@ Add responsive mobile layout, visual indicators for overdue tasks (styling), imp
 - [ ] 2.5 Delete: confirmation dialog works, task removed on confirm
 - [ ] 2.6 Move to tomorrow: task no longer in today/overdue list
 - [ ] 2.7 Refresh button: fetches and updates list
-- [ ] 2.8 Quick-add task: new task appears with today's due date
-- [ ] 2.9 Quick-add error: shows error on empty title or API failure
-- [ ] 2.10 All actions respect loading state (buttons disabled during request)
+- [ ] 2.8 All actions respect loading state (buttons disabled during request)
 
 ### Phase 3: Polish & Edge Cases
 

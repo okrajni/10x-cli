@@ -53,7 +53,8 @@ The **north star** — the smallest outcome that proves the hypothesis — is th
 | F-04  | frontend-scaffold          | (foundation) React app with routing, components, build   | —                | —              | done   |
 | S-01  | new-user-setup             | Register, create household, create first task            | F-01, F-02, F-04 | US-01, FR-001–003 | done |
 | S-02  | basic-task-crud            | Create, view, edit, delete task with title, description, due date | F-01, F-02, F-04 | US-02, FR-006, FR-008, FR-010–013 | done |
-| S-06  | today-dashboard-enhanced   | View tasks due today/overdue + suggested household tasks, sorted by priority and due date | S-02, F-04 | US-02, FR-014 | in-progress |
+| S-06A | dashboard-prioritization   | User's tasks due today/overdue, intelligently sorted by due date and priority | S-02, F-04 | US-02, FR-014 (sorting) | ready-to-plan |
+| S-06B | suggested-household-tasks  | Suggested household tasks via domain heuristics (3–5 suggestions); user can accept or dismiss | S-02, F-04 | US-02, FR-014 (suggestions) | ready-to-plan |
 | S-08  | ui-styling-updates         | UI styling is updated and refined; polished appearance   | F-04, S-01, S-02 | —              | in-progress |
 
 ## Baseline
@@ -183,31 +184,20 @@ What's already in place in the codebase as of 2026-09-03 (auto-researched + user
 | F-04       | frontend-scaffold      | Frontend scaffold: React, routing, build setup         | no (done)             | Complete; dev server running. |
 | S-01       | new-user-setup         | New user setup: register, create household, first task | no (done)             | Complete. |
 | S-02       | basic-task-crud        | Basic task CRUD: create, view, edit, delete            | no (done)             | Complete; tested. |
-| S-06       | today-dashboard-enhanced | Today dashboard: enhanced sorting, domain-heuristic suggestions | yes (in-progress) | **NORTH STAR.** Core decision-support via smart sorting + heuristic suggestions. 1-week focus. |
-| S-08       | ui-styling-updates     | UI styling updates: colors, spacing, typography        | yes (in-progress) | Polish pass. Run in parallel with S-06. |
+| S-06A      | dashboard-prioritization | Today dashboard: smart sorting (due date, priority, overdue first) | yes (ready-to-plan) | **NORTH STAR part 1.** Core decision-support via sorting. 3–4 days. |
+| S-06B      | suggested-household-tasks | Domain-heuristic suggestions (3–5 tasks); user can accept/dismiss | yes (ready-to-plan) | **NORTH STAR part 2.** Task suggestions without AI. 4–5 days. Runs parallel with S-06A. |
+| S-08       | ui-styling-updates     | UI styling updates: colors, spacing, typography        | yes (in-progress) | Polish pass. Run in parallel with S-06A & S-06B. |
 | S-07       | ai-task-generation     | AI task generation (deferred to v1.1)                    | no (parked)       | Revisit post-launch based on heuristic validation. |
 
 ## Open Roadmap Questions
 
-1. **Domain heuristics ruleset for task suggestions (S-06):** What household tasks should the system suggest, and by what logic? Finalize this for MVP:
-   - Seasonal (HVAC filter every 6-12 months, gutter cleaning, AC maintenance, etc.)
-   - Frequency-based (laundry every 2-3 days, dishes daily/as-needed, weekly cleaning, etc.)
-   - Category-based (cleaning, maintenance, shopping, repairs, etc.)
-   - Start simple: 5-10 common tasks per category, iterate based on user feedback
-   
-   Owner: implementation (you). Block: yes (S-06). Timeline: **Decide this week.**
+**Status:** S-06 has been split into S-06A (dashboard-prioritization) and S-06B (suggested-household-tasks) to simplify scope. Both tasks resolve the blocking questions below.
 
-2. **Task prioritization and sorting in dashboard (S-06):** Finalize the sorting strategy:
-   - Sort user's own tasks: by due date, then priority
-   - Float overdue tasks to top?
-   - Suggested tasks: show below user's tasks? Interleave?
-   - Start simple: due date primary, category secondary
-   
-   Owner: implementation (you). Block: yes (S-06). Timeline: **Decide this week.**
+1. **Task prioritization and sorting in dashboard (S-06A):** ✓ **Resolved** — Sort by overdue (top) → due date (primary) → priority (secondary). Implementation plan: [dashboard-prioritization/plan.md](../changes/dashboard-prioritization/plan.md)
 
-3. **Suggestion acceptance & metrics (post-MVP):** What's the validation threshold? If users accept 50%+ of suggestions, that validates the heuristics work.
-   
-   Owner: product. Block: no (ships regardless; iteration lever post-MVP).
+2. **Domain heuristics ruleset for task suggestions (S-06B):** ✓ **Resolved** — 20–30 common household tasks with rules (seasonal, frequency-based, category-based). Implementation plan: [suggested-household-tasks/plan.md](../changes/suggested-household-tasks/plan.md)
+
+3. **Suggestion acceptance & metrics (post-MVP):** Target ≥50% acceptance rate to validate heuristics work. Block: no (ships regardless; iteration lever post-MVP).
 
 ## Parked
 
@@ -249,21 +239,34 @@ What's already in place in the codebase as of 2026-09-03 (auto-researched + user
 
 ## Current Status & Next Steps
 
-**1-week sprint to MVP** (S-06 + S-08 focus, S-07 parked):
+**1-week sprint to MVP** (S-06A + S-06B + S-08 focus, S-07 parked):
 
 **Week 1 priorities:**
-1. **S-06 (Today's Dashboard + Heuristics)** — CRITICAL PATH
-   - Finalize heuristic rules (5-10 common tasks per category)
-   - Implement smart sorting: due date primary, priority secondary
-   - Suggested tasks UI: simple list below user's own tasks
-   - Accept task action: adds to user's task list
+1. **S-06A (Dashboard Prioritization)** — CRITICAL PATH (3–4 days)
+   - Create TodayDashboardContainer component
+   - Implement smart sorting: overdue first → due date → priority
+   - Wire task actions: complete, delete, move to tomorrow, refresh
+   - Visual hierarchy: clear distinction between overdue and today's tasks
    
-2. **S-08 (UI Styling)** — PARALLEL
+2. **S-06B (Suggested Household Tasks)** — CRITICAL PATH (4–5 days, runs parallel with S-06A)
+   - Define 20–30 domain household tasks with frequencies/seasons
+   - Implement heuristics scoring engine (backend)
+   - Create suggestion API endpoint
+   - Build SuggestedTasksList component + accept/dismiss flow
+   - Analytics: log acceptance/dismissal for post-MVP validation
+   
+3. **Dashboard Integration** (both S-06A and S-06B together)
+   - Show user's sorted tasks above suggested tasks
+   - Accept suggestion → task added to user's list
+   - Clear visual separation
+   
+4. **S-08 (UI Styling)** — PARALLEL
    - Polish dashboard appearance
    - Color, spacing, typography refinement
    
-3. **Launch ready:**
-   - Domain heuristics working
+5. **Launch ready:**
+   - Smart sorting working (S-06A)
+   - Domain heuristics working (S-06B)
    - No AI complexity
    - Users see useful suggestions
 
@@ -272,9 +275,10 @@ What's already in place in the codebase as of 2026-09-03 (auto-researched + user
 - Users accept 50%+ of suggestions (heuristics are useful).
 - System responds instantly to actions (no lag).
 
-**Unknowns to resolve THIS WEEK:**
-1. Heuristic rules: What 10-20 tasks should you suggest? Which frequency/season patterns? (Open Roadmap Questions #1)
-2. Sorting strategy: Due date only, or due date + priority? Float overdue to top? (Open Roadmap Questions #2)
+**Task dependencies:**
+- S-06A and S-06B can run in parallel (different concerns)
+- S-06B depends on S-06A's container for dashboard integration
+- Both depend on S-02 (task CRUD + API) — already done
 
 **Post-launch path (v1.1):**
 - Measure heuristic effectiveness via user adoption & acceptance rate.
@@ -283,4 +287,4 @@ What's already in place in the codebase as of 2026-09-03 (auto-researched + user
 
 ---
 
-**Summary:** 1-week sprint: build S-06 (dashboard + domain heuristics) + S-08 (polish). Validate the decision-support hypothesis with simple, rule-based suggestions. Ship lean, iterate based on real user behavior. AI considered only post-launch if heuristics alone aren't enough.
+**Summary:** 1-week sprint: build S-06A (dashboard prioritization) + S-06B (domain heuristics) in parallel + S-08 (polish). Split S-06 into two focused tasks to reduce complexity per task and enable parallel work. Validate the decision-support hypothesis with simple, rule-based sorting + suggestions. Ship lean, iterate based on real user behavior. AI considered only post-launch if heuristics alone aren't enough.
