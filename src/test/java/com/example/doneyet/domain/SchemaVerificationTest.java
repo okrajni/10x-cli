@@ -67,12 +67,14 @@ class SchemaVerificationTest {
 
     @Test
     void taskCategoryEnumHasAllValues() {
-        assertEquals(5, TaskCategory.values().length);
+        assertEquals(7, TaskCategory.values().length);
         assertTrue(enumValueExists(TaskCategory.class, "CLEANING"));
         assertTrue(enumValueExists(TaskCategory.class, "SHOPPING"));
         assertTrue(enumValueExists(TaskCategory.class, "LAUNDRY"));
         assertTrue(enumValueExists(TaskCategory.class, "MAINTENANCE"));
         assertTrue(enumValueExists(TaskCategory.class, "BILLS"));
+        assertTrue(enumValueExists(TaskCategory.class, "SEASONAL"));
+        assertTrue(enumValueExists(TaskCategory.class, "ERRANDS"));
     }
 
     private <E extends Enum<E>> boolean enumValueExists(Class<E> enumClass, String name) {

@@ -27,6 +27,7 @@ public class SuggestionDto {
     }
 
     public static class SuggestedTask {
+        private String id;
         private String title;
         private String description;
         private TaskCategory category;
@@ -34,8 +35,26 @@ public class SuggestionDto {
         private RecurrenceFrequency recurrenceFrequency;
         private Integer recurrenceWeekday;
         private LocalDate recurrenceEndDate;
+        private Double score;
+        private Integer frequencyDays;
 
         public SuggestedTask() {
+        }
+
+        public SuggestedTask(String id, String title, String description, TaskCategory category,
+                           LocalDate dueDate, RecurrenceFrequency recurrenceFrequency,
+                           Integer recurrenceWeekday, LocalDate recurrenceEndDate, Double score,
+                           Integer frequencyDays) {
+            this.id = id;
+            this.title = title;
+            this.description = description;
+            this.category = category;
+            this.dueDate = dueDate;
+            this.recurrenceFrequency = recurrenceFrequency;
+            this.recurrenceWeekday = recurrenceWeekday;
+            this.recurrenceEndDate = recurrenceEndDate;
+            this.score = score;
+            this.frequencyDays = frequencyDays;
         }
 
         public SuggestedTask(String title, String description, TaskCategory category,
@@ -104,6 +123,30 @@ public class SuggestionDto {
 
         public void setRecurrenceEndDate(LocalDate recurrenceEndDate) {
             this.recurrenceEndDate = recurrenceEndDate;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public Double getScore() {
+            return score;
+        }
+
+        public void setScore(Double score) {
+            this.score = score;
+        }
+
+        public Integer getFrequencyDays() {
+            return frequencyDays;
+        }
+
+        public void setFrequencyDays(Integer frequencyDays) {
+            this.frequencyDays = frequencyDays;
         }
     }
 

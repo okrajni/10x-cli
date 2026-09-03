@@ -1,11 +1,13 @@
 package com.example.doneyet.controller;
 
+import com.example.doneyet.domain.DomainTask;
 import com.example.doneyet.domain.User;
 import com.example.doneyet.dto.SuggestionDto;
 import com.example.doneyet.exception.ValidationException;
 import com.example.doneyet.repository.HouseholdRepository;
 import com.example.doneyet.repository.TaskRepository;
 import com.example.doneyet.service.GeminiClient;
+import com.example.doneyet.service.SuggestionService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,16 +24,52 @@ public class SuggestionsController {
     private final GeminiClient geminiClient;
     private final HouseholdRepository householdRepository;
     private final TaskRepository taskRepository;
+    private final SuggestionService suggestionService;
 
     @Value("${GOOGLE_API_KEY:}")
     private String googleApiKey;
 
     public SuggestionsController(GeminiClient geminiClient,
                                HouseholdRepository householdRepository,
-                               TaskRepository taskRepository) {
+                               TaskRepository taskRepository,
+                               SuggestionService suggestionService) {
         this.geminiClient = geminiClient;
         this.householdRepository = householdRepository;
         this.taskRepository = taskRepository;
+        this.suggestionService = suggestionService;
+    }
+
+    @GetMapping("/heuristic")
+    public ResponseEntity<SuggestionDto.SuggestionsResponse> getHeuristicSuggestions(
+            Authentication authentication
+    ) {
+        try {
+            User user = (User) authentication.getPrincipal();
+            UUID householdId = getUserHouseholdId(user.getId());
+
+            List<SuggestionService.SuggestedTaskWithScore> suggestions =
+                    suggestionService.getSuggestionsWithScores(householdId);
+
+            List<SuggestionDto.SuggestedTask> suggestedTasks = suggestions.stream()
+                    .map(scored -> {
+                        SuggestionDto.SuggestedTask task = new SuggestionDto.SuggestedTask();
+                        task.setId(scored.getTask().getId());
+                        task.setTitle(scored.getTask().getTitle());
+                        task.setCategory(scored.getTask().getCategory());
+                        task.setFrequencyDays(scored.getTask().getFrequencyDays());
+                        task.setScore(scored.getScore());
+                        return task;
+                    })
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(new SuggestionDto.SuggestionsResponse(suggestedTasks));
+        } catch (ValidationException e) {
+            return ResponseEntity.badRequest()
+                    .body(new SuggestionDto.SuggestionsResponse(List.of()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new SuggestionDto.SuggestionsResponse(List.of()));
+        }
     }
 
     @PostMapping

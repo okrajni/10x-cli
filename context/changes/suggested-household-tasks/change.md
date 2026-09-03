@@ -2,12 +2,13 @@
 change_id: suggested-household-tasks
 title: Suggested Household Tasks (Domain Heuristics)
 description: Domain-specific heuristic engine suggesting 3–5 household tasks based on seasonal patterns, frequency rules, and category analysis. User can accept, customize, or dismiss suggestions.
-status: ready-to-plan
+status: implementing
 roadmap_ref: S-06 (part 2 of 2)
 prd_refs: US-02, FR-014 (suggestion component)
 depends_on: S-02 (basic-task-crud), dashboard-prioritization (for shared container/UI)
 blocked_by: none
 created: 2026-09-03
+updated: 2026-09-03
 ---
 
 # Suggested Household Tasks — Domain Heuristics

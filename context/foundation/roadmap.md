@@ -3,7 +3,7 @@ project: "done yet?"
 version: 1
 status: draft
 created: 2026-08-26
-updated: 2026-09-03
+updated: 2026-09-03 (S-06A + S-06B implementation started)
 prd_version: 1
 main_goal: speed
 top_blocker: decisions
@@ -53,8 +53,8 @@ The **north star** — the smallest outcome that proves the hypothesis — is th
 | F-04  | frontend-scaffold          | (foundation) React app with routing, components, build   | —                | —              | done   |
 | S-01  | new-user-setup             | Register, create household, create first task            | F-01, F-02, F-04 | US-01, FR-001–003 | done |
 | S-02  | basic-task-crud            | Create, view, edit, delete task with title, description, due date | F-01, F-02, F-04 | US-02, FR-006, FR-008, FR-010–013 | done |
-| S-06A | dashboard-prioritization   | User's tasks due today/overdue, intelligently sorted by due date and priority | S-02, F-04 | US-02, FR-014 (sorting) | ready-to-plan |
-| S-06B | suggested-household-tasks  | Suggested household tasks via domain heuristics (3–5 suggestions); user can accept or dismiss | S-02, F-04 | US-02, FR-014 (suggestions) | ready-to-plan |
+| S-06A | dashboard-prioritization   | User's tasks due today/overdue, intelligently sorted by due date and priority | S-02, F-04 | US-02, FR-014 (sorting) | in-progress |
+| S-06B | suggested-household-tasks  | Suggested household tasks via domain heuristics (3–5 suggestions); user can accept or dismiss | S-02, F-04 | US-02, FR-014 (suggestions) | in-progress |
 | S-08  | ui-styling-updates         | UI styling is updated and refined; polished appearance   | F-04, S-01, S-02 | —              | in-progress |
 
 ## Baseline
