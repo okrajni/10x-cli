@@ -61,9 +61,25 @@ public class SuggestionService {
     }
 
     private LocalDateTime findLastCompletion(DomainTask domainTask, List<Task> householdTasks) {
-        return householdTasks.stream()
+        // Check for completed tasks first
+        LocalDateTime lastCompletion = householdTasks.stream()
                 .filter(task -> task.isCompleted() && matchesTitle(domainTask.getTitle(), task.getTitle()))
                 .map(Task::getCompletedAt)
+                .max(LocalDateTime::compareTo)
+                .orElse(null);
+
+        if (lastCompletion != null) {
+            return lastCompletion;
+        }
+
+        // If no completion found, check for recently created (uncompleted) tasks created today
+        // This prevents re-suggesting tasks that were just created from accepted suggestions
+        LocalDate today = LocalDate.now();
+        return householdTasks.stream()
+                .filter(task -> !task.isCompleted() &&
+                        matchesTitle(domainTask.getTitle(), task.getTitle()) &&
+                        task.getCreatedAt().toLocalDate().isEqual(today))
+                .map(Task::getCreatedAt)
                 .max(LocalDateTime::compareTo)
                 .orElse(null);
     }
