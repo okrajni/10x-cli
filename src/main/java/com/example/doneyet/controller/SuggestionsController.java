@@ -113,6 +113,25 @@ public class SuggestionsController {
         }
     }
 
+    @PostMapping("/interaction")
+    public ResponseEntity<?> logSuggestionInteraction(
+            @RequestBody SuggestionDto.SuggestionInteractionRequest request,
+            Authentication authentication
+    ) {
+        try {
+            User user = (User) authentication.getPrincipal();
+            getUserHouseholdId(user.getId());
+
+            return ResponseEntity.ok(new SuggestionDto.InteractionResponse("ok"));
+        } catch (ValidationException e) {
+            return ResponseEntity.badRequest()
+                    .body(new ErrorResponse(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("Failed to log interaction: " + e.getMessage()));
+        }
+    }
+
     private UUID getUserHouseholdId(UUID userId) {
         return householdRepository.findByCreatedById(userId)
                 .stream()

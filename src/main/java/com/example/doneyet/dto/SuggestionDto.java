@@ -168,4 +168,52 @@ public class SuggestionDto {
             this.suggestions = suggestions;
         }
     }
+
+    public static class SuggestionInteractionRequest {
+        private String suggestionId;
+        private String action;
+
+        public SuggestionInteractionRequest() {
+        }
+
+        public SuggestionInteractionRequest(String suggestionId, String action) {
+            this.suggestionId = suggestionId;
+            this.action = action;
+        }
+
+        public String getSuggestionId() {
+            return suggestionId;
+        }
+
+        public void setSuggestionId(String suggestionId) {
+            this.suggestionId = suggestionId;
+        }
+
+        public String getAction() {
+            return action;
+        }
+
+        public void setAction(String action) {
+            this.action = action;
+        }
+    }
+
+    public static class InteractionResponse {
+        private String status;
+
+        public InteractionResponse() {
+        }
+
+        public InteractionResponse(String status) {
+            this.status = status;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public void setStatus(String status) {
+            this.status = status;
+        }
+    }
 }
