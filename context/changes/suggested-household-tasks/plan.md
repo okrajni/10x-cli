@@ -623,7 +623,7 @@ Integrate suggestions into the today dashboard container and polish the overall 
 #### Manual
 
 - [ ] 2.3 SuggestedTasksList displays on dashboard
-- [x] 2.4 Accept button: task added to list
+- [x] 2.4 Accept button: task added to list — 3ccd655
 - [ ] 2.5 Dismiss button: suggestion removed, task not added
 - [ ] 2.6 Error handling: offline → see error + retry
 - [ ] 2.7 Household switching: suggestions update
