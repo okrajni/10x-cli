@@ -3,8 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#818243">
     <title>Done Yet ? - Household Task Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
+        /* Rammetto One — the wordmark typeface. SIL Open Font License 1.1,
+           free for commercial use and redistributable, so the file is carried
+           in the repo. Expected at src/main/resources/static/fonts/, alongside
+           OFL.txt. See frontend/public/fonts/README.md. */
+        @font-face {
+            font-family: 'Rammetto One';
+            src: url('/fonts/rammetto-one.woff2') format('woff2'),
+                 url('/fonts/rammetto-one.woff') format('woff');
+            font-weight: 400;
+            font-display: swap;
+        }
+
+        /* ------------------------------------------------------------------
+           Same two-color visual system as the React app:
+             canvas #818243 — background
+             accent #D29C9A — borders, text, headings, buttons
+           Hairline borders, pill radii, no shadows, no gradients.
+           ------------------------------------------------------------------ */
+        :root {
+            --canvas: #818243;
+            --accent: #D29C9A;
+            --hairline: rgba(210, 156, 154, 0.35);
+            --hairline-soft: rgba(210, 156, 154, 0.25);
+            --fill-soft: rgba(210, 156, 154, 0.06);
+            color-scheme: dark;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,80 +43,97 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-weight: 300;
+            line-height: 1.6;
+            background-color: var(--canvas);
+            color: var(--accent);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 40px 24px;
+            -webkit-font-smoothing: antialiased;
         }
 
         .container {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 40px;
-            max-width: 600px;
-            text-align: center;
+            width: 100%;
+            max-width: 640px;
         }
 
+        .masthead {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        /* The wordmark — the only element using Rammetto One. Heavy and wide,
+           so it runs at a smaller size than a normal h1 would. */
         h1 {
-            color: #333;
+            font-family: 'Rammetto One', 'Playfair Display', Georgia, serif;
+            font-weight: 400;
+            font-size: 40px;
+            letter-spacing: 0.01em;
+            line-height: 1.3;
             margin-bottom: 12px;
-            font-size: 32px;
         }
 
         .subtitle {
-            color: #666;
-            font-size: 16px;
-            margin-bottom: 30px;
+            font-size: 14px;
+            color: rgba(210, 156, 154, 0.7);
         }
 
-        .status {
-            background: #f0f4ff;
-            border-left: 4px solid #667eea;
-            padding: 15px;
-            border-radius: 6px;
-            text-align: left;
-            margin-bottom: 30px;
+        /* Cards, sections, panels — thin accent hairline, generous radius. */
+        .card {
+            border: 1px solid var(--hairline);
+            border-radius: 28px;
+            background-color: var(--fill-soft);
+            padding: 32px;
+            margin-bottom: 24px;
         }
 
-        .status h2 {
-            color: #333;
-            font-size: 16px;
-            margin-bottom: 10px;
+        h2,
+        h3 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 20px;
         }
 
         .status-item {
             display: flex;
             align-items: center;
-            padding: 8px 0;
-            color: #555;
+            gap: 12px;
+            padding: 10px 0;
             font-size: 14px;
+            border-bottom: 1px solid var(--hairline-soft);
         }
 
-        .status-item .check {
-            color: #4caf50;
-            margin-right: 10px;
-            font-weight: bold;
+        .status-item:last-child {
+            border-bottom: none;
         }
 
-        .info {
-            background: #f9f9f9;
-            padding: 20px;
-            border-radius: 6px;
-            text-align: left;
-            margin-bottom: 30px;
+        /* State is signalled by fill, not by a new color. */
+        .mark {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            border-radius: 9999px;
+            border: 1px solid var(--accent);
+            font-size: 11px;
+            font-weight: 500;
         }
 
-        .info h3 {
-            color: #333;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-            color: #667eea;
+        .mark-done {
+            background-color: var(--accent);
+            color: var(--canvas);
+        }
+
+        .mark-pending {
+            background-color: transparent;
+            color: var(--accent);
         }
 
         .info-list {
@@ -93,78 +141,128 @@
         }
 
         .info-list li {
-            padding: 6px 0;
-            color: #666;
+            padding: 10px 0;
             font-size: 14px;
+            color: rgba(210, 156, 154, 0.85);
+            border-bottom: 1px solid var(--hairline-soft);
+        }
+
+        .info-list li:last-child {
+            border-bottom: none;
+        }
+
+        .info-list strong {
+            font-weight: 500;
+            color: var(--accent);
+        }
+
+        .label {
+            display: block;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            color: rgba(210, 156, 154, 0.75);
+            margin-bottom: 8px;
         }
 
         .api-endpoint {
-            background: #f5f5f5;
-            padding: 10px 15px;
-            border-radius: 4px;
-            font-family: monospace;
+            display: inline-block;
+            margin-top: 8px;
+            padding: 8px 18px;
+            border: 1px solid var(--hairline);
+            border-radius: 9999px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
             font-size: 12px;
-            color: #333;
             word-break: break-all;
-            margin: 10px 0;
         }
 
-        .coming-soon {
-            color: #999;
-            font-size: 14px;
+        .footnote {
+            text-align: center;
+            font-size: 13px;
+            color: rgba(210, 156, 154, 0.7);
+        }
+
+        .footnote strong {
+            font-weight: 500;
+            color: var(--accent);
+        }
+
+        /* Pill button — accent fill, canvas label, subtle hover. */
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
+            padding: 10px 28px;
+            border: 1px solid var(--accent);
+            border-radius: 9999px;
+            background-color: var(--accent);
+            color: var(--canvas);
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: opacity 200ms ease;
         }
 
-        .coming-soon strong {
-            color: #667eea;
+        .button:hover {
+            opacity: 0.85;
+        }
+
+        ::selection {
+            background-color: var(--accent);
+            color: var(--canvas);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>✓ Done Yet</h1>
-        <p class="subtitle">AI-powered household task management system</p>
+        <div class="masthead">
+            <h1>Done Yet</h1>
+            <p class="subtitle">AI-powered household task management</p>
+        </div>
 
-        <div class="status">
+        <div class="card">
             <h2>Deployment Status</h2>
             <div class="status-item">
-                <span class="check">✓</span> Backend deployed on Fly.io
+                <span class="mark mark-done" aria-hidden="true">✓</span> Backend deployed on Fly.io
             </div>
             <div class="status-item">
-                <span class="check">✓</span> PostgreSQL database connected
+                <span class="mark mark-done" aria-hidden="true">✓</span> PostgreSQL database connected
             </div>
             <div class="status-item">
-                <span class="check">✓</span> Environment variables configured
+                <span class="mark mark-done" aria-hidden="true">✓</span> Environment variables configured
             </div>
             <div class="status-item">
-                <span class="check">✗</span> Frontend coming soon
+                <span class="mark mark-pending" aria-hidden="true">–</span> Frontend coming soon
             </div>
         </div>
 
-        <div class="info">
+        <div class="card">
             <h3>Backend Information</h3>
             <ul class="info-list">
-                <li><strong>Runtime:</strong> Spring Boot 4.1.1 (Java 21)</li>
-                <li><strong>Database:</strong> PostgreSQL (Fly Managed)</li>
-                <li><strong>Region:</strong> San Jose (sjc)</li>
-                <li><strong>Machines:</strong> 2× shared-cpu-1x (1GB RAM)</li>
+                <li><strong>Runtime</strong> — Spring Boot 4.1.1 (Java 21)</li>
+                <li><strong>Database</strong> — PostgreSQL (Fly Managed)</li>
+                <li><strong>Region</strong> — San Jose (sjc)</li>
+                <li><strong>Machines</strong> — 2× shared-cpu-1x (1GB RAM)</li>
             </ul>
         </div>
 
-        <div class="info">
+        <div class="card">
             <h3>API Endpoints</h3>
-            <ul class="info-list">
-                <li>Base URL: <div class="api-endpoint">https://doneyet.fly.dev</div></li>
-                <li>Status: Spring Boot endpoints coming in Phase 9</li>
+            <span class="label">Base URL</span>
+            <span class="api-endpoint">https://doneyet.fly.dev</span>
+            <ul class="info-list" style="margin-top: 20px;">
+                <li>Spring Boot endpoints coming in Phase 9</li>
             </ul>
         </div>
 
-        <div class="coming-soon">
+        <p class="footnote">
             <strong>Next: React Frontend</strong><br>
-            The React frontend will be deployed in the next phase. Check back soon!
-        </div>
+            The React frontend will be deployed in the next phase.
+        </p>
     </div>
 </body>
 </html>
