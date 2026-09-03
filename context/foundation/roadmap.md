@@ -15,7 +15,7 @@ milestone_status: open
 # Roadmap: done yet?
 
 > Derived from user description + auto-researched codebase baseline.
-> Last updated 2026-09-03: S-07 (AI task generation) moved from deferred to in-progress.
+> Last updated 2026-09-03: Refocused on domain-specific decision system. S-07 (AI) parked to v1.1 for 1-week MVP sprint.
 > Edit-in-place; archive when superseded.
 > Slices below are listed in dependency order. The "At a glance" table is the index.
 
@@ -54,7 +54,6 @@ The **north star** — the smallest outcome that proves the hypothesis — is th
 | S-01  | new-user-setup             | Register, create household, create first task            | F-01, F-02, F-04 | US-01, FR-001–003 | done |
 | S-02  | basic-task-crud            | Create, view, edit, delete task with title, description, due date | F-01, F-02, F-04 | US-02, FR-006, FR-008, FR-010–013 | done |
 | S-06  | today-dashboard-enhanced   | View tasks due today/overdue + suggested household tasks, sorted by priority and due date | S-02, F-04 | US-02, FR-014 | in-progress |
-| S-07  | ai-task-generation         | AI-powered task suggestions using Gemini API; accept/customize/dismiss UI | S-02, F-04 | FR-019–FR-020 | in-progress |
 | S-08  | ui-styling-updates         | UI styling is updated and refined; polished appearance   | F-04, S-01, S-02 | —              | in-progress |
 
 ## Baseline
@@ -162,20 +161,6 @@ What's already in place in the codebase as of 2026-09-03 (auto-researched + user
 - **Risk:** Medium complexity. Query performance matters (must return in <500ms per NFR). Decision-support logic (heuristics for suggestions, sorting/grouping) is the new critical path instead of prompt engineering. User testing on the heuristic suggestions is the validation lever. If domain heuristics feel off, iterate quickly; the system is fully under your control (unlike prompt engineering).
 - **Status:** in-progress
 
-### S-07: AI Task Generation
-
-- **Outcome:** AI-powered task suggestions using Google Gemini API. System generates contextual household task recommendations based on user's existing tasks, household state, and seasonal/frequency heuristics. User can accept, customize, or dismiss suggestions. Accept adds task to their list; dismiss trains the model's suggestion quality.
-- **Change ID:** `ai-task-generation`
-- **PRD refs:** FR-019, FR-020
-- **Prerequisites:** S-02 (need task context), F-04 (suggestion UI)
-- **Parallel with:** S-06, S-08
-- **Blockers:** —
-- **Unknowns:**
-  - **Prompt engineering for household domain:** What context should be fed to Gemini? How to structure prompts for high-quality suggestions? — Owner: implementation. Block: no (iterate in-flight).
-  - **Suggestion ranking strategy:** How to rank/order suggestions? By confidence, by urgency (seasonal vs. routine), by user preference history? — Owner: implementation. Block: no.
-- **Risk:** Medium. LLM quality varies; suggestions may hallucinate or be off-domain. Mitigation: pair with domain heuristics (S-06) as fallback; user can always dismiss poor suggestions. Cost control via API rate limits and caching.
-- **Status:** in-progress
-
 ### S-08: UI styling updates
 
 - **Outcome:** UI styling is updated and refined (colors, spacing, typography, component polish). App has a cohesive, polished visual appearance.
@@ -198,41 +183,35 @@ What's already in place in the codebase as of 2026-09-03 (auto-researched + user
 | F-04       | frontend-scaffold      | Frontend scaffold: React, routing, build setup         | no (done)             | Complete; dev server running. |
 | S-01       | new-user-setup         | New user setup: register, create household, first task | no (done)             | Complete. |
 | S-02       | basic-task-crud        | Basic task CRUD: create, view, edit, delete            | no (done)             | Complete; tested. |
-| S-06       | today-dashboard-enhanced | Today dashboard: enhanced sorting, domain-heuristic suggestions | yes (in-progress) | **NORTH STAR.** Core decision-support via smart sorting + heuristic suggestions. |
-| S-07       | ai-task-generation     | AI task generation: Gemini API integration + suggest/accept/dismiss UI | yes (in-progress) | Running parallel to S-06. Enhances suggestions beyond domain heuristics. |
-| S-08       | ui-styling-updates     | UI styling updates: colors, spacing, typography        | yes (in-progress) | Polish pass. Can ship in parallel with S-06/S-07. |
+| S-06       | today-dashboard-enhanced | Today dashboard: enhanced sorting, domain-heuristic suggestions | yes (in-progress) | **NORTH STAR.** Core decision-support via smart sorting + heuristic suggestions. 1-week focus. |
+| S-08       | ui-styling-updates     | UI styling updates: colors, spacing, typography        | yes (in-progress) | Polish pass. Run in parallel with S-06. |
+| S-07       | ai-task-generation     | AI task generation (deferred to v1.1)                    | no (parked)       | Revisit post-launch based on heuristic validation. |
 
 ## Open Roadmap Questions
 
-1. **Domain heuristics for task suggestions (S-06):** What household tasks should the system suggest, and by what logic? Examples:
-   - Seasonal (HVAC filter, gutters, AC maintenance every 6-12 months)
-   - Frequency-based (laundry every 2-3 days, dishes daily, weekly cleaning, etc.)
+1. **Domain heuristics ruleset for task suggestions (S-06):** What household tasks should the system suggest, and by what logic? Finalize this for MVP:
+   - Seasonal (HVAC filter every 6-12 months, gutter cleaning, AC maintenance, etc.)
+   - Frequency-based (laundry every 2-3 days, dishes daily/as-needed, weekly cleaning, etc.)
    - Category-based (cleaning, maintenance, shopping, repairs, etc.)
-   - What weights / prioritization should these have?
+   - Start simple: 5-10 common tasks per category, iterate based on user feedback
    
-   Owner: product / user research. Block: yes (S-06). Status: **In progress.**
+   Owner: implementation (you). Block: yes (S-06). Timeline: **Decide this week.**
 
-2. **Task prioritization and sorting in the dashboard (S-06):** How should the today dashboard order tasks?
-   - Strictly by due date (current plan)?
-   - By due date + priority + category?
-   - Should overdue tasks float to the very top?
-   - How should suggested tasks (from heuristics and AI) integrate with user's own tasks?
+2. **Task prioritization and sorting in dashboard (S-06):** Finalize the sorting strategy:
+   - Sort user's own tasks: by due date, then priority
+   - Float overdue tasks to top?
+   - Suggested tasks: show below user's tasks? Interleave?
+   - Start simple: due date primary, category secondary
    
-   Owner: product / design. Block: yes (S-06). Status: **In progress.**
+   Owner: implementation (you). Block: yes (S-06). Timeline: **Decide this week.**
 
-3. **Hybrid suggestion strategy:** How should domain heuristics (S-06) and AI suggestions (S-07) interact?
-   - Show both, rank by confidence?
-   - Use heuristics as fallback when AI is low-confidence?
-   - De-duplicate overlapping suggestions?
-   
-   Owner: implementation. Block: no (both can iterate independently).
-
-4. **Suggestion acceptance rate target:** What's the validation threshold for "suggestions are useful"? If users accept 50%+ of suggestions, is that enough, or do we need higher signal?
+3. **Suggestion acceptance & metrics (post-MVP):** What's the validation threshold? If users accept 50%+ of suggestions, that validates the heuristics work.
    
    Owner: product. Block: no (ships regardless; iteration lever post-MVP).
 
 ## Parked
 
+- **S-07 (AI task generation)** — Deferred to v1.1. MVP focuses on domain-specific heuristics (S-06) only. Reason: 1-week timeline, reduced complexity, keep system maintainable. AI enhancement revisit post-launch based on user feedback and heuristic effectiveness.
 - **FR-007 (Task assignment to partner), S-03, S-04, S-05 (Telegram bot and reminders)** — Multi-user feature, explicitly deferred. Single-user MVP has no "partner" to assign tasks to.
 - **Task categories/tags** — Deferred. Dashboard sorts by due date + priority only.
 - **Advanced observability** — Deferred to post-MVP. Baseline logging (stdout/stderr) only.
@@ -251,46 +230,57 @@ What's already in place in the codebase as of 2026-09-03 (auto-researched + user
 
 ## Key Changes from v0 → v1
 
-**Initial pivot to domain-specific approach (v0 → v1):**
-- Planned S-07 (ai-task-generation) removal in favor of domain-specific heuristics.
-- North star shifted from "70% AI acceptance" to "enhanced dashboard with smart sorting."
+**Pivot to domain-specific decision system (v0 → v1):**
+- **v0:** AI task generation (S-07) as north star. Challenge: complex prompt engineering, external dependencies, 70% acceptance threshold.
+- **v1:** Enhanced dashboard with domain-specific heuristics (S-06) as north star. Benefit: simpler, faster to ship, fully under your control, easier to iterate.
 
-**Current state (v1 in-progress):**
-- **S-06 (Today's Dashboard)** in-progress: implementing smart sorting + domain-heuristic suggestions.
-- **S-07 (AI task generation)** now in-progress: Gemini API integration for AI-powered task suggestions.
-- **Hybrid approach:** Both paths running in parallel. Domain heuristics provide immediate baseline; AI suggestions layer on for enhancement.
+**Current commitment (1-week MVP):**
+- **S-06 (Today's Dashboard)** — Smart sorting + domain-heuristic task suggestions. Validate core value: users find heuristics useful enough to return daily.
+- **S-07 (AI task generation)** — Parked to v1.1. Revisit only if domain heuristics work and you want to layer on AI.
+- **S-08 (UI Styling)** — Polish pass in parallel.
 
-**Investment areas:**
-- **Frontend:** Dashboard logic (sorting, grouping, suggestion display) + AI suggestion UI (accept/customize/dismiss).
-- **Backend:** Task-suggestion service combining both rule-based heuristics and Gemini API integration.
-- **Data:** Task table extended to track suggestion acceptance/dismissal metrics.
+**Investment areas (MVP scope):**
+- **Frontend:** Dashboard logic (sorting, grouping, suggestion display). Keep UI simple: show suggested tasks, user can accept.
+- **Backend:** Simple heuristics engine (rule-based task suggestions, no ML). ~10-20 common household tasks, hardcoded rules.
+- **Data:** Task table tracks suggestion acceptance (optional; log first).
 - **Auth / Infra:** No changes.
 
 ---
 
 ## Current Status & Next Steps
 
-**S-06, S-07, S-08 all in progress** as of 2026-09-03. Parallel development:
+**1-week sprint to MVP** (S-06 + S-08 focus, S-07 parked):
 
-- **S-06 (Today's Dashboard)** — Implementing smart sorting + domain-heuristic suggestions. Unknowns: finalize heuristic rules, sorting/grouping strategy. Continue implementation or iterate if logic feels off.
-- **S-07 (AI Task Generation)** — Gemini API integration + suggest/accept/dismiss UI. Risk: prompt engineering, cost control. Iterate in-flight based on suggestion quality.
-- **S-08 (UI Styling)** — Visual polish in parallel with core features.
+**Week 1 priorities:**
+1. **S-06 (Today's Dashboard + Heuristics)** — CRITICAL PATH
+   - Finalize heuristic rules (5-10 common tasks per category)
+   - Implement smart sorting: due date primary, priority secondary
+   - Suggested tasks UI: simple list below user's own tasks
+   - Accept task action: adds to user's task list
+   
+2. **S-08 (UI Styling)** — PARALLEL
+   - Polish dashboard appearance
+   - Color, spacing, typography refinement
+   
+3. **Launch ready:**
+   - Domain heuristics working
+   - No AI complexity
+   - Users see useful suggestions
 
-**Validation criteria:**
+**Validation criteria (post-launch):**
 - Users return to dashboard daily (engagement signal).
 - Users accept 50%+ of suggestions (heuristics are useful).
-- System responds to suggestion actions (no lag on accept/dismiss).
+- System responds instantly to actions (no lag).
 
-**Unknowns to resolve (non-blocking iteration):**
-1. Domain heuristics rule set (Open Roadmap Questions #1).
-2. Dashboard sorting strategy (Open Roadmap Questions #2).
-3. Hybrid suggestion ranking (Open Roadmap Questions #3).
+**Unknowns to resolve THIS WEEK:**
+1. Heuristic rules: What 10-20 tasks should you suggest? Which frequency/season patterns? (Open Roadmap Questions #1)
+2. Sorting strategy: Due date only, or due date + priority? Float overdue to top? (Open Roadmap Questions #2)
 
-**Post-MVP path:**
-- If heuristics work, keep simple for stability. Layer AI only if needed.
-- If AI suggestions outperform heuristics, prioritize Gemini output.
-- Continue v1.1 roadmap based on user feedback and adoption metrics.
+**Post-launch path (v1.1):**
+- Measure heuristic effectiveness via user adoption & acceptance rate.
+- If heuristics work well, keep simple; no AI needed.
+- If users want more sophistication, revisit S-07 (AI suggestions) based on validated demand.
 
 ---
 
-**Summary:** MVP path is running now: (1) complete today dashboard + AI integration in parallel, (2) measure suggestion adoption and user engagement, (3) iterate based on data. Validate the decision-support hypothesis with both heuristic and AI-backed suggestions.
+**Summary:** 1-week sprint: build S-06 (dashboard + domain heuristics) + S-08 (polish). Validate the decision-support hypothesis with simple, rule-based suggestions. Ship lean, iterate based on real user behavior. AI considered only post-launch if heuristics alone aren't enough.
