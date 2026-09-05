@@ -58,7 +58,6 @@ export default function DashboardPage() {
         <TodayDashboardContainer />
 
         <div className="surface flex flex-col p-8">
-          <h2 className="mb-4 text-lg font-semibold text-accent">Suggested Tasks</h2>
           <div className="flex-1">
             <SuggestedTasksList />
           </div>
