@@ -145,7 +145,7 @@ export default function TodayDashboardContainer() {
           <p className="text-sm text-accent/70">All caught up! No tasks for today.</p>
         </div>
       ) : (
-        <div className="max-h-96 overflow-y-auto">
+        <div className="max-h-[32rem] overflow-y-auto">
           <div className="space-y-3">
             {todayAndOverdue.map((task) => (
               <TaskCard
