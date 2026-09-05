@@ -39,7 +39,7 @@ export default function TaskListPage() {
 
   const handleComplete = async (taskId: string) => {
     const task = tasks.find((t) => t.id === taskId)
-    if (!task) return
+    if (!task || task.completedAt) return
 
     try {
       const result = await completeTask(taskId)
@@ -137,8 +137,8 @@ export default function TaskListPage() {
             </div>
           ) : (
             <div className="space-y-4">
-              {displayTasks
-                .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
+              {[...displayTasks]
+                .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
                 .map((task) => (
                   <TaskCard
                     key={task.id}

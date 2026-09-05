@@ -2,13 +2,13 @@
 change_id: dashboard-prioritization
 title: Dashboard Prioritization & Sorting
 description: Smart sorting of user's own tasks by due date, priority, and category. Overdue tasks float to top. Enables decision-support through task ordering without suggestion complexity.
-status: implementing
+status: impl_reviewed
 roadmap_ref: S-06 (part 1 of 2)
 prd_refs: US-02, FR-014 (sorting component)
 depends_on: S-02 (basic-task-crud)
 blocked_by: none
 created: 2026-09-03
-updated: 2026-09-03
+updated: 2026-09-05
 ---
 
 # Dashboard Prioritization & Sorting

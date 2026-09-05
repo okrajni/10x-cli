@@ -21,8 +21,6 @@ export function SuggestedTasksList({ onSuggestionAccepted }: SuggestedTasksListP
   const [error, setError] = useState<string | null>(null)
   const [actionInProgress, setActionInProgress] = useState<string | null>(null)
 
-  console.log('SuggestedTasksList render - suggestions count:', suggestions.length)
-
   useEffect(() => {
     fetchSuggestions()
   }, [])
@@ -51,7 +49,6 @@ export function SuggestedTasksList({ onSuggestionAccepted }: SuggestedTasksListP
 
     try {
       const today = new Date().toISOString().split('T')[0] ?? ''
-      console.log('Creating task:', { title: suggestion.title, category: suggestion.category, dueDate: today })
 
       if (!suggestion.title || !suggestion.category) {
         throw new Error('Invalid suggestion data')
@@ -63,13 +60,9 @@ export function SuggestedTasksList({ onSuggestionAccepted }: SuggestedTasksListP
         dueDate: today,
       })
 
-      console.log('Task creation result:', result)
-
       if (result.ok) {
-        console.log('Success! Removing suggestion from list')
         // Remove from suggestions immediately
         const filtered = suggestions.filter((s) => s.id !== suggestion.id)
-        console.log('Suggestions before:', suggestions.length, 'after:', filtered.length)
         setSuggestions(filtered)
 
         // Notify parent to refresh tasks
@@ -85,11 +78,9 @@ export function SuggestedTasksList({ onSuggestionAccepted }: SuggestedTasksListP
           })
         }
       } else {
-        console.error('Task creation failed:', result)
         setError(result.message || 'Failed to accept suggestion')
       }
     } catch (error) {
-      console.error('Error accepting suggestion:', error)
       setError('An error occurred while accepting the suggestion')
     } finally {
       setActionInProgress(null)
