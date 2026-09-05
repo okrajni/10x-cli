@@ -1,7 +1,7 @@
 ---
-status: implemented
+status: impl_reviewed
 created: 2026-08-28
-updated: 2026-08-29
+updated: 2026-09-05
 ---
 
 # Household Schema — One Household Per User Constraint

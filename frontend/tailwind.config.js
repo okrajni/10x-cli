@@ -2,8 +2,8 @@
  * Global visual system.
  *
  * The palette is intentionally locked to two colors:
- *   canvas #344c36 — application background / text on accent surfaces
- *   accent #D29C9A — borders, text, headings, links, button fills
+ *   canvas #222222 — application background / text on accent surfaces
+ *   accent #C2D8C4 — borders, text, headings, links, button fills
  *
  * `theme.colors` is REPLACED (not extended) on purpose: Tailwind's default
  * gray / red / blue / green scales are unavailable, so an off-palette class
@@ -17,8 +17,8 @@ export default {
       transparent: 'transparent',
       current: 'currentColor',
       inherit: 'inherit',
-      canvas: '#344c36',
-      accent: '#D29C9A',
+      canvas: '#222222',
+      accent: '#C2D8C4',
     },
     extend: {
       fontFamily: {

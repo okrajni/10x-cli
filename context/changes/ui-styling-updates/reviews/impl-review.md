@@ -26,14 +26,14 @@
 - **Impact**: 🔬 HIGH — architectural stakes; think carefully before deciding
 - **Dimension**: Plan Adherence
 - **Location**: frontend/tailwind.config.js, frontend/src/index.css
-- **Detail**: Plan specified warm 1970s retro palette (cream #E8E2D4, green #436741, rose #E1C1C6) with multi-color harmony. Implementation uses completely different palette (canvas #818243 muted olive, accent #D29C9A mauve). Colors used across all 20+ modified files, affecting visual consistency, component behavior, and entire brand direction. This is not a color tweak—it's a fundamental aesthetic pivot.
+- **Detail**: Plan specified warm 1970s retro palette (cream #E8E2D4, green #436741, rose #E1C1C6) with multi-color harmony. Implementation uses completely different palette (canvas #222222 dark gray, accent #C2D8C4 soft sage). Colors used across all 20+ modified files, affecting visual consistency, component behavior, and entire brand direction. This is not a color tweak—it's a fundamental aesthetic pivot.
 - **Fix A ⭐ Recommended**: Restore to approved 1970s palette and document any stakeholder request for redesign as a separate change
   - Strength: Honors the completed plan; if new design is desired, it gets proper review via a new change request rather than silently diverging from approved work.
   - Tradeoff: If the minimalist direction is intentional, requires reverting substantial work.
   - Confidence: HIGH — plan is documented and stakeholders approved it; any pivot should be explicit.
   - Blind spot: Haven't checked whether product team requested the new palette offline.
 - **Fix B**: Accept the new palette as superior and document the decision
-  - Strength: New palette (olive + mauve) is cohesive and rendered safely (code review passed).
+  - Strength: New palette (dark gray + sage) is cohesive and rendered safely (code review passed).
   - Tradeoff: Invalidates the entire approved plan without recorded decision; sets precedent that post-approval redesigns don't require stakeholder sign-off.
   - Confidence: LOW — this is a governance issue, not a code quality issue.
   - Blind spot: Stakeholder awareness and approval for the pivot.

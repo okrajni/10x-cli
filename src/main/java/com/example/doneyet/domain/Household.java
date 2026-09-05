@@ -11,7 +11,9 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "households")
+@Table(name = "households", uniqueConstraints = {
+    @UniqueConstraint(columnNames = "created_by", name = "uk_household_one_per_user")
+})
 public class Household {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

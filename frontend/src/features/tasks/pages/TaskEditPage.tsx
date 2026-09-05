@@ -4,13 +4,14 @@ import clsx from 'clsx'
 import { Button, Input, Notice, PageHeading, Spinner } from '@shared/components'
 import { getTask, updateTask, Task, UpdateTaskRequest, TaskCategory } from '../api'
 import { categoryLabel, CATEGORIES } from '../utils/categoryUtils'
-import { formatRecurrence } from '../utils/recurrenceUtils'
+import { formatRecurrence, FREQUENCY_OPTIONS } from '../utils/recurrenceUtils'
 import { useAuth } from '@features/auth/context/AuthContext'
 
 interface FormErrors {
   title?: string
   category?: string
   dueDate?: string
+  recurrenceWeekday?: string
 }
 
 export default function TaskEditPage() {
@@ -19,6 +20,7 @@ export default function TaskEditPage() {
   useAuth()
   const [task, setTask] = useState<Task | null>(null)
   const [formData, setFormData] = useState<UpdateTaskRequest>({})
+  const [hasRecurrence, setHasRecurrence] = useState(false)
   const [errors, setErrors] = useState<FormErrors>({})
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -38,7 +40,11 @@ export default function TaskEditPage() {
           description: result.data.description,
           category: result.data.category,
           dueDate: result.data.dueDate,
+          recurrenceFrequency: result.data.recurrenceFrequency,
+          recurrenceWeekday: result.data.recurrenceWeekday,
+          recurrenceEndDate: result.data.recurrenceEndDate,
         })
+        setHasRecurrence(!!result.data.recurrenceFrequency)
       } else {
         setMessage({
           type: 'error',
@@ -74,6 +80,14 @@ export default function TaskEditPage() {
       newErrors.dueDate = 'Due date is required'
     }
 
+    if (
+      hasRecurrence &&
+      formData.recurrenceFrequency === 'WEEKLY' &&
+      formData.recurrenceWeekday === undefined
+    ) {
+      newErrors.recurrenceWeekday = 'Weekday is required for weekly recurrence'
+    }
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -89,7 +103,14 @@ export default function TaskEditPage() {
     setMessage(null)
 
     try {
-      const result = await updateTask(id, formData)
+      const submitData = { ...formData }
+      if (!hasRecurrence) {
+        submitData.recurrenceFrequency = undefined
+        submitData.recurrenceWeekday = undefined
+        submitData.recurrenceEndDate = undefined
+      }
+
+      const result = await updateTask(id, submitData)
 
       if (result.ok) {
         setMessage({ type: 'success', text: 'Task updated successfully.' })
@@ -207,18 +228,105 @@ export default function TaskEditPage() {
             error={errors.dueDate}
           />
 
-          {/* Recurrence (read-only) */}
-          {task?.recurrenceFrequency && (
-            <div className="surface-inset p-6">
-              <p className="label">Recurrence</p>
-              <p className="text-sm text-accent">
-                {formatRecurrence(
-                  task.recurrenceFrequency,
-                  task.recurrenceWeekday,
-                  task.recurrenceEndDate
-                )}
-              </p>
-              <p className="hint mt-3">Recurrence is read-only in this version.</p>
+          {/* Recurrence toggle */}
+          <label className="flex cursor-pointer items-center gap-3">
+            <input
+              type="checkbox"
+              checked={hasRecurrence}
+              onChange={(e) => {
+                setHasRecurrence(e.target.checked)
+                if (!e.target.checked) {
+                  setFormData({
+                    ...formData,
+                    recurrenceFrequency: undefined,
+                    recurrenceWeekday: undefined,
+                    recurrenceEndDate: undefined,
+                  })
+                }
+              }}
+              disabled={isSubmitting}
+              className="control-check"
+            />
+            <span className="text-sm text-accent">Repeat this task</span>
+          </label>
+
+          {hasRecurrence && (
+            <div className="surface-inset space-y-8 p-6">
+              {/* Frequency */}
+              <div>
+                <p className="label">Frequency *</p>
+                <div className="space-y-3">
+                  {FREQUENCY_OPTIONS.map((option) => (
+                    <label
+                      key={option.value}
+                      className="flex cursor-pointer items-center gap-3 text-sm font-light text-accent"
+                    >
+                      <input
+                        type="radio"
+                        name="frequency"
+                        value={option.value}
+                        checked={formData.recurrenceFrequency === option.value}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            recurrenceFrequency: e.target.value,
+                            recurrenceWeekday: undefined,
+                          })
+                        }
+                        disabled={isSubmitting}
+                        className="control-radio"
+                      />
+                      {option.label}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Weekday */}
+              {formData.recurrenceFrequency === 'WEEKLY' && (
+                <div>
+                  <p className="label">Day of Week *</p>
+                  <div className="flex flex-wrap gap-2">
+                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => setFormData({ ...formData, recurrenceWeekday: index })}
+                        disabled={isSubmitting}
+                        className={clsx(
+                          'rounded-pill border px-4 py-1.5 text-xs transition',
+                          formData.recurrenceWeekday === index
+                            ? 'border-accent bg-accent font-medium text-canvas'
+                            : 'border-accent/40 font-light text-accent hover:bg-accent/10'
+                        )}
+                      >
+                        {day}
+                      </button>
+                    ))}
+                  </div>
+                  {errors.recurrenceWeekday && (
+                    <p className="mt-2 pl-1 text-xs font-medium text-accent">
+                      ! {errors.recurrenceWeekday}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* End date */}
+              <Input
+                id="recurrenceEndDate"
+                label="End Date (optional)"
+                type="date"
+                value={formData.recurrenceEndDate || ''}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    recurrenceEndDate: e.target.value || undefined,
+                  })
+                }
+                disabled={isSubmitting}
+                helpText="Leave empty for no end date."
+              />
             </div>
           )}
 

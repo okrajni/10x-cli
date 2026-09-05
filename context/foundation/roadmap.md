@@ -3,7 +3,7 @@ project: "done yet?"
 version: 1
 status: draft
 created: 2026-08-26
-updated: 2026-09-03 (S-06A + S-06B implementation started)
+updated: 2026-09-05 (Added S-03: task recurrence management as critical path)
 prd_version: 1
 main_goal: speed
 top_blocker: decisions
@@ -53,9 +53,10 @@ The **north star** — the smallest outcome that proves the hypothesis — is th
 | F-04  | frontend-scaffold          | (foundation) React app with routing, components, build   | —                | —              | done   |
 | S-01  | new-user-setup             | Register, create household, create first task            | F-01, F-02, F-04 | US-01, FR-001–003 | done |
 | S-02  | basic-task-crud            | Create, view, edit, delete task with title, description, due date | F-01, F-02, F-04 | US-02, FR-006, FR-008, FR-010–013 | done |
-| S-06A | dashboard-prioritization   | User's tasks due today/overdue, intelligently sorted by due date and priority | S-02, F-04 | US-02, FR-014 (sorting) | in-progress |
-| S-06B | suggested-household-tasks  | Suggested household tasks via domain heuristics (3–5 suggestions); user can accept or dismiss | S-02, F-04 | US-02, FR-014 (suggestions) | in-progress |
-| S-08  | ui-styling-updates         | UI styling is updated and refined; polished appearance   | F-04, S-01, S-02 | —              | in-progress |
+| S-03  | task-recurrence-management | Change task frequency (daily, weekly, monthly) or remove recurrence from existing tasks | S-02, F-04 | US-02, FR-015 (recurrence) | proposed |
+| S-06A | dashboard-prioritization   | User's tasks due today/overdue, intelligently sorted by due date and priority | S-02, S-03, F-04 | US-02, FR-014 (sorting) | proposed |
+| S-06B | suggested-household-tasks  | Suggested household tasks via domain heuristics (3–5 suggestions); user can accept or dismiss | S-02, S-03, F-04 | US-02, FR-014 (suggestions) | proposed |
+| S-08  | ui-styling-updates         | UI styling is updated and refined; polished appearance   | F-04, S-01, S-02 | —              | proposed |
 
 ## Baseline
 
@@ -148,19 +149,33 @@ What's already in place in the codebase as of 2026-09-03 (auto-researched + user
 - **Risk:** Implementation complete. Forms and API endpoints tested. Task schema supports dashboard queries in S-06.
 - **Status:** done
 
+### S-03: Task recurrence management
+
+- **Outcome:** User can edit an existing task to change its recurrence frequency (daily, weekly, monthly, etc.) or remove recurrence entirely. Recurring tasks display their next occurrence date and frequency in the task list.
+- **Change ID:** `task-recurrence-management`
+- **PRD refs:** US-02, FR-015 (task recurrence)
+- **Prerequisites:** S-02 (task model and edit API must exist), F-02 (schema must support recurrence fields), F-04 (task edit form)
+- **Parallel with:** —
+- **Blockers:** —
+- **Unknowns:**
+  - **Recurrence schema design:** Should task table have recurrence_type (daily/weekly/monthly/once), recurrence_interval (every N days/weeks/months), recurrence_end_date? How to store next occurrence? — Owner: backend lead. Block: yes (defines API contract and database migration).
+  - **Recurrence display:** When a user edits a recurring task, how should the UI present the options? Simple dropdown (Daily/Weekly/Monthly) or advanced picker? Should there be an "end date" picker? — Owner: product/design. Block: yes (UX complexity).
+- **Risk:** Medium. Recurrence logic (calculating next occurrence, handling frequency changes) is non-trivial. Data schema changes required. Must not break existing non-recurring tasks. Close integration with S-06 (dashboard relies on knowing which tasks recur to display them correctly).
+- **Status:** proposed
+
 ### S-06: Today's Dashboard (Enhanced)
 
-- **Outcome:** User sees a dashboard of tasks due today or overdue, intelligently sorted by due date and priority. System surfaces 3–5 suggested household tasks based on domain heuristics (common chores, seasonal maintenance, frequency-based patterns) that the user can accept, customize, or dismiss. Provides at-a-glance entry point and daily ritual. Updates when user completes a task (no page reload lag).
+- **Outcome:** User sees a dashboard of tasks due today or overdue, intelligently sorted by due date and priority. System surfaces 3–5 suggested household tasks based on domain heuristics (common chores, seasonal maintenance, frequency-based patterns, considering task recurrence) that the user can accept, customize, or dismiss. Provides at-a-glance entry point and daily ritual. Updates when user completes a task (no page reload lag).
 - **Change ID:** `today-dashboard-enhanced`
 - **PRD refs:** US-02, FR-014, NFR <500ms latency
-- **Prerequisites:** S-02 (need tasks), F-04 (dashboard layout and real-time updates)
+- **Prerequisites:** S-02 (need tasks), S-03 (dashboard must handle recurring tasks correctly), F-04 (dashboard layout and real-time updates)
 - **Parallel with:** S-08
 - **Blockers:** —
 - **Unknowns:**
-  - **Domain heuristics for task suggestions:** What household tasks should the system suggest? Seasonal (HVAC filter every 6 months), frequency-based (laundry every 2 days), category-based (cleaning, maintenance, errands)? How to weight them? — Owner: product/user research. Block: yes (this drives the dashboard logic).
-  - **Task prioritization / sorting strategy:** Should dashboard sort by due date only, or by priority + due date + category? Should overdue tasks float to top? How should suggested tasks integrate with user's own tasks? — Owner: product. Block: yes.
-- **Risk:** Medium complexity. Query performance matters (must return in <500ms per NFR). Decision-support logic (heuristics for suggestions, sorting/grouping) is the new critical path instead of prompt engineering. User testing on the heuristic suggestions is the validation lever. If domain heuristics feel off, iterate quickly; the system is fully under your control (unlike prompt engineering).
-- **Status:** in-progress
+  - **Domain heuristics for task suggestions:** What household tasks should the system suggest? Seasonal (HVAC filter every 6 months), frequency-based (laundry every 2 days), category-based (cleaning, maintenance, errands)? How to weight them? Should suggested tasks account for task recurrence (don't re-suggest a weekly task that's already scheduled for today)? — Owner: product/user research. Block: yes (this drives the dashboard logic).
+  - **Task prioritization / sorting strategy:** Should dashboard sort by due date only, or by priority + due date + category? Should overdue tasks float to top? How should suggested tasks integrate with user's own tasks? How do recurring tasks appear in the sorted list? — Owner: product. Block: yes.
+- **Risk:** Medium complexity. Query performance matters (must return in <500ms per NFR). Decision-support logic (heuristics for suggestions, sorting/grouping) is the new critical path instead of prompt engineering. Recurrence adds complexity to suggestion logic (must check if a recurring task is already due today). User testing on the heuristic suggestions is the validation lever. If domain heuristics feel off, iterate quickly; the system is fully under your control (unlike prompt engineering).
+- **Status:** proposed
 
 ### S-08: UI styling updates
 
@@ -184,7 +199,8 @@ What's already in place in the codebase as of 2026-09-03 (auto-researched + user
 | F-04       | frontend-scaffold      | Frontend scaffold: React, routing, build setup         | no (done)             | Complete; dev server running. |
 | S-01       | new-user-setup         | New user setup: register, create household, first task | no (done)             | Complete. |
 | S-02       | basic-task-crud        | Basic task CRUD: create, view, edit, delete            | no (done)             | Complete; tested. |
-| S-06A      | dashboard-prioritization | Today dashboard: smart sorting (due date, priority, overdue first) | yes (ready-to-plan) | **NORTH STAR part 1.** Core decision-support via sorting. 3–4 days. |
+| S-03       | task-recurrence-management | Task recurrence: change frequency or remove recurrence from existing tasks | yes | **CRITICAL PATH for MVP.** Prerequisite for S-06 (dashboard needs recurring task logic). 3–4 days. |
+| S-06A      | dashboard-prioritization | Today dashboard: smart sorting (due date, priority, overdue first) | yes (ready-to-plan) | **NORTH STAR part 1.** Core decision-support via sorting. 3–4 days. Depends on S-03. |
 | S-06B      | suggested-household-tasks | Domain-heuristic suggestions (3–5 tasks); user can accept/dismiss | yes (ready-to-plan) | **NORTH STAR part 2.** Task suggestions without AI. 4–5 days. Runs parallel with S-06A. |
 | S-08       | ui-styling-updates     | UI styling updates: colors, spacing, typography        | yes (in-progress) | Polish pass. Run in parallel with S-06A & S-06B. |
 | S-07       | ai-task-generation     | AI task generation (deferred to v1.1)                    | no (parked)       | Revisit post-launch based on heuristic validation. |
@@ -239,52 +255,67 @@ What's already in place in the codebase as of 2026-09-03 (auto-researched + user
 
 ## Current Status & Next Steps
 
-**1-week sprint to MVP** (S-06A + S-06B + S-08 focus, S-07 parked):
+**1-week sprint to MVP** (S-03 foundation + S-06A + S-06B + S-08 focus, S-07 parked):
 
 **Week 1 priorities:**
-1. **S-06A (Dashboard Prioritization)** — CRITICAL PATH (3–4 days)
+1. **S-03 (Task Recurrence Management)** — CRITICAL PATH FOUNDATION (3–4 days, MUST ship before S-06)
+   - Extend task schema to support recurrence (recurrence_type: daily/weekly/monthly/once, recurrence_interval, recurrence_end_date)
+   - Database migration for existing tasks (default to non-recurring)
+   - Backend API endpoint: fetch task recurrence details, update recurrence
+   - Frontend: extend task edit form to show recurrence picker
+   - Ensure next occurrence calculations work for dashboard integration
+   - **Unlocks:** S-06A and S-06B can now work with recurring tasks correctly
+   
+2. **S-06A (Dashboard Prioritization)** — CRITICAL PATH (3–4 days, starts after S-03 schema lands)
    - Create TodayDashboardContainer component
    - Implement smart sorting: overdue first → due date → priority
+   - **With S-03 complete:** dashboard can now correctly display recurring tasks and their next occurrences
    - Wire task actions: complete, delete, move to tomorrow, refresh
    - Visual hierarchy: clear distinction between overdue and today's tasks
    
-2. **S-06B (Suggested Household Tasks)** — CRITICAL PATH (4–5 days, runs parallel with S-06A)
+3. **S-06B (Suggested Household Tasks)** — CRITICAL PATH (4–5 days, runs parallel with S-06A after S-03)
    - Define 20–30 domain household tasks with frequencies/seasons
+   - **Leverage S-03's recurrence logic:** suggestions should account for recurring tasks already scheduled
    - Implement heuristics scoring engine (backend)
    - Create suggestion API endpoint
    - Build SuggestedTasksList component + accept/dismiss flow
    - Analytics: log acceptance/dismissal for post-MVP validation
    
-3. **Dashboard Integration** (both S-06A and S-06B together)
+4. **Dashboard Integration** (S-06A and S-06B together)
    - Show user's sorted tasks above suggested tasks
    - Accept suggestion → task added to user's list
    - Clear visual separation
+   - Recurring tasks display frequency info
    
-4. **S-08 (UI Styling)** — PARALLEL
+5. **S-08 (UI Styling)** — PARALLEL
    - Polish dashboard appearance
    - Color, spacing, typography refinement
    
-5. **Launch ready:**
+6. **Launch ready:**
+   - Task recurrence working end-to-end (S-03)
    - Smart sorting working (S-06A)
-   - Domain heuristics working (S-06B)
+   - Domain heuristics working with recurrence logic (S-06B)
    - No AI complexity
-   - Users see useful suggestions
+   - Users see useful suggestions and can manage task recurrence
 
 **Validation criteria (post-launch):**
 - Users return to dashboard daily (engagement signal).
 - Users accept 50%+ of suggestions (heuristics are useful).
+- Users modify task recurrence (feature adoption signal).
 - System responds instantly to actions (no lag).
 
 **Task dependencies:**
-- S-06A and S-06B can run in parallel (different concerns)
-- S-06B depends on S-06A's container for dashboard integration
-- Both depend on S-02 (task CRUD + API) — already done
+- **S-03 FIRST** — Schema changes must land before S-06A/S-06B can be planned in detail
+- S-06A and S-06B can run in parallel once S-03 is complete (different concerns, same data)
+- S-06A and S-06B both depend on S-03 (task recurrence foundation)
+- All depend on S-02 (task CRUD + API) — already done
 
 **Post-launch path (v1.1):**
 - Measure heuristic effectiveness via user adoption & acceptance rate.
-- If heuristics work well, keep simple; no AI needed.
+- Measure recurrence adoption (do users actually use the frequency change feature?).
+- If heuristics + recurrence work well, keep simple; no AI needed.
 - If users want more sophistication, revisit S-07 (AI suggestions) based on validated demand.
 
 ---
 
-**Summary:** 1-week sprint: build S-06A (dashboard prioritization) + S-06B (domain heuristics) in parallel + S-08 (polish). Split S-06 into two focused tasks to reduce complexity per task and enable parallel work. Validate the decision-support hypothesis with simple, rule-based sorting + suggestions. Ship lean, iterate based on real user behavior. AI considered only post-launch if heuristics alone aren't enough.
+**Summary:** 1-week sprint: build S-03 (task recurrence foundation) → S-06A (dashboard prioritization) and S-06B (domain heuristics) in parallel → S-08 (polish). Recurrence is the foundation that makes the dashboard and suggestions intelligent. Validate that users find recurrence management + heuristic suggestions useful. Ship lean, iterate based on real user behavior. AI considered only post-launch if heuristics alone aren't enough.
