@@ -114,27 +114,21 @@ export function SuggestedTasksList({ onSuggestionAccepted }: SuggestedTasksListP
   }
 
   return (
-    <>
-      {/* Divider */}
-      <div className="my-6 border-t border-accent/20" />
+    <div className="flex flex-col">
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-accent">Suggested Tasks</h2>
+        <Button variant="secondary" size="sm" onClick={fetchSuggestions} disabled={isLoading}>
+          Refresh
+        </Button>
+      </div>
 
-      {/* Suggestions Section */}
-      <div>
-        <h3 className="mb-4 text-sm font-semibold text-accent">Suggested Tasks</h3>
+      {error && (
+        <Notice tone="error" className="mb-4" onDismiss={() => setError(null)}>
+          {error}
+        </Notice>
+      )}
 
-        {error && (
-          <Notice tone="error" className="mb-4" onDismiss={() => setError(null)}>
-            {error}
-            <button
-              onClick={fetchSuggestions}
-              className="ml-2 text-xs font-medium underline hover:no-underline"
-            >
-              Retry
-            </button>
-          </Notice>
-        )}
-
-        <div className="space-y-2">
+      <div className="space-y-2">
           {suggestions.map((suggestion) => (
             <div
               key={suggestion.id}
@@ -189,7 +183,6 @@ export function SuggestedTasksList({ onSuggestionAccepted }: SuggestedTasksListP
             </div>
           ))}
         </div>
-      </div>
-    </>
+    </div>
   )
 }
