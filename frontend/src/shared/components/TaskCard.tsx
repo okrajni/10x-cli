@@ -9,6 +9,7 @@ interface TaskCardProps {
   onComplete?: (taskId: string) => void
   onEdit?: (taskId: string) => void
   onDelete?: (taskId: string) => void
+  onMoveToTomorrow?: (taskId: string) => void
   isLoading?: boolean
 }
 
@@ -17,6 +18,7 @@ export function TaskCard({
   onComplete,
   onEdit,
   onDelete,
+  onMoveToTomorrow,
   isLoading = false,
 }: TaskCardProps) {
   const isCompleted = !!task.completedAt
@@ -26,10 +28,11 @@ export function TaskCard({
   return (
     <div
       className={clsx(
-        'rounded-card border border-accent/30 bg-accent/[0.05] p-5 transition hover:border-accent/60',
+        'rounded-card border p-5 transition',
         isCompleted && 'opacity-55',
-        // Overdue is signalled by a solid hairline instead of a warning color.
-        isOverdue && 'border-accent'
+        isOverdue
+          ? 'border-red-400 bg-red-50/50 hover:border-red-500'
+          : 'border-accent/30 bg-accent/[0.05] hover:border-accent/60'
       )}
     >
       {/* Title + category */}
@@ -59,8 +62,8 @@ export function TaskCard({
 
       {/* Due date + recurrence */}
       <div className="mb-5 flex flex-wrap items-center gap-3 text-xs">
-        <span className={clsx('font-light text-accent/75', isOverdue && 'font-medium text-accent')}>
-          {isOverdue && <span aria-hidden="true">! </span>}
+        <span className={clsx('font-light text-accent/75', isOverdue && 'font-medium text-red-600')}>
+          {isOverdue && <span aria-hidden="true">⚠ </span>}
           {dueDate.toLocaleDateString()}
         </span>
 
@@ -96,6 +99,18 @@ export function TaskCard({
             aria-label={`Edit ${task.title}`}
           >
             Edit
+          </Button>
+        )}
+
+        {onMoveToTomorrow && !isCompleted && (
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => onMoveToTomorrow(task.id)}
+            disabled={isLoading}
+            aria-label={`Move ${task.title} to tomorrow`}
+          >
+            Tomorrow
           </Button>
         )}
 

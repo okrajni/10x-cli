@@ -26,7 +26,7 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Base layer — the canvas (#445225) and the accent (#D29C9A) are the only
+   Base layer — the canvas (#344c36) and the accent (#D29C9A) are the only
    two colors in the interface. Text defaults to accent everywhere, so any
    element that forgets to declare a color still lands inside the palette.
    --------------------------------------------------------------------------- */
@@ -44,7 +44,7 @@
   ::before,
   ::after {
     --tw-ring-color: rgb(210 156 154 / 0.7);
-    --tw-ring-offset-color: #445225;
+    --tw-ring-offset-color: #344c36;
   }
 
   html,
@@ -54,7 +54,7 @@
   }
 
   body {
-    background-color: #445225;
+    background-color: #344c36;
     font-family: 'Inter', 'system-ui', '-apple-system', sans-serif;
     color: #D29C9A;
     -webkit-font-smoothing: antialiased;
@@ -89,13 +89,13 @@
 
   ::selection {
     background-color: #d29c9a;
-    color: #445225;
+    color: #344c36;
   }
 
   /* Native selects and their options stay inside the palette. */
   select,
   option {
-    background-color: #445225;
+    background-color: #344c36;
     color: #d29c9a;
   }
 
@@ -141,7 +141,7 @@
 
   :focus-visible {
     outline: none;
-    box-shadow: 0 0 0 2px rgb(210 156 154 / 0.7), 0 0 0 4px #445225;
+    box-shadow: 0 0 0 2px rgb(210 156 154 / 0.7), 0 0 0 4px #344c36;
   }
 }
 

@@ -1,6 +1,6 @@
 import { apiClient, ApiResult } from '@lib/api/client'
 
-export type TaskCategory = 'CLEANING' | 'SHOPPING' | 'LAUNDRY' | 'MAINTENANCE' | 'BILLS'
+export type TaskCategory = 'CLEANING' | 'SHOPPING' | 'LAUNDRY' | 'MAINTENANCE' | 'BILLS' | 'ERRANDS' | 'SEASONAL'
 
 export interface Task {
   id: string
@@ -68,5 +68,35 @@ export async function updateTask(
 export async function deleteTask(taskId: string): Promise<ApiResult<void>> {
   return apiClient(`/task/${taskId}`, {
     method: 'DELETE',
+  })
+}
+
+export interface DomainTask {
+  id: string
+  title: string
+  category: TaskCategory
+  frequencyDays: number
+  score: number
+}
+
+export interface SuggestionsResponse {
+  suggestions: DomainTask[]
+}
+
+export async function getSuggestions(): Promise<ApiResult<SuggestionsResponse>> {
+  return apiClient('/suggestions/heuristic')
+}
+
+export interface SuggestionInteraction {
+  suggestionId: string
+  action: 'accepted' | 'dismissed'
+}
+
+export async function logSuggestionInteraction(
+  interaction: SuggestionInteraction
+): Promise<ApiResult<void>> {
+  return apiClient('/suggestions/interaction', {
+    method: 'POST',
+    body: JSON.stringify(interaction),
   })
 }

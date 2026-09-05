@@ -430,9 +430,9 @@ Add responsive mobile layout, visual indicators for overdue tasks (styling), imp
 
 #### Automated
 
-- [ ] 1.1 Component compiles without errors (npm run typecheck)
-- [ ] 1.2 No linting issues (npm run lint)
-- [ ] 1.3 DashboardPage layout unchanged
+- [x] 1.1 Component compiles without errors (npm run typecheck)
+- [x] 1.2 No linting issues (npm run lint)
+- [x] 1.3 DashboardPage layout unchanged
 
 #### Manual
 
@@ -450,8 +450,8 @@ Add responsive mobile layout, visual indicators for overdue tasks (styling), imp
 
 #### Automated
 
-- [ ] 2.1 No type errors (npm run typecheck)
-- [ ] 2.2 Linting passes (npm run lint)
+- [x] 2.1 No type errors (npm run typecheck)
+- [x] 2.2 Linting passes (npm run lint)
 
 #### Manual
 
@@ -466,8 +466,8 @@ Add responsive mobile layout, visual indicators for overdue tasks (styling), imp
 
 #### Automated
 
-- [ ] 3.1 No regressions in lint/typecheck
-- [ ] 3.2 TaskCard prop changes backward compatible with TaskListPage
+- [x] 3.1 No regressions in lint/typecheck
+- [x] 3.2 TaskCard prop changes backward compatible with TaskListPage
 
 #### Manual
 

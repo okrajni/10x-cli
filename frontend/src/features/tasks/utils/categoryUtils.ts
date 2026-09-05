@@ -7,6 +7,8 @@ export function categoryLabel(category: TaskCategory): string {
     LAUNDRY: 'Laundry',
     MAINTENANCE: 'Maintenance',
     BILLS: 'Bills',
+    ERRANDS: 'Errands',
+    SEASONAL: 'Seasonal',
   }
   return labels[category]
 }
@@ -23,8 +25,10 @@ export function categoryColor(category: TaskCategory): string {
     LAUNDRY: 'border-accent/50 bg-accent/20 text-accent',
     MAINTENANCE: 'border-accent/70 bg-accent/30 text-accent',
     BILLS: 'border-accent bg-accent text-canvas',
+    ERRANDS: 'border-accent/35 bg-accent/5 text-accent',
+    SEASONAL: 'border-accent/60 bg-accent/25 text-accent',
   }
   return fills[category]
 }
 
-export const CATEGORIES: TaskCategory[] = ['CLEANING', 'SHOPPING', 'LAUNDRY', 'MAINTENANCE', 'BILLS']
+export const CATEGORIES: TaskCategory[] = ['CLEANING', 'SHOPPING', 'LAUNDRY', 'MAINTENANCE', 'BILLS', 'ERRANDS', 'SEASONAL']

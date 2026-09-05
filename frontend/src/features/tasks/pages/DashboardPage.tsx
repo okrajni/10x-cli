@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@features/auth/context/AuthContext'
 import { Button, PageHeading, Spinner } from '@shared/components'
 import TodayDashboardContainer from '../components/TodayDashboardContainer'
+import { SuggestedTasksList } from '../components/SuggestedTasksList'
 
 export default function DashboardPage() {
   const navigate = useNavigate()
@@ -56,8 +57,17 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <TodayDashboardContainer />
 
+        <div className="surface flex flex-col p-8">
+          <h2 className="mb-4 text-lg font-semibold text-accent">Suggested Tasks</h2>
+          <div className="flex-1">
+            <SuggestedTasksList />
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6">
         <div className="surface flex flex-col items-start gap-4 p-8">
-          <h2 className="text-lg font-semibold text-accent">Tasks</h2>
+          <h2 className="text-lg font-semibold text-accent">All Tasks</h2>
           <p className="flex-1 text-sm font-light text-accent/70">
             Browse, edit and complete every task in your household.
           </p>
