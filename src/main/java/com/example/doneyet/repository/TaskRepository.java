@@ -31,6 +31,6 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
     @Query("SELECT t FROM Task t WHERE t.parentTaskId = :parentTaskId AND t.deletedAt IS NULL ORDER BY t.dueDate ASC")
     List<Task> findByParentTaskIdOrderByDueDateAsc(@Param("parentTaskId") UUID parentTaskId);
 
-    @Query("SELECT t FROM Task t WHERE t.parentTaskId = :parentTaskId AND t.completed = false AND t.dueDate > :dueDateThreshold AND t.deletedAt IS NULL ORDER BY t.dueDate ASC LIMIT 1")
+    @Query(value = "SELECT t.* FROM tasks t WHERE t.parent_task_id = :parentTaskId AND t.completed = false AND t.due_date > :dueDateThreshold AND t.deleted_at IS NULL ORDER BY t.due_date ASC LIMIT 1", nativeQuery = true)
     Optional<Task> findByParentTaskIdAndCompletedFalseAndDueDateAfter(@Param("parentTaskId") UUID parentTaskId, @Param("dueDateThreshold") LocalDate dueDateThreshold);
 }

@@ -2,8 +2,8 @@
 
 **Roadmap ID:** S-02  
 **Change ID:** `basic-task-crud`  
-**Status:** implemented  
-**Updated:** 2026-08-29  
+**Status:** impl_reviewed  
+**Updated:** 2026-09-05  
 
 ## Identity
 

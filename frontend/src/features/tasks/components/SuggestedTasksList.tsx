@@ -50,7 +50,7 @@ export function SuggestedTasksList({ onSuggestionAccepted }: SuggestedTasksListP
     setActionInProgress(suggestion.id)
 
     try {
-      const today = new Date().toISOString().split('T')[0]
+      const today = new Date().toISOString().split('T')[0] ?? ''
       console.log('Creating task:', { title: suggestion.title, category: suggestion.category, dueDate: today })
 
       if (!suggestion.title || !suggestion.category) {

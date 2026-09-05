@@ -34,28 +34,32 @@ export default function TodayDashboardContainer() {
   }
 
   const getTodayAndOverdue = () => {
-    const today = new Date().toISOString().split('T')[0]
+    const today = new Date().toISOString().split('T')[0] ?? ''
+
+    const formatDate = (dateStr: string | undefined): string => {
+      return (dateStr ?? '').split('T')[0] ?? ''
+    }
 
     const overdue = tasks
       .filter((t) => {
-        const dueStr = t.dueDate.split('T')[0]
+        const dueStr = formatDate(t.dueDate)
         return dueStr < today && !t.completedAt
       })
-      .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
+      .sort((a, b) => new Date(a.dueDate ?? '').getTime() - new Date(b.dueDate ?? '').getTime())
 
     const todayOnly = tasks
       .filter((t) => {
-        const dueStr = t.dueDate.split('T')[0]
+        const dueStr = formatDate(t.dueDate)
         return dueStr === today && !t.completedAt
       })
-      .sort((a, b) => (b.priority || 0) - (a.priority || 0))
+      .sort((a, b) => a.category.localeCompare(b.category))
 
     const completedOverdueAndToday = tasks
       .filter((t) => {
-        const dueStr = t.dueDate.split('T')[0]
+        const dueStr = formatDate(t.dueDate)
         return dueStr <= today && t.completedAt
       })
-      .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
+      .sort((a, b) => new Date(a.dueDate ?? '').getTime() - new Date(b.dueDate ?? '').getTime())
 
     return [...overdue, ...todayOnly, ...completedOverdueAndToday]
   }

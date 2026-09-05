@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button, TaskCard, Notice, PageHeading } from '@shared/components'
-import { listTasks, Task, updateTask, deleteTask } from '../api'
+import { listTasks, Task, completeTask, deleteTask } from '../api'
 import TaskDeleteDialog from '../components/TaskDeleteDialog'
 
 export default function TaskListPage() {
@@ -42,19 +42,17 @@ export default function TaskListPage() {
     if (!task) return
 
     try {
-      const result = await updateTask(taskId, {
-        completedAt: task.completedAt ? undefined : new Date().toISOString(),
-      })
+      const result = await completeTask(taskId)
 
       if (result.ok) {
         setTasks(
           tasks.map((t) => (t.id === taskId ? result.data : t))
         )
       } else {
-        setError(result.message || 'Failed to update task')
+        setError(result.message || 'Failed to complete task')
       }
     } catch {
-      setError('An error occurred while updating the task')
+      setError('An error occurred while completing the task')
     }
   }
 

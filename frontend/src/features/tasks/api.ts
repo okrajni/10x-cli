@@ -71,6 +71,12 @@ export async function deleteTask(taskId: string): Promise<ApiResult<void>> {
   })
 }
 
+export async function completeTask(taskId: string): Promise<ApiResult<Task>> {
+  return apiClient(`/task/${taskId}/complete`, {
+    method: 'PUT',
+  })
+}
+
 export interface DomainTask {
   id: string
   title: string
