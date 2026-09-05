@@ -145,16 +145,18 @@ export default function TodayDashboardContainer() {
           <p className="text-sm text-accent/70">All caught up! No tasks for today.</p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {todayAndOverdue.map((task) => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              onComplete={() => handleComplete(task.id)}
-              onDelete={() => handleDelete(task.id)}
-              onMoveToTomorrow={() => handleMoveToTomorrow(task.id)}
-            />
-          ))}
+        <div className="max-h-96 overflow-y-auto">
+          <div className="space-y-3">
+            {todayAndOverdue.map((task) => (
+              <TaskCard
+                key={task.id}
+                task={task}
+                onComplete={() => handleComplete(task.id)}
+                onDelete={() => handleDelete(task.id)}
+                onMoveToTomorrow={() => handleMoveToTomorrow(task.id)}
+              />
+            ))}
+          </div>
         </div>
       )}
     </div>
