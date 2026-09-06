@@ -473,15 +473,15 @@ Create `TaskRecurrenceIntegrationTest.java` to prove end-to-end recurrence workf
 
 #### Automated
 
-- [x] 4.1 TaskRecurrenceIntegrationTest compiles
-- [x] 4.2 Workflow test (create recurring → complete → verify next) passes
-- [x] 4.3 Idempotency test (call twice → 1 instance) passes
-- [x] 4.4 Soft-delete orphan test passes
-- [x] 4.5 State invariant violation test (reject invalid) passes
-- [x] 4.6 No regression in existing TaskControllerIntegrationTest tests
+- [x] 4.1 TaskRecurrenceIntegrationTest compiles — 71f2085
+- [x] 4.2 Workflow test (create recurring → complete → verify next) passes — 71f2085
+- [x] 4.3 Idempotency test (call twice → 1 instance) passes — 71f2085
+- [x] 4.4 Soft-delete orphan test passes — 71f2085
+- [x] 4.5 State invariant violation test (reject invalid) passes — 71f2085
+- [x] 4.6 No regression in existing TaskControllerIntegrationTest tests — 71f2085
 
 #### Manual
 
-- [x] 4.7 Dashboard completion triggers recurrence end-to-end
-- [x] 4.8 State invariant guard rejects invalid via API
-- [x] 4.9 Soft-delete orphans remain in DB but hidden from dashboard
+- [x] 4.7 Dashboard completion triggers recurrence end-to-end — 71f2085
+- [x] 4.8 State invariant guard rejects invalid via API — 71f2085
+- [x] 4.9 Soft-delete orphans remain in DB but hidden from dashboard — 71f2085
