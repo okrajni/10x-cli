@@ -428,32 +428,32 @@ Create `TaskRecurrenceIntegrationTest.java` to prove end-to-end recurrence workf
 
 #### Automated
 
-- [x] 1.1 Type checking passes (frontend + backend)
-- [x] 1.2 Linting passes (frontend + backend)
-- [x] 1.3 Dashboard fix compiles with no import errors
-- [x] 1.4 Guard methods compile correctly
-- [x] 1.5 TaskServiceTest passes with new guard logic
-- [x] 1.6 Existing recurrence tests still pass: mvn test -Dtest=RecurrenceServiceTest
+- [x] 1.1 Type checking passes (frontend + backend) — 9d03156
+- [x] 1.2 Linting passes (frontend + backend) — 9d03156
+- [x] 1.3 Dashboard fix compiles with no import errors — 9d03156
+- [x] 1.4 Guard methods compile correctly — 9d03156
+- [x] 1.5 TaskServiceTest passes with new guard logic — 9d03156
+- [x] 1.6 Existing recurrence tests still pass: mvn test -Dtest=RecurrenceServiceTest — 9d03156
 
 #### Manual
 
-- [x] 1.6 Dashboard completion triggers recurrence (verify next instance appears)
-- [x] 1.7 Idempotency guard works (call completeTask() twice → no duplicates)
-- [x] 1.8 State invariant guard works (reject invalid completedAt without completed)
+- [x] 1.7 Dashboard completion triggers recurrence (verify next instance appears) — 9d03156
+- [x] 1.8 Idempotency guard works (call completeTask() twice → no duplicates) — 9d03156
+- [x] 1.9 State invariant guard works (reject invalid completedAt without completed) — 9d03156
 
 ### Phase 2: Test Infrastructure & Dependencies
 
 #### Automated
 
-- [ ] 2.1 Maven build succeeds with RFC 5545 library added
-- [ ] 2.2 RFC 5545 library resolves from Maven Central
-- [ ] 2.3 TestRecurrenceFixtures compiles with no errors
-- [ ] 2.4 Fixtures accessible from test classes
+- [x] 2.1 Maven build succeeds with RFC 5545 library added
+- [x] 2.2 RFC 5545 library resolves from Maven Central (using ical4j)
+- [x] 2.3 TestRecurrenceFixtures compiles with no errors
+- [x] 2.4 Fixtures accessible from test classes
 
 #### Manual
 
-- [ ] 2.5 Review TestRecurrenceFixtures for representative boundary cases
-- [ ] 2.6 Verify RFC 5545 library appears in dependency tree
+- [x] 2.5 Review TestRecurrenceFixtures for representative boundary cases (5 cases: daily, weekly, month-end clamping, leap year, cascading month-end)
+- [x] 2.6 Verify RFC 5545 library appears in dependency tree (ical4j:3.2.14:test)
 
 ### Phase 3: Recurrence Math Unit Tests
 
