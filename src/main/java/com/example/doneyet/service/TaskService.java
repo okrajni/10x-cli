@@ -83,6 +83,10 @@ public class TaskService {
         Task task = taskRepository.findByIdAndHouseholdId(taskId, householdId)
                 .orElseThrow(() -> new NotFoundException("Task not found"));
 
+        if (request.getCompletedAt() != null) {
+            throw new IllegalArgumentException("Task completed flag and completedAt timestamp must be consistent; use PUT /task/{id}/complete endpoint instead");
+        }
+
         if (request.getTitle() != null) {
             task.setTitle(request.getTitle());
         }
@@ -94,9 +98,6 @@ public class TaskService {
         }
         if (request.getDueDate() != null) {
             task.setDueDate(request.getDueDate());
-        }
-        if (request.getCompletedAt() != null) {
-            task.setCompletedAt(request.getCompletedAt());
         }
         if (request.getRecurrenceFrequency() != null) {
             task.setRecurrenceFrequency(request.getRecurrenceFrequency());
@@ -146,6 +147,10 @@ public class TaskService {
 
         Task task = taskRepository.findByIdAndHouseholdId(taskId, householdId)
                 .orElseThrow(() -> new NotFoundException("Task not found"));
+
+        if (task.isCompleted()) {
+            return mapToResponse(task);
+        }
 
         task.setCompleted(true);
         task.setCompletedAt(LocalDateTime.now());

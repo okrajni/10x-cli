@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@features/auth/context/AuthContext'
-import { listTasks, deleteTask, updateTask, Task } from '../api'
+import { listTasks, deleteTask, updateTask, completeTask, Task } from '../api'
 import { Button, Notice, Spinner, TaskCard } from '@shared/components'
 
 export default function TodayDashboardContainer() {
@@ -72,9 +72,7 @@ export default function TodayDashboardContainer() {
     setTasks(optimisticTasks)
 
     try {
-      const result = await updateTask(taskId, {
-        completedAt: new Date().toISOString(),
-      })
+      const result = await completeTask(taskId)
 
       if (!result.ok) {
         setTasks(tasks)
