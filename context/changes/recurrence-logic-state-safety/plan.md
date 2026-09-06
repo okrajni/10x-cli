@@ -445,29 +445,29 @@ Create `TaskRecurrenceIntegrationTest.java` to prove end-to-end recurrence workf
 
 #### Automated
 
-- [x] 2.1 Maven build succeeds with RFC 5545 library added
-- [x] 2.2 RFC 5545 library resolves from Maven Central (using ical4j)
-- [x] 2.3 TestRecurrenceFixtures compiles with no errors
-- [x] 2.4 Fixtures accessible from test classes
+- [x] 2.1 Maven build succeeds with RFC 5545 library added — 3baaf27
+- [x] 2.2 RFC 5545 library resolves from Maven Central (using ical4j) — 3baaf27
+- [x] 2.3 TestRecurrenceFixtures compiles with no errors — 3baaf27
+- [x] 2.4 Fixtures accessible from test classes — 3baaf27
 
 #### Manual
 
-- [x] 2.5 Review TestRecurrenceFixtures for representative boundary cases (5 cases: daily, weekly, month-end clamping, leap year, cascading month-end)
-- [x] 2.6 Verify RFC 5545 library appears in dependency tree (ical4j:3.2.14:test)
+- [x] 2.5 Review TestRecurrenceFixtures for representative boundary cases (5 cases: daily, weekly, month-end clamping, leap year, cascading month-end) — 3baaf27
+- [x] 2.6 Verify RFC 5545 library appears in dependency tree (ical4j:3.2.14:test) — 3baaf27
 
 ### Phase 3: Recurrence Math Unit Tests
 
 #### Automated
 
-- [ ] 3.1 RecurrenceServiceTest compiles
-- [ ] 3.2 Parameterized tests run (5 boundary cases)
-- [ ] 3.3 All recurrence boundary tests pass
-- [ ] 3.4 No regression in existing RecurrenceServiceTest tests
+- [x] 3.1 RecurrenceServiceTest compiles
+- [x] 3.2 Parameterized tests run (5 boundary cases)
+- [x] 3.3 All recurrence boundary tests pass
+- [x] 3.4 No regression in existing RecurrenceServiceTest tests
 
 #### Manual
 
-- [ ] 3.5 Review parameterized test output to verify all 5 cases executed
-- [ ] 3.6 Spot-check one boundary case manually (e.g., Jan 31 + 1 month)
+- [x] 3.5 Review parameterized test output to verify all 5 cases executed
+- [x] 3.6 Spot-check one boundary case manually (e.g., Jan 31 + 1 month)
 
 ### Phase 4: State Transition & Integration Tests
 

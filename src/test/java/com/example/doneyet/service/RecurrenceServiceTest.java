@@ -1,16 +1,21 @@
 package com.example.doneyet.service;
 
+import com.example.doneyet.TestRecurrenceFixtures;
 import com.example.doneyet.domain.*;
 import com.example.doneyet.repository.TaskRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDate;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -147,5 +152,26 @@ public class RecurrenceServiceTest {
         assertEquals(TaskCategory.SHOPPING, nextInstance.getCategory());
         assertEquals(RecurrenceFrequency.WEEKLY, nextInstance.getRecurrenceFrequency());
         assertEquals(1, nextInstance.getRecurrenceWeekday());
+    }
+
+    @ParameterizedTest(name = "Recurrence {0}")
+    @MethodSource("getRecurrenceBoundaryCases")
+    public void testComputeNextDueDateMatchesRfc5545Oracle(TestRecurrenceFixtures.RecurrenceTestCase testCase) {
+        Task task = new Task("Test", household, user);
+        task.setDueDate(testCase.startDate());
+        task.setRecurrenceFrequency(testCase.frequency());
+        if (testCase.weekday() != null) {
+            task.setRecurrenceWeekday(testCase.weekday());
+        }
+
+        LocalDate actual = recurrenceService.computeNextDueDate(task);
+        LocalDate expected = testCase.expectedNextDate();
+
+        assertEquals(expected, actual, "Mismatch for " + testCase.description());
+    }
+
+    private static Stream<TestRecurrenceFixtures.RecurrenceTestCase> getRecurrenceBoundaryCases() {
+        return TestRecurrenceFixtures.getRecurrenceBoundaryCases()
+                .stream();
     }
 }

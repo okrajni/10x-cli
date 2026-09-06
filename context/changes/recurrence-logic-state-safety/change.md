@@ -1,10 +1,10 @@
 ---
 id: recurrence-logic-state-safety
 title: Recurrence Logic + State Safety Unit Tests
-phase: Phase 2 (Rollout §3)
+phase: Phase 3 (Rollout §3)
 status: implementing
 updated: 2026-09-06
-last_phase_completed: 1
+last_phase_completed: 2
 risks_covered:
   - Risk #3 (recurring task math)
   - Risk #7 (state inconsistency & transitions)
