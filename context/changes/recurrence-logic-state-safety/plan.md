@@ -459,29 +459,29 @@ Create `TaskRecurrenceIntegrationTest.java` to prove end-to-end recurrence workf
 
 #### Automated
 
-- [x] 3.1 RecurrenceServiceTest compiles
-- [x] 3.2 Parameterized tests run (5 boundary cases)
-- [x] 3.3 All recurrence boundary tests pass
-- [x] 3.4 No regression in existing RecurrenceServiceTest tests
+- [x] 3.1 RecurrenceServiceTest compiles — 4e355dc
+- [x] 3.2 Parameterized tests run (5 boundary cases) — 4e355dc
+- [x] 3.3 All recurrence boundary tests pass — 4e355dc
+- [x] 3.4 No regression in existing RecurrenceServiceTest tests — 4e355dc
 
 #### Manual
 
-- [x] 3.5 Review parameterized test output to verify all 5 cases executed
-- [x] 3.6 Spot-check one boundary case manually (e.g., Jan 31 + 1 month)
+- [x] 3.5 Review parameterized test output to verify all 5 cases executed — 4e355dc
+- [x] 3.6 Spot-check one boundary case manually (e.g., Jan 31 + 1 month) — 4e355dc
 
 ### Phase 4: State Transition & Integration Tests
 
 #### Automated
 
-- [ ] 4.1 TaskRecurrenceIntegrationTest compiles
-- [ ] 4.2 Workflow test (create recurring → complete → verify next) passes
-- [ ] 4.3 Idempotency test (call twice → 1 instance) passes
-- [ ] 4.4 Soft-delete orphan test passes
-- [ ] 4.5 State invariant violation test (reject invalid) passes
-- [ ] 4.6 No regression in existing TaskControllerIntegrationTest tests
+- [x] 4.1 TaskRecurrenceIntegrationTest compiles
+- [x] 4.2 Workflow test (create recurring → complete → verify next) passes
+- [x] 4.3 Idempotency test (call twice → 1 instance) passes
+- [x] 4.4 Soft-delete orphan test passes
+- [x] 4.5 State invariant violation test (reject invalid) passes
+- [x] 4.6 No regression in existing TaskControllerIntegrationTest tests
 
 #### Manual
 
-- [ ] 4.7 Dashboard completion triggers recurrence end-to-end
-- [ ] 4.8 State invariant guard rejects invalid via API
-- [ ] 4.9 Soft-delete orphans remain in DB but hidden from dashboard
+- [x] 4.7 Dashboard completion triggers recurrence end-to-end
+- [x] 4.8 State invariant guard rejects invalid via API
+- [x] 4.9 Soft-delete orphans remain in DB but hidden from dashboard
