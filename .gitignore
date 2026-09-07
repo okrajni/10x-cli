@@ -8,6 +8,7 @@ coverage/
 tests/e2e/.env.test
 .vitest-cache/
 .claude/
+.lefthook-local/
 HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar

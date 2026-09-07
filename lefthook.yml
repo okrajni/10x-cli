@@ -1,0 +1,25 @@
+pre-commit:
+  parallel: false
+
+  commands:
+    # TypeScript/Frontend
+    lint:
+      glob: "*.ts?(x)"
+      run: bun run lint {staged_files}
+
+    typecheck:
+      glob: "*.ts?(x)"
+      run: bun run typecheck
+
+    test-frontend:
+      glob: "*.ts?(x)"
+      run: bun test --run {staged_files}
+
+    # Java/Backend
+    compile:
+      glob: "*.java"
+      run: mvn clean compile -q
+
+    test-backend:
+      glob: "*.java"
+      run: mvn test -q
