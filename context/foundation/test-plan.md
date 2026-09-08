@@ -43,7 +43,7 @@ A household task management app (single-user MVP). Users externalize the mental 
 |---|---|---|---|---|---|---|---|
 | 1 | Bootstrap + critical-path | Configure test runners (backend + frontend); prove data visibility + completion persistence work | #1, #2 | Backend integration (dashboard query, task update); frontend unit (state mgmt) | context/changes/testing-bootstrap-critical-path/ | complete | — |
 | 2 | Recurrence logic + state safety | Validate recurring task math; prove state transitions don't introduce bugs. Unblock S-03 shipping. | #3, #7 | Unit tests (recurrence math); integration tests (state transitions + database) | context/changes/recurrence-logic-state-safety/ | complete | — |
-| 3 | Performance + authorization | Verify dashboard query <500ms under load; authorization checks prevent cross-user access. | #4, #6 | API integration (auth boundaries, ownership checks); benchmark (query latency) | — | not started | /10x-new testing-performance-authorization |
+| 3 | Performance + authorization | Verify dashboard query <500ms under load; authorization checks prevent cross-user access. | #4, #6 | API integration (auth boundaries, ownership checks); benchmark (query latency) | context/changes/testing-performance-authorization/ | change opened | — |
 | 4 | Validation consistency | Ensure frontend and backend validation match across task creation, editing, recurrence. | #5 | API contract tests (invalid payloads); optional frontend unit tests | — | not started | (waits for Phase 3, can run parallel) |
 
 ---
