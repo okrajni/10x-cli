@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
     private final RegistrationService registrationService;
     private final LoginService loginService;
@@ -53,7 +53,6 @@ public class AuthController {
         }
 
         try {
-            rateLimiter.recordLoginAttempt(request.getEmail(), ipAddress);
             AuthDto.AuthResponse response = loginService.login(request, httpRequest);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {

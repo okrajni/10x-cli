@@ -30,21 +30,6 @@ public class HouseholdController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @PostMapping("/{householdId}/invite")
-    public ResponseEntity<HouseholdDto.InvitationResponse> sendInvitation(
-            @PathVariable UUID householdId,
-            @RequestBody HouseholdDto.InvitationRequest request,
-            Authentication authentication
-    ) {
-        User user = (User) authentication.getPrincipal();
-        HouseholdDto.InvitationResponse response = householdService.sendInvitation(
-                householdId,
-                request.getInvitedEmail(),
-                user.getEmail()
-        );
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
     @GetMapping
     public ResponseEntity<List<HouseholdDto.HouseholdResponse>> getUserHouseholds(
             Authentication authentication
@@ -52,5 +37,15 @@ public class HouseholdController {
         User user = (User) authentication.getPrincipal();
         List<HouseholdDto.HouseholdResponse> households = householdService.getUserHouseholds(user.getId());
         return ResponseEntity.status(HttpStatus.OK).body(households);
+    }
+
+    @GetMapping("/{householdId}")
+    public ResponseEntity<HouseholdDto.HouseholdDetailsResponse> getHouseholdDetails(
+            @PathVariable UUID householdId,
+            Authentication authentication
+    ) {
+        User user = (User) authentication.getPrincipal();
+        HouseholdDto.HouseholdDetailsResponse response = householdService.getHouseholdDetails(householdId, user.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

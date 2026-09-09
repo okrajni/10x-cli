@@ -7,6 +7,12 @@ interface ApiClientOptions extends RequestInit {
   headers?: Record<string, string>
 }
 
+let tokenOverride: string | null = null
+
+export function setApiToken(token: string | null) {
+  tokenOverride = token
+}
+
 /**
  * Custom fetch wrapper that:
  * - Injects Bearer token in Authorization header
@@ -18,7 +24,7 @@ export async function apiClient<T>(
   path: string,
   options: ApiClientOptions = {}
 ): Promise<ApiResult<T>> {
-  const token = getStoredToken()
+  const token = tokenOverride || getStoredToken()
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -39,6 +45,10 @@ export async function apiClient<T>(
 
       // Success: 2xx status
       if (response.ok) {
+        // Handle 204 No Content (empty response)
+        if (response.status === 204) {
+          return { ok: true, data: undefined as T }
+        }
         const data = await response.json()
         return { ok: true, data }
       }

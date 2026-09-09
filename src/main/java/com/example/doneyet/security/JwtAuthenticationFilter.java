@@ -1,5 +1,7 @@
 package com.example.doneyet.security;
 
+import com.example.doneyet.domain.User;
+import com.example.doneyet.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,9 +18,11 @@ import java.util.UUID;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
 
-    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
+    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, UserRepository userRepository) {
         this.jwtTokenProvider = jwtTokenProvider;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -29,11 +33,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (bearerToken != null && jwtTokenProvider.isTokenValid(bearerToken)) {
             try {
                 UUID userId = jwtTokenProvider.extractUserId(bearerToken);
-                String email = jwtTokenProvider.extractEmail(bearerToken);
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(userId.toString(), null, Collections.emptyList());
-                authentication.setDetails(email);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                User user = userRepository.findById(userId).orElse(null);
+                if (user != null) {
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
             } catch (Exception e) {
                 SecurityContextHolder.clearContext();
             }

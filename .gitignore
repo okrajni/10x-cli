@@ -8,6 +8,7 @@ coverage/
 tests/e2e/.env.test
 .vitest-cache/
 .claude/
+.lefthook-local/
 HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar
@@ -38,3 +39,8 @@ build/
 ### VS Code ###
 .vscode/
 # from spring
+playwright/.auth/
+test-results/
+playwright-report/
+.playwright-cli/
+frontend/test-results/

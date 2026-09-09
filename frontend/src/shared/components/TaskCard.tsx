@@ -1,21 +1,16 @@
 import clsx from 'clsx'
 import { Task } from '@features/tasks/api'
+import { categoryColor, categoryLabel } from '@features/tasks/utils/categoryUtils'
+import { formatRecurrence } from '@features/tasks/utils/recurrenceUtils'
 import { Button } from './Button'
 
 interface TaskCardProps {
   task: Task
   onComplete?: (taskId: string) => void
-  onEdit?: (task: Task) => void
+  onEdit?: (taskId: string) => void
   onDelete?: (taskId: string) => void
+  onMoveToTomorrow?: (taskId: string) => void
   isLoading?: boolean
-}
-
-const categoryColors: Record<Task['category'], string> = {
-  cleaning: 'bg-blue-100 text-blue-800',
-  shopping: 'bg-green-100 text-green-800',
-  laundry: 'bg-purple-100 text-purple-800',
-  maintenance: 'bg-yellow-100 text-yellow-800',
-  bills: 'bg-red-100 text-red-800',
 }
 
 export function TaskCard({
@@ -23,44 +18,70 @@ export function TaskCard({
   onComplete,
   onEdit,
   onDelete,
+  onMoveToTomorrow,
   isLoading = false,
 }: TaskCardProps) {
-  const isCompleted = task.status === 'completed'
+  const isCompleted = !!task.completedAt
+  const dueDate = new Date(task.dueDate)
+  const isOverdue = dueDate < new Date() && !isCompleted
 
   return (
     <div
       className={clsx(
-        'p-4 border rounded-lg shadow-sm hover:shadow-md transition bg-white',
-        isCompleted && 'opacity-60'
+        'rounded-card border p-5 transition',
+        isCompleted && 'opacity-55',
+        isOverdue
+          ? 'border-red-400 bg-red-50/50 hover:border-red-500'
+          : 'border-accent/30 bg-accent/[0.05] hover:border-accent/60'
       )}
     >
-      {/* Header: Title + Category Badge */}
-      <div className="flex justify-between items-start mb-2">
-        <h3 className={clsx('font-semibold text-gray-900', isCompleted && 'line-through')}>
+      {/* Title + category */}
+      <div className="mb-3 flex items-start justify-between gap-4">
+        <h3
+          className={clsx(
+            'font-serif text-base font-semibold text-accent',
+            isCompleted && 'line-through decoration-accent/60'
+          )}
+        >
           {task.title}
         </h3>
-        <span className={clsx('text-xs px-2 py-1 rounded-full font-medium', categoryColors[task.category])}>
-          {task.category}
+
+        <span
+          className={clsx(
+            'shrink-0 rounded-pill border px-3 py-0.5 text-[0.65rem] font-medium uppercase tracking-label',
+            categoryColor(task.category)
+          )}
+        >
+          {categoryLabel(task.category)}
         </span>
       </div>
 
-      {/* Description */}
-      {task.description && <p className="text-sm text-gray-600 mb-3">{task.description}</p>}
+      {task.description && (
+        <p className="mb-4 line-clamp-2 text-sm font-light text-accent/75">{task.description}</p>
+      )}
 
-      {/* Due Date + Assignee */}
-      <div className="flex gap-4 text-sm text-gray-500 mb-4">
-        {task.dueDate && (
-          <span>{new Date(task.dueDate).toLocaleDateString()}</span>
+      {/* Due date + recurrence */}
+      <div className="mb-5 flex flex-wrap items-center gap-3 text-xs">
+        <span className={clsx('font-light text-accent/75', isOverdue && 'font-medium text-red-600')}>
+          {isOverdue && <span aria-hidden="true">⚠ </span>}
+          {dueDate.toLocaleDateString()}
+        </span>
+
+        {task.recurrenceFrequency && (
+          <span className="chip">
+            {formatRecurrence(
+              task.recurrenceFrequency,
+              task.recurrenceWeekday,
+              task.recurrenceEndDate
+            )}
+          </span>
         )}
-        <span className="font-medium text-blue-600">
-          {task.assignedTo === 'me' ? '👤 Me' : '👥 Partner'}
-        </span>
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex gap-2 justify-end">
+      {/* Actions */}
+      <div className="flex flex-wrap justify-end gap-2">
         <Button
-          variant="primary"
+          variant={isCompleted ? 'secondary' : 'primary'}
           size="sm"
           onClick={() => onComplete?.(task.id)}
           disabled={isLoading}
@@ -73,11 +94,23 @@ export function TaskCard({
           <Button
             variant="secondary"
             size="sm"
-            onClick={() => onEdit(task)}
+            onClick={() => onEdit(task.id)}
             disabled={isLoading}
             aria-label={`Edit ${task.title}`}
           >
             Edit
+          </Button>
+        )}
+
+        {onMoveToTomorrow && !isCompleted && (
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => onMoveToTomorrow(task.id)}
+            disabled={isLoading}
+            aria-label={`Move ${task.title} to tomorrow`}
+          >
+            Tomorrow
           </Button>
         )}
 

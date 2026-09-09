@@ -1,0 +1,12 @@
+# Intentionally empty of ignore rules.
+#
+# The wordmark font (Rammetto One) is under the SIL Open Font License, which
+# permits redistribution — so the .woff2 / .woff files SHOULD be committed
+# alongside OFL.txt. Nothing here is excluded from git.
+#
+# This file exists only to record that decision: an earlier candidate was a
+# personal-use-only font that had to stay out of the repo. If you ever swap the
+# wordmark back to a proprietary face, restore the exclusions:
+#   *
+#   !.gitignore
+#   !README.md

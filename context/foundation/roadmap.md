@@ -3,299 +3,319 @@ project: "done yet?"
 version: 1
 status: draft
 created: 2026-08-26
-updated: 2026-08-29
+updated: 2026-09-05 (Added S-03: task recurrence management as critical path)
 prd_version: 1
 main_goal: speed
-top_blocker: time
-milestone_id: first-coordination-proof
+top_blocker: decisions
+milestone_id: single-user-decision-system-mvp
 milestone_seq: 1
 milestone_status: open
 ---
 
 # Roadmap: done yet?
 
-> Derived from context/foundation/prd.md (v1) + auto-researched codebase baseline.
+> Derived from user description + auto-researched codebase baseline.
+> Last updated 2026-09-03: Refocused on domain-specific decision system. S-07 (AI) parked to v1.1 for 1-week MVP sprint.
 > Edit-in-place; archive when superseded.
 > Slices below are listed in dependency order. The "At a glance" table is the index.
 
 ## Milestone
 
-**M-1: first-coordination-proof** — Status: open
+**M-1: single-user-decision-system-mvp** — Status: open
 
-- **Intent:** Prove that the household coordination model works — two users can share task management responsibility and receive timely reminders, reducing the mental load from one person to both.
-- **Source materials:** `context/foundation/prd.md` (v1)
+- **Intent:** Validate that a domain-specific decision system (smart sorting, heuristic-based task suggestions, user-driven prioritization) reduces household management's mental load without requiring AI integration. Single user signs up, creates tasks, views an intelligent today dashboard, and can accept/customize suggested tasks. Core hypothesis: a simple, rule-based system that helps users decide what needs attention is more maintainable and faster to ship than AI-generated suggestions.
+- **Source materials:** User description (scope anchors below)
 - **Done when:** every F-NN and S-NN below is `done`.
 - **Scope anchors:**
-  - FR-001 through FR-005: Registration, household creation, partner invitation (the on-ramp)
-  - FR-006 through FR-008, FR-010 through FR-014: Task CRUD, assignment, dashboard (the coordination layer)
-  - FR-015 through FR-018: Telegram integration (the reminder channel)
-  - FR-019 through FR-020: AI task generation (secondary feature, may defer if time pressure peaks)
+  - **MS-01:** Shift from AI-agent approach to domain-specific decision system
+  - **MS-02:** Application actively helps user decide what needs attention (not just CRUD)
+  - **MS-03:** Suggest useful household tasks based on domain heuristics and decision logic
 
 ## Vision recap
 
-The mental load of managing a household falls disproportionately on one person — they remember what needs to be done, decide when it should be done, assign tasks, and remind others. **done yet?** transfers the coordination and reminder role to software, so household responsibilities can be shared without one partner becoming the perpetual "manager" of the home. The system acts as an external brain: rather than one partner remembering everything, the app surfaces reminders (Telegram for immediacy) and task suggestions (AI for discovery), allowing both partners to share responsibility explicitly through assignment and visibility.
+Household management is invisible mental labor — a person carries the cognitive load of remembering what needs doing. **done yet?** externalizes this through a simple task list (capture what's due when) plus intelligent task prioritization and suggestion (surface what people forget to do via smart defaults, not AI). The system acts as an external brain, reducing mental load through guided discovery powered by domain knowledge rather than AI-agent complexity.
+
+The **north star** — the smallest outcome that proves the hypothesis — is the today dashboard: when users open the app, they see their tasks smartly organized (by due date, priority, category, etc.), with optional task suggestions that surface common household needs they might have overlooked. If users find this simple heuristic-based system useful, the MVP validates without AI overhead.
 
 ## North star
 
-**S-04: User assigns task, partner receives Telegram reminder, marks complete from bot** — This is the smallest end-to-end validation of the core value prop: reminders catch users where they already are (Telegram). Everything before it (setup, task CRUD, assignment) is a prerequisite; everything after it (2-way sync, dashboard, AI) amplifies the core mechanism. Success here proves that the Telegram-as-coordination-channel model works.
+**S-06: Today's Dashboard (Enhanced)** — User sees tasks due today or overdue, intelligently sorted and grouped. System surfaces suggested household tasks based on domain heuristics (common chores, seasonal maintenance, frequency-based patterns). This proves the decision-support value without requiring AI integration.
 
-> The **north star** is the smallest end-to-end user-visible outcome whose successful delivery proves the core product hypothesis — placed as early as Prerequisites allow because everything else only matters if this works.
+> A reader-facing one-liner explaining what "north star" means here: the smallest end-to-end slice whose successful delivery would prove the core product hypothesis — placed as early as Prerequisites allow because everything else only matters if this works.
 
 ## At a glance
 
-| ID    | Change ID                | Outcome (user can …)                                          | Prerequisites      | PRD refs           | Status   |
-|-------|--------------------------|---------------------------------------------------------------|--------------------|--------------------|---------:|
-| F-01  | auth-scaffold            | (foundation) Email/password registration & login              | —                  | FR-001, FR-002     | in-progress |
-| F-02  | household-schema         | (foundation) Household data model & schema established        | F-01               | FR-003, FR-004     | in-progress |
-| F-04  | frontend-scaffold        | (foundation) React app, routing, component scaffolding, build setup | —                 | —                  | in-progress |
-| S-01  | new-user-setup           | Register, create household, invite partner, partner joins     | F-01, F-02, F-04   | US-01, FR-001–005  | in-progress |
-| S-02  | basic-task-crud          | Create, view, edit, delete task with title, description, category, due date | F-01, F-02, F-04 | US-02 partial, FR-006, FR-008, FR-010–013 | proposed |
-| S-03  | task-assignment          | Assign task to self or partner; both see assignments          | S-02, F-04         | FR-007             | proposed |
-| F-03  | telegram-bot-scaffold    | (foundation) Telegram bot scaffolding, token management, webhook setup | F-01, S-03 | FR-015 | proposed |
-| S-04  | telegram-reminder        | (NORTH STAR) Receive Telegram reminder at configured time     | S-03, F-03         | US-02, FR-016      | proposed |
-| S-05  | telegram-completion-sync | Mark task complete from Telegram; reflected immediately in web app | S-04, F-04 | FR-017, FR-018 | proposed |
-| S-06  | today-dashboard          | View tasks due today, grouped by assignee                     | S-02, S-03, F-04   | US-02 partial, FR-014 | proposed |
-| S-07  | ai-task-generation       | Describe household, receive AI task suggestions, accept/save  | S-02, F-04         | US-03, FR-019–020  | proposed |
-
-## Streams
-
-Navigation aid — groups items that share a Prerequisites chain. Canonical ordering still lives in the dependency graph below.
-
-| Stream | Theme                      | Chain                                  | Note                                                           |
-|--------|----------------------------|----------------------------------------|----------------------------------------------------------------|
-| A      | Backend Foundations        | `F-01` → `F-02`                        | Auth & household data model; unblocks all backend work.        |
-| B      | Frontend Foundation        | `F-04`                                 | React scaffolding, routing, build setup; runs parallel to A.   |
-| C      | Household Onramp           | `S-01` → `S-02`                        | Registration, household setup, task CRUD; joins A & B.         |
-| D      | Coordination (North Star)  | `S-03` → `F-03` → `S-04` → `S-05`      | Assignment & Telegram reminders; follows C; proves value prop. |
-| E      | Visibility & Discovery     | `S-06` → `S-07`                        | Dashboard & AI; parallel to D; depends on C.                   |
+| ID    | Change ID                  | Outcome (user can …)                                     | Prerequisites    | PRD refs       | Status   |
+|-------|----------------------------|----------------------------------------------------------|------------------|-------|----------|
+| F-01  | auth-scaffold              | (foundation) Register and log in with email/password     | —                | FR-001, FR-002 | done   |
+| F-02  | household-schema           | (foundation) Single-user household data model (cleaned)  | F-01             | FR-003         | done   |
+| F-03  | local-postgres-docker      | (foundation) Local postgres in Docker                    | —                | —              | done   |
+| F-04  | frontend-scaffold          | (foundation) React app with routing, components, build   | —                | —              | done   |
+| S-01  | new-user-setup             | Register, create household, create first task            | F-01, F-02, F-04 | US-01, FR-001–003 | done |
+| S-02  | basic-task-crud            | Create, view, edit, delete task with title, description, due date | F-01, F-02, F-04 | US-02, FR-006, FR-008, FR-010–013 | done |
+| S-03  | task-recurrence-management | Change task frequency (daily, weekly, monthly) or remove recurrence from existing tasks | S-02, F-04 | US-02, FR-015 (recurrence) | proposed |
+| S-06A | dashboard-prioritization   | User's tasks due today/overdue, intelligently sorted by due date and priority | S-02, S-03, F-04 | US-02, FR-014 (sorting) | proposed |
+| S-06B | suggested-household-tasks  | Suggested household tasks via domain heuristics (3–5 suggestions); user can accept or dismiss | S-02, S-03, F-04 | US-02, FR-014 (suggestions) | proposed |
+| S-08  | ui-styling-updates         | UI styling is updated and refined; polished appearance   | F-04, S-01, S-02 | —              | proposed |
 
 ## Baseline
 
-What's already in place in the codebase as of 2026-08-26 (auto-researched + user-confirmed).
+What's already in place in the codebase as of 2026-09-03 (auto-researched + user-confirmed).
 
-- **Frontend**: Absent — landing page only, no React framework or components yet
-- **Backend / API**: Partial — Spring Boot initialized, pom.xml has web dependencies, but no controllers or endpoints
-- **Data**: Partial — PostgreSQL + Hibernate + Spring Data JPA configured, but no entity classes or schema
-- **Auth**: Minimal — 10x-cli has CLI auth scaffolding; Spring Boot has no Spring Security or auth endpoints
-- **Deploy / Infra**: Present — Dockerfile, fStart `/10x-plan auth-scaffold`ly.toml, GitHub Actions auto-deploy workflows all in place
-- **Observability**: Absent — no logging library, error tracking, or metrics configured
+- **Frontend**: Present — Vite + React 18 with TypeScript. Router, auth context, API client, component scaffolding.
+- **Backend / API**: Present — Spring Boot with auth, household, and task endpoints. JWT auth via JwtAuthenticationFilter.
+- **Data**: Partial — PostgreSQL with users, households, tasks tables (cleaned of multi-user schema).
+- **Auth**: Present — Registration, login, JWT token management, rate limiting.
+- **Deploy / Infra**: Present — Dockerfile, GitHub Actions CI/CD (Fly.io deploy), local Docker Compose.
+- **Observability**: Minimal — Spring Boot defaults only, no structured logging.
 
 ## Foundations
 
 ### F-01: Auth scaffold
 
-- **Outcome:** (foundation) Email/password registration and login endpoints working; users have session tokens and can log in independently.
+- **Outcome:** (foundation) Email/password registration and login working; users receive JWT tokens and can log in independently.
 - **Change ID:** `auth-scaffold`
 - **PRD refs:** FR-001, FR-002
-- **Unlocks:** S-01 (user registration), all downstream user-facing work (users must be authenticated)
+- **Unlocks:** S-01 (user registration), all downstream user-facing work
 - **Prerequisites:** —
-- **Parallel with:** —
+- **Parallel with:** F-02, F-03, F-04
 - **Blockers:** —
 - **Unknowns:** —
-- **Risk:** Auth is the foundation of everything; if delayed, all downstream work is blocked. Spring Boot has no Spring Security config yet, so this is a first-week critical path item. Once in place, S-01 can start immediately.
-- **Status:** in-progress
+- **Risk:** Low risk — fully implemented and tested. Spring Boot auth is rock-solid.
+- **Status:** done
 
-### F-02: Household schema & data model
+### F-02: Household schema (cleaned)
 
-- **Outcome:** (foundation) PostgreSQL schema established with households, users, household_members, and tasks tables. User-household relationships are enforced (isolation, multi-member households).
+- **Outcome:** (foundation) PostgreSQL schema with users and households tables. Single-user model: each user has one household, with full ownership and isolation enforced.
 - **Change ID:** `household-schema`
-- **PRD refs:** FR-003, FR-004, NFR (data isolation)
-- **Unlocks:** S-02 (task persistence), S-03 (assignment), S-06 (dashboard queries), all downstream slices that depend on data storage
-- **Prerequisites:** F-01 (need user context for household isolation)
-- **Parallel with:** F-04 (frontend work can start independently; both feed S-01, S-02)
+- **PRD refs:** FR-003, NFR (data isolation)
+- **Unlocks:** S-01 (household creation), S-02 (task persistence), S-06 (dashboard queries)
+- **Prerequisites:** F-01
+- **Parallel with:** F-04
 - **Blockers:** —
-- **Unknowns:**
-  - **Telegram bot token ownership:** RESOLVED — system-wide bot model chosen. One bot serves all households; bot token managed centrally (not per-household). F-03 handles provisioning.
-- **Risk:** Schema design choice here cascades into Telegram bot architecture (F-03) and task assignment visibility (S-03). Get the household isolation model right in week 1; redesigning the schema in week 3 wastes critical time.
-- **Status:** in-progress
+- **Unknowns:** —
+- **Risk:** Low — schema cleanup complete, multi-user dead code removed.
+- **Status:** done
+
+### F-03: Local postgres docker setup
+
+- **Outcome:** (foundation) PostgreSQL runs in Docker locally for development; enables free local iteration. Docker Compose configured with schema parity to production.
+- **Change ID:** `local-postgres-docker`
+- **PRD refs:** —
+- **Unlocks:** S-01 (local task persistence), S-02 (local task operations), S-06 (dashboard queries), all downstream slices
+- **Prerequisites:** —
+- **Parallel with:** F-01, F-02, F-04
+- **Blockers:** —
+- **Unknowns:** —
+- **Risk:** Low — straightforward Docker Compose setup, schema parity verified.
+- **Status:** done
 
 ### F-04: Frontend scaffold
 
-- **Outcome:** (foundation) React app is bootstrapped with routing (React Router), build tooling (Vite or Webpack), component scaffolding, and state management skeleton (Context API or Redux setup). Development server is running and hot-reload is functional.
+- **Outcome:** (foundation) React app bootstrapped with routing (React Router), build tooling (Vite), component scaffolding, and auth context. Dev server runs with hot-reload.
 - **Change ID:** `frontend-scaffold`
 - **PRD refs:** —
-- **Unlocks:** S-01 (registration form UI), S-02 (task CRUD forms/views), S-03 (assignment picker UI), S-05 (real-time sync UI updates), S-06 (dashboard layout), S-07 (AI form UI)
+- **Unlocks:** S-01 (registration form, household creation form), S-02 (task CRUD UI), S-06 (dashboard), S-08 (styling)
 - **Prerequisites:** —
-- **Parallel with:** F-01, F-02 (backend and frontend can be built in parallel; no dependencies between them until integration in S-01)
+- **Parallel with:** F-01, F-02
 - **Blockers:** —
-- **Unknowns:**
-  - **Frontend state management choice:** Redux, Context API, Zustand, or Jotai? Affects component complexity and testability downstream. — Owner: development team. Block: no (can iterate, but choice in week 1 saves refactoring later).
-  - **UI framework & component library:** Use headless components (Radix UI, Headless UI) or a full component library (Material-UI, Chakra)? Affects development speed vs. customization. — Owner: product/design. Block: no (ship with basic HTML + CSS first, polish after north star).
-- **Risk:** Frontend setup in week 1 is critical to avoid late-stage bloat. React Router, build tool, and state management decisions made here cascade into all UI slices. Use a proven lightweight stack (React 18 + React Router + Vite + Context API) to minimize complexity during time crunch.
-- **Status:** in-progress
+- **Unknowns:** —
+- **Risk:** Low — fully scaffolded and running. Radix UI + Tailwind CSS proven.
+- **Status:** done
 
 ## Slices
 
 ### S-01: New user setup
 
-- **Outcome:** User registers with email/password, creates a household, invites a partner via email, and the partner can accept the invite and log in independently. Both users see the same household on login.
+- **Outcome:** User registers with email/password, creates a household with a name, and immediately can create their first task. Single-user flow; no partner invitation.
 - **Change ID:** `new-user-setup`
-- **PRD refs:** US-01, FR-001–005
-- **Prerequisites:** F-01 (auth API), F-02 (household schema), F-04 (registration form UI, email input validation, household creation form)
-- **Parallel with:** S-02 (both depend on F-01, F-02, F-04; can run in parallel after foundations land)
-- **Blockers:** Email infrastructure provisioning (SMTP, SendGrid, Mailgun, etc.)
+- **PRD refs:** US-01, FR-001–003
+- **Prerequisites:** F-01 (auth API), F-02 (household schema), F-04 (registration form, household creation form)
+- **Parallel with:** —
+- **Blockers:** —
 - **Unknowns:** —
-- **Risk:** Invitation email delivery is a hard dependency (partner must receive a joinable link). Email infrastructure (SMTP, SendGrid, etc.) must be in place by end of week 1. If email setup delays, the entire on-ramp blocks.
-- **Status:** in-progress
+- **Risk:** Implementation already complete and tested.
+- **Status:** done
 
 ### S-02: Basic task CRUD
 
-- **Outcome:** User can create a task with title, optional description, category (cleaning, shopping, laundry, maintenance, bills), and due date. User can view all household tasks, edit a task's details, and delete a task. All changes are persistent and visible to household members.
+- **Outcome:** User can create a task with title, optional description, and due date. User can view all household tasks, edit details, and delete. All changes persist and are visible on next login.
 - **Change ID:** `basic-task-crud`
-- **PRD refs:** US-02 (partial), FR-006, FR-008, FR-010–013
-- **Prerequisites:** F-01 (auth API), F-02 (household schema, task table), F-04 (task form UI, task list view, category selector)
-- **Parallel with:** S-01 (both depend on F-01, F-02, F-04; can run in parallel after foundations land)
-- **Blockers:** —
-- **Unknowns:** —
-- **Risk:** Category enum must match PRD exactly (cleaning, shopping, laundry, maintenance, bills); any mismatch breaks downstream dashboard grouping (S-06). Lock categories in schema design (F-02). Form validation and error handling in React (F-04) must align with backend (F-01).
-- **Status:** proposed
-
-### S-03: Task assignment
-
-- **Outcome:** When a task is created or edited, the user can assign it to themselves or to their partner. Both household members see the assignee on every task. The task list reflects who owns what.
-- **Change ID:** `task-assignment`
-- **PRD refs:** FR-007
-- **Prerequisites:** S-02 (need tasks before assigning them), F-04 (assignment dropdown/selector UI, display assignee on task cards)
+- **PRD refs:** US-02, FR-006, FR-008, FR-010–013
+- **Prerequisites:** F-01 (auth), F-02 (task schema), F-04 (task forms and list view)
 - **Parallel with:** —
 - **Blockers:** —
 - **Unknowns:** —
-- **Risk:** Assignment is the core coordination mechanism (PRD: "tasks are never assigned to the household — they're always assigned to a specific person"). A household member must always know who owns a task; this explicitness prevents the tragedy-of-the-commons. Ensure assignment is required, not optional.
-- **Status:** proposed
+- **Risk:** Implementation complete. Forms and API endpoints tested. Task schema supports dashboard queries in S-06.
+- **Status:** done
 
-### F-03: Telegram bot scaffold
+### S-03: Task recurrence management
 
-- **Outcome:** (foundation) Telegram bot is initialized with a token, webhook is configured, and the system can send messages to users. User-bot communication is authenticated (bot can verify user identity).
-- **Change ID:** `telegram-bot-scaffold`
-- **PRD refs:** FR-015
-- **Unlocks:** S-04 (reminders), S-05 (2-way sync)
-- **Prerequisites:** F-01 (need user context), S-03 (need assigned tasks to know who to remind)
+- **Outcome:** User can edit an existing task to change its recurrence frequency (daily, weekly, monthly, etc.) or remove recurrence entirely. Recurring tasks display their next occurrence date and frequency in the task list.
+- **Change ID:** `task-recurrence-management`
+- **PRD refs:** US-02, FR-015 (task recurrence)
+- **Prerequisites:** S-02 (task model and edit API must exist), F-02 (schema must support recurrence fields), F-04 (task edit form)
 - **Parallel with:** —
-- **Blockers:** Telegram bot token must be provisioned before work can start. Resolves the unknown from F-02 (bot ownership model).
+- **Blockers:** —
 - **Unknowns:**
-  - **Telegram bot API polling vs. WebSocket behavior:** Long-polling vs. WebSocket for message delivery; retry semantics for missed reminders. Affects real-time sync reliability. — Owner: development team. Block: yes.
-  - **User linking flow:** How do users link their Telegram account to the household profile? QR code, manual token entry, or OAuth? Affects UX and security. — Owner: product. Block: yes.
-- **Risk:** Telegram bot token provisioning and user linking are critical path items. If not resolved by end of week 2, S-04 cannot ship. Set up a test bot and linking flow early.
+  - **Recurrence schema design:** Should task table have recurrence_type (daily/weekly/monthly/once), recurrence_interval (every N days/weeks/months), recurrence_end_date? How to store next occurrence? — Owner: backend lead. Block: yes (defines API contract and database migration).
+  - **Recurrence display:** When a user edits a recurring task, how should the UI present the options? Simple dropdown (Daily/Weekly/Monthly) or advanced picker? Should there be an "end date" picker? — Owner: product/design. Block: yes (UX complexity).
+- **Risk:** Medium. Recurrence logic (calculating next occurrence, handling frequency changes) is non-trivial. Data schema changes required. Must not break existing non-recurring tasks. Close integration with S-06 (dashboard relies on knowing which tasks recur to display them correctly).
 - **Status:** proposed
 
-### S-04: Telegram reminder (NORTH STAR)
+### S-06: Today's Dashboard (Enhanced)
 
-- **Outcome:** When a task has a due date and a reminder time, the Telegram bot sends a notification at that time to the assigned user (via the linked Telegram account). The reminder includes the task title and due date. At least 80% of reminders deliver on time (per PRD guardrails).
-- **Change ID:** `telegram-reminder`
-- **PRD refs:** US-02, FR-016
-- **Prerequisites:** S-03 (need to know who to remind), F-03 (bot scaffolding)
-- **Parallel with:** —
-- **Blockers:** Telegram bot token (blocked by F-03 resolution)
-- **Unknowns:** Resolved in F-03 (polling vs. WebSocket behavior must be confirmed in F-03 before this slice starts)
-- **Risk:** This is the **north star**: if reminders don't work reliably, the core value prop fails. Test reminder delivery exhaustively in week 2–3 (send 100s of reminders, verify >80% on-time delivery). If Telegram's retry semantics don't meet the 80% threshold, implement a polling fallback or escalate to queue-based delivery (e.g., Upstash).
-- **Status:** proposed
-
-### S-05: Telegram completion (2-way sync)
-
-- **Outcome:** User can mark a task as complete directly from the Telegram bot (via bot command or button on the reminder message). The completion is immediately reflected in the web app — both users see the task marked done without page reload or delay. No sync lag.
-- **Change ID:** `telegram-completion-sync`
-- **PRD refs:** FR-017, FR-018
-- **Prerequisites:** S-04 (reminder must exist before user can complete from bot), F-04 (React real-time UI updates to reflect task completion from bot)
-- **Parallel with:** —
+- **Outcome:** User sees a dashboard of tasks due today or overdue, intelligently sorted by due date and priority. System surfaces 3–5 suggested household tasks based on domain heuristics (common chores, seasonal maintenance, frequency-based patterns, considering task recurrence) that the user can accept, customize, or dismiss. Provides at-a-glance entry point and daily ritual. Updates when user completes a task (no page reload lag).
+- **Change ID:** `today-dashboard-enhanced`
+- **PRD refs:** US-02, FR-014, NFR <500ms latency
+- **Prerequisites:** S-02 (need tasks), S-03 (dashboard must handle recurring tasks correctly), F-04 (dashboard layout and real-time updates)
+- **Parallel with:** S-08
 - **Blockers:** —
-- **Unknowns:** Real-time sync mechanism (WebSocket vs. polling, latency target <500ms per NFR) must be proven in S-04 work. Carry that knowledge forward.
-- **Risk:** 2-way sync failure (bot completion not reflecting in web app) creates confusion and breaks trust. Test sync latency under load in week 3; if >500ms, add a loading indicator or polling fallback. React component state updates must handle rapid bot completions without race conditions.
+- **Unknowns:**
+  - **Domain heuristics for task suggestions:** What household tasks should the system suggest? Seasonal (HVAC filter every 6 months), frequency-based (laundry every 2 days), category-based (cleaning, maintenance, errands)? How to weight them? Should suggested tasks account for task recurrence (don't re-suggest a weekly task that's already scheduled for today)? — Owner: product/user research. Block: yes (this drives the dashboard logic).
+  - **Task prioritization / sorting strategy:** Should dashboard sort by due date only, or by priority + due date + category? Should overdue tasks float to top? How should suggested tasks integrate with user's own tasks? How do recurring tasks appear in the sorted list? — Owner: product. Block: yes.
+- **Risk:** Medium complexity. Query performance matters (must return in <500ms per NFR). Decision-support logic (heuristics for suggestions, sorting/grouping) is the new critical path instead of prompt engineering. Recurrence adds complexity to suggestion logic (must check if a recurring task is already due today). User testing on the heuristic suggestions is the validation lever. If domain heuristics feel off, iterate quickly; the system is fully under your control (unlike prompt engineering).
 - **Status:** proposed
 
-### S-06: "Today" dashboard
+### S-08: UI styling updates
 
-- **Outcome:** User sees a dashboard of tasks due today or overdue, grouped by assignee (two columns: "Today's tasks for me" | "Today's tasks for partner"). The view updates whenever a task is completed (either in app or bot). Provides at-a-glance visibility of who owns what.
-- **Change ID:** `today-dashboard`
-- **PRD refs:** US-02 (partial), FR-014
-- **Prerequisites:** S-02 (need tasks), S-03 (need assignment to group by), F-04 (dashboard layout, grouping UI, real-time updates)
-- **Parallel with:** S-04, S-05, S-07 (dashboard doesn't depend on Telegram or AI; runs parallel to those streams)
+- **Outcome:** UI styling is updated and refined (colors, spacing, typography, component polish). App has a cohesive, polished visual appearance.
+- **Change ID:** `ui-styling-updates`
+- **PRD refs:** —
+- **Prerequisites:** F-04 (frontend scaffold), S-01 (UI flows exist to style), S-02 (core UI in place)
+- **Parallel with:** S-06
 - **Blockers:** —
 - **Unknowns:** —
-- **Risk:** Dashboard is the daily entry point; it must be fast (query must return in <500ms) and accurate (must reflect real-time updates from bot). Denormalize task counts / status in schema if needed to meet latency target. React component must efficiently re-render grouped task lists on updates.
-- **Status:** proposed
-
-### S-07: AI task generation
-
-- **Outcome:** User can describe their household characteristics ("we have kids and a dog and a 3-bedroom apartment"), and the AI generates 5–10 task suggestions (e.g., "check gutters", "vet appointment for dog"). User can accept, reject, or customize suggestions before saving as tasks. At least 70% of generated tasks are accepted by users (per PRD guardrails).
-- **Change ID:** `ai-task-generation`
-- **PRD refs:** US-03, FR-019–020
-- **Prerequisites:** S-02 (tasks must exist in the system; AI suggestions integrate into the task list), F-04 (household description form UI, suggestion list display, accept/reject/customize buttons)
-- **Parallel with:** S-04, S-05, S-06 (AI work is independent of Telegram + reminder work)
-- **Blockers:** OpenAI API key must be provisioned
-- **Unknowns:**
-  - **Prompt engineering for 70% acceptance rate:** How to design the prompt so AI suggestions match user expectations? Accuracy validation requires real users and iteration. — Owner: development team (post-MVP). Block: no.
-  - **Household description input:** Free-form text, structured form, or multi-choice questionnaire? Affects UX and prompt consistency. — Owner: product. Block: no.
-- **Risk:** AI suggestions are a secondary feature (PRD marks it "Secondary" success criterion). If timeline pressure peaks, this slice can defer to v1.1 without breaking the north star (task assignment + reminders). Front-load the core 4 slices; AI can be an early post-MVP feature.
-- **Status:** proposed
+- **Risk:** Low — styling refinement has no impact on core functionality. Can ship as polish pass post-north-star validation.
+- **Status:** in-progress
 
 ## Backlog Handoff
 
-| Roadmap ID | Change ID                | Suggested issue title                                    | Ready for `/10x-plan` | Notes |
-|------------|--------------------------|----------------------------------------------------------|-----------------------|-------|
-| F-01       | auth-scaffold            | Auth scaffold: email/password registration & login       | no                    | Unblock all downstream work |
-| F-02       | household-schema         | Household data model & PostgreSQL schema                 | no                    | Unblock S-01, S-02, S-03, S-06, S-07 |
-| F-04       | frontend-scaffold        | Frontend scaffold: React, routing, build setup           | no                    | Unblock all UI slices; runs parallel to F-01, F-02 |
-| S-01       | new-user-setup           | New user setup: register, create household, invite       | no                    | Depends on F-01, F-02, F-04 |
-| S-02       | basic-task-crud          | Basic task CRUD: create, view, edit, delete              | no                    | Depends on F-01, F-02, F-04 |
-| S-03       | task-assignment          | Task assignment to self or partner                       | no                    | Depends on S-02, F-04 |
-| F-03       | telegram-bot-scaffold    | Telegram bot scaffold & webhook setup                    | no                    | Blocked on Telegram token provisioning & user linking design |
-| S-04       | telegram-reminder        | Telegram reminder (north star)                           | no                    | Depends on S-03, F-03 |
-| S-05       | telegram-completion-sync | Telegram 2-way sync: completion from bot                 | no                    | Depends on S-04, F-04 |
-| S-06       | today-dashboard          | "Today" dashboard: tasks due today, grouped by assignee  | no                    | Depends on S-02, S-03, F-04 |
-| S-07       | ai-task-generation       | AI task generation: suggestions, accept/reject/customize | no                    | Depends on S-02, F-04; deferrable if time pressure peaks |
+| Roadmap ID | Change ID                  | Suggested issue title                                     | Ready for `/10x-plan` | Notes |
+|------------|------------------------|-------------------------------------------------------|-----------------------|-------|
+| F-01       | auth-scaffold          | Auth scaffold: email/password registration & login    | no (done)             | Complete; no additional planning needed. |
+| F-02       | household-schema       | Household schema: single-user model (cleaned)          | no (done)             | Complete; multi-user tables removed. |
+| F-03       | local-postgres-docker  | Local postgres in Docker for development               | no (done)             | Complete; Docker Compose running. |
+| F-04       | frontend-scaffold      | Frontend scaffold: React, routing, build setup         | no (done)             | Complete; dev server running. |
+| S-01       | new-user-setup         | New user setup: register, create household, first task | no (done)             | Complete. |
+| S-02       | basic-task-crud        | Basic task CRUD: create, view, edit, delete            | no (done)             | Complete; tested. |
+| S-03       | task-recurrence-management | Task recurrence: change frequency or remove recurrence from existing tasks | yes | **CRITICAL PATH for MVP.** Prerequisite for S-06 (dashboard needs recurring task logic). 3–4 days. |
+| S-06A      | dashboard-prioritization | Today dashboard: smart sorting (due date, priority, overdue first) | yes (ready-to-plan) | **NORTH STAR part 1.** Core decision-support via sorting. 3–4 days. Depends on S-03. |
+| S-06B      | suggested-household-tasks | Domain-heuristic suggestions (3–5 tasks); user can accept/dismiss | yes (ready-to-plan) | **NORTH STAR part 2.** Task suggestions without AI. 4–5 days. Runs parallel with S-06A. |
+| S-08       | ui-styling-updates     | UI styling updates: colors, spacing, typography        | yes (in-progress) | Polish pass. Run in parallel with S-06A & S-06B. |
+| S-07       | ai-task-generation     | AI task generation (deferred to v1.1)                    | no (parked)       | Revisit post-launch based on heuristic validation. |
 
 ## Open Roadmap Questions
 
-1. **Telegram bot token ownership model:** Is the bot token managed by the system (one bot for all households) or per-household? This affects authentication and deployment architecture for F-03. — Owner: product/ops. Block: F-03.
+**Status:** S-06 has been split into S-06A (dashboard-prioritization) and S-06B (suggested-household-tasks) to simplify scope. Both tasks resolve the blocking questions below.
 
-2. **User Telegram linking flow:** How do users link their Telegram account to the household profile? QR code scan, manual token entry, or OAuth-style flow? Affects UX and security design for F-03. — Owner: product. Block: F-03.
+1. **Task prioritization and sorting in dashboard (S-06A):** ✓ **Resolved** — Sort by overdue (top) → due date (primary) → priority (secondary). Implementation plan: [dashboard-prioritization/plan.md](../changes/dashboard-prioritization/plan.md)
 
-3. **Email infrastructure provider:** Which service (SMTP, SendGrid, Mailgun) will handle invitation emails for S-01? Must be provisioned before week 1 ends. — Owner: ops/infrastructure. Block: S-01.
+2. **Domain heuristics ruleset for task suggestions (S-06B):** ✓ **Resolved** — 20–30 common household tasks with rules (seasonal, frequency-based, category-based). Implementation plan: [suggested-household-tasks/plan.md](../changes/suggested-household-tasks/plan.md)
+
+3. **Suggestion acceptance & metrics (post-MVP):** Target ≥50% acceptance rate to validate heuristics work. Block: no (ships regardless; iteration lever post-MVP).
 
 ## Parked
 
-- **FR-009 (recurring tasks)** — Explicitly deferred to v1.1 in PRD. Reduces MVP scope; one-off task creation is sufficient for launch. Users can manually recreate repeating tasks until v1.1 ships.
-- **Advanced Telegram features** — Bot can complete tasks only in MVP. Task editing, assignment changes, and due-date updates remain in web app. Rich Telegram UX deferred to v1.1.
-- **Advanced observability** — Error tracking (Sentry), metrics dashboards, and log aggregation deferred to post-MVP. Baseline logging only (stdout/stderr) in scope.
-- **Mobile native apps** — Web-only MVP per PRD §Non-Goals.
-- **External integrations** — Google Calendar, WhatsApp, Slack integrations deferred per PRD §Non-Goals.
-- **Gamification, advanced analytics, complex AI agents** — All out of scope per PRD §Non-Goals.
+- **S-07 (AI task generation)** — Deferred to v1.1. MVP focuses on domain-specific heuristics (S-06) only. Reason: 1-week timeline, reduced complexity, keep system maintainable. AI enhancement revisit post-launch based on user feedback and heuristic effectiveness.
+- **FR-007 (Task assignment to partner), S-03, S-04, S-05 (Telegram bot and reminders)** — Multi-user feature, explicitly deferred. Single-user MVP has no "partner" to assign tasks to.
+- **Task categories/tags** — Deferred. Dashboard sorts by due date + priority only.
+- **Advanced observability** — Deferred to post-MVP. Baseline logging (stdout/stderr) only.
+- **Mobile native apps** — Web-only MVP per PRD. Responsive design covers mobile browsers.
+- **External integrations** — Google Calendar, Slack, etc. deferred.
 
 ## Milestone History
 
-(Empty on first generation.)
+(Empty on first generation. `/10x-archive` appends entries here as slices complete.)
 
 ## Done
 
-(Empty on first generation. `/10x-archive` appends entries here as slices complete.)
+(Empty on first generation. `/10x-archive` appends entries here as slices are archived.)
 
 ---
 
-## Your Next Move
+## Key Changes from v0 → v1
 
-**► Parallel launch:**  on **F-01** AND `/10x-plan frontend-scaffold` on **F-04** immediately.
+**Pivot to domain-specific decision system (v0 → v1):**
+- **v0:** AI task generation (S-07) as north star. Challenge: complex prompt engineering, external dependencies, 70% acceptance threshold.
+- **v1:** Enhanced dashboard with domain-specific heuristics (S-06) as north star. Benefit: simpler, faster to ship, fully under your control, easier to iterate.
 
-  **Why these two first:** F-01 and F-04 have no prerequisites and must both land in week 1 to unblock S-01 and S-02. Backend and frontend can develop in parallel. Email infrastructure provisioning is also week-1 critical path.
+**Current commitment (1-week MVP):**
+- **S-06 (Today's Dashboard)** — Smart sorting + domain-heuristic task suggestions. Validate core value: users find heuristics useful enough to return daily.
+- **S-07 (AI task generation)** — Parked to v1.1. Revisit only if domain heuristics work and you want to layer on AI.
+- **S-08 (UI Styling)** — Polish pass in parallel.
 
-  **Recommended sequence after F-01 & F-04:**
-  1. `/10x-plan household-schema` on **F-02** → database foundation
-  2. `/10x-plan new-user-setup` on **S-01** → registration & household setup (can start parallel to F-02)
-  3. `/10x-plan basic-task-crud` on **S-02** → task forms & views (parallel to S-01)
-  4. `/10x-plan task-assignment` on **S-03** → assignment UI
-  5. **[Resolve Telegram unknowns]** → then `/10x-plan telegram-bot-scaffold` on **F-03**
-  6. `/10x-plan telegram-reminder` on **S-04** → **NORTH STAR** (validation moment)
-  7. `/10x-plan telegram-completion-sync` on **S-05** → 2-way sync
-  8. `/10x-plan today-dashboard` on **S-06** → dashboard (parallel to Telegram work)
-  9. `/10x-plan ai-task-generation` on **S-07** → AI suggestions (defer to post-MVP if time tight)
-
-  **Blockers to resolve before planning F-03:**
-  - Telegram bot ownership model (system-wide vs. per-household)
-  - User Telegram linking flow (QR code, token, or OAuth)
-
-  **Week-1 critical path:**
-  - F-01 auth endpoints shipped
-  - F-04 React scaffold shipped
-  - Email provider provisioned (SendGrid, Mailgun, SMTP)
+**Investment areas (MVP scope):**
+- **Frontend:** Dashboard logic (sorting, grouping, suggestion display). Keep UI simple: show suggested tasks, user can accept.
+- **Backend:** Simple heuristics engine (rule-based task suggestions, no ML). ~10-20 common household tasks, hardcoded rules.
+- **Data:** Task table tracks suggestion acceptance (optional; log first).
+- **Auth / Infra:** No changes.
 
 ---
 
-**Ready.** The roadmap is clean: 4 foundations, 7 vertical slices, clear north-star path. Parallelism opportunity: F-01+F-04+F-02 can overlap. Speed goal means ship the must-have path; parked items offer scope trim if weeks 4–5 get tight.
+## Current Status & Next Steps
+
+**1-week sprint to MVP** (S-03 foundation + S-06A + S-06B + S-08 focus, S-07 parked):
+
+**Week 1 priorities:**
+1. **S-03 (Task Recurrence Management)** — CRITICAL PATH FOUNDATION (3–4 days, MUST ship before S-06)
+   - Extend task schema to support recurrence (recurrence_type: daily/weekly/monthly/once, recurrence_interval, recurrence_end_date)
+   - Database migration for existing tasks (default to non-recurring)
+   - Backend API endpoint: fetch task recurrence details, update recurrence
+   - Frontend: extend task edit form to show recurrence picker
+   - Ensure next occurrence calculations work for dashboard integration
+   - **Unlocks:** S-06A and S-06B can now work with recurring tasks correctly
+   
+2. **S-06A (Dashboard Prioritization)** — CRITICAL PATH (3–4 days, starts after S-03 schema lands)
+   - Create TodayDashboardContainer component
+   - Implement smart sorting: overdue first → due date → priority
+   - **With S-03 complete:** dashboard can now correctly display recurring tasks and their next occurrences
+   - Wire task actions: complete, delete, move to tomorrow, refresh
+   - Visual hierarchy: clear distinction between overdue and today's tasks
+   
+3. **S-06B (Suggested Household Tasks)** — CRITICAL PATH (4–5 days, runs parallel with S-06A after S-03)
+   - Define 20–30 domain household tasks with frequencies/seasons
+   - **Leverage S-03's recurrence logic:** suggestions should account for recurring tasks already scheduled
+   - Implement heuristics scoring engine (backend)
+   - Create suggestion API endpoint
+   - Build SuggestedTasksList component + accept/dismiss flow
+   - Analytics: log acceptance/dismissal for post-MVP validation
+   
+4. **Dashboard Integration** (S-06A and S-06B together)
+   - Show user's sorted tasks above suggested tasks
+   - Accept suggestion → task added to user's list
+   - Clear visual separation
+   - Recurring tasks display frequency info
+   
+5. **S-08 (UI Styling)** — PARALLEL
+   - Polish dashboard appearance
+   - Color, spacing, typography refinement
+   
+6. **Launch ready:**
+   - Task recurrence working end-to-end (S-03)
+   - Smart sorting working (S-06A)
+   - Domain heuristics working with recurrence logic (S-06B)
+   - No AI complexity
+   - Users see useful suggestions and can manage task recurrence
+
+**Validation criteria (post-launch):**
+- Users return to dashboard daily (engagement signal).
+- Users accept 50%+ of suggestions (heuristics are useful).
+- Users modify task recurrence (feature adoption signal).
+- System responds instantly to actions (no lag).
+
+**Task dependencies:**
+- **S-03 FIRST** — Schema changes must land before S-06A/S-06B can be planned in detail
+- S-06A and S-06B can run in parallel once S-03 is complete (different concerns, same data)
+- S-06A and S-06B both depend on S-03 (task recurrence foundation)
+- All depend on S-02 (task CRUD + API) — already done
+
+**Post-launch path (v1.1):**
+- Measure heuristic effectiveness via user adoption & acceptance rate.
+- Measure recurrence adoption (do users actually use the frequency change feature?).
+- If heuristics + recurrence work well, keep simple; no AI needed.
+- If users want more sophistication, revisit S-07 (AI suggestions) based on validated demand.
+
+---
+
+**Summary:** 1-week sprint: build S-03 (task recurrence foundation) → S-06A (dashboard prioritization) and S-06B (domain heuristics) in parallel → S-08 (polish). Recurrence is the foundation that makes the dashboard and suggestions intelligent. Validate that users find recurrence management + heuristic suggestions useful. Ship lean, iterate based on real user behavior. AI considered only post-launch if heuristics alone aren't enough.

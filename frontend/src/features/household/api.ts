@@ -21,42 +21,20 @@ export interface CreateHouseholdResponse {
 export async function createHouseholdApi(
   request: CreateHouseholdRequest
 ): Promise<ApiResult<CreateHouseholdResponse>> {
-  return apiClient('/api/household', {
+  return apiClient('/household', {
     method: 'POST',
     body: JSON.stringify(request),
   })
 }
 
-export interface SendInvitationRequest {
-  invitedEmail: string
-}
-
-export interface SendInvitationResponse {
-  invitationId: string
-  invitedEmail: string
-  expiresAt: string
-}
-
-export async function sendInvitationApi(
-  householdId: string,
-  request: SendInvitationRequest
-): Promise<ApiResult<SendInvitationResponse>> {
-  return apiClient(`/api/household/${householdId}/invite`, {
-    method: 'POST',
-    body: JSON.stringify(request),
-  })
-}
-
-export async function acceptInvitationApi(
-  token: string
-): Promise<ApiResult<CreateHouseholdResponse>> {
-  return apiClient(`/api/invitation/${token}/accept`, {
-    method: 'POST',
-  })
+export async function getHouseholdDetailsApi(
+  householdId: string
+): Promise<ApiResult<Household>> {
+  return apiClient(`/household/${householdId}`)
 }
 
 export async function getUserHouseholdsApi(): Promise<ApiResult<Household[]>> {
-  return apiClient('/api/household', {
+  return apiClient('/household', {
     method: 'GET',
   })
 }

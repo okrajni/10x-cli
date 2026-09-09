@@ -5,5 +5,7 @@ public enum TaskCategory {
     SHOPPING,
     LAUNDRY,
     MAINTENANCE,
-    BILLS
+    BILLS,
+    SEASONAL,
+    ERRANDS
 }

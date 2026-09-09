@@ -3,7 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>done yet?</title>
+    <meta name="theme-color" content="#445225" />
+    <title>Done yet?</title>
+    <style>
+      /* Painted before the bundle loads so the first frame is already
+         on-palette instead of flashing white. */
+      html,
+      body {
+        margin: 0;
+        background-color: #445225;
+        color: #d29c9a;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>

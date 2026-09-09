@@ -1,5 +1,4 @@
 import { apiClient, ApiResult } from '@lib/api/client'
-import { User } from './types'
 
 export interface LoginRequest {
   email: string
@@ -7,9 +6,10 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  user: User
+  userId: string
+  email: string
   token: string
-  refreshToken: string
+  expiresAt: string
 }
 
 export async function loginApi(request: LoginRequest): Promise<ApiResult<LoginResponse>> {
@@ -43,9 +43,10 @@ export interface RegisterRequest {
 }
 
 export interface RegisterResponse {
-  user: User
+  userId: string
+  email: string
   token: string
-  refreshToken?: string
+  expiresAt: string
 }
 
 export async function registerApi(request: RegisterRequest): Promise<ApiResult<RegisterResponse>> {

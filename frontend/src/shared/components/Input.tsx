@@ -8,17 +8,24 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 export function Input({ label, error, helpText, className, ...props }: InputProps) {
-  const inputStyles = clsx(
-    'px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition',
-    error ? 'border-red-500 bg-red-50' : 'border-gray-300'
-  )
-
   return (
-    <div>
-      {label && <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>}
-      <input className={clsx(inputStyles, className)} {...props} />
-      {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
-      {helpText && !error && <p className="mt-1 text-sm text-gray-500">{helpText}</p>}
+    <div className="space-y-0">
+      {label && (
+        <label className="label" htmlFor={props.id}>
+          {label}
+        </label>
+      )}
+
+      <input className={clsx('field', error && 'field-invalid', className)} {...props} />
+
+      {error && (
+        <p className="mt-2 flex items-center gap-1.5 pl-1 text-xs font-medium text-accent">
+          <span aria-hidden="true">!</span>
+          {error}
+        </p>
+      )}
+
+      {helpText && !error && <p className="hint mt-2 pl-1">{helpText}</p>}
     </div>
   )
 }

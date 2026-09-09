@@ -1,7 +1,9 @@
 import { createContext, useContext, useReducer, useCallback, useEffect, ReactNode } from 'react'
 import { authReducer, initialState } from '../reducer'
-import { AuthState } from '../types'
-import { loginApi } from '../api'
+import { AuthState, Household } from '../types'
+import { loginApi, registerApi } from '../api'
+import { getUserHouseholdsApi } from '@features/household/api'
+import { setApiToken } from '@lib/api/client'
 
 interface AuthContextValue {
   user: AuthState['user']
@@ -10,10 +12,15 @@ interface AuthContextValue {
   isLoading: AuthState['isLoading']
   isAuthenticated: AuthState['isAuthenticated']
   error: AuthState['error']
+  households: AuthState['households']
+  currentHousehold: AuthState['currentHousehold']
   login: (email: string, password: string) => Promise<void>
+  register: (email: string, password: string) => Promise<void>
   logout: () => Promise<void>
   refreshToken: () => Promise<void>
   clearError: () => void
+  setCurrentHousehold: (household: Household) => void
+  refetchHouseholds: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
@@ -31,19 +38,97 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error(result.message)
       }
 
-      const expiresAt = Date.now() + 3600000 // 1 hour from now
+      const expiresAt = new Date(result.data.expiresAt).getTime()
+      const token = result.data.token
 
       dispatch({
         type: 'LOGIN_SUCCESS',
         payload: {
-          user: result.data.user,
-          token: result.data.token,
-          refreshToken: result.data.refreshToken,
+          user: {
+            id: result.data.userId,
+            email: result.data.email,
+          },
+          token,
+          refreshToken: null,
           expiresAt,
         },
       })
+
+      // Set token immediately for subsequent API calls
+      setApiToken(token)
+
+      // Fetch households after successful login
+      try {
+        const householdsResult = await getUserHouseholdsApi()
+        if (householdsResult.ok && Array.isArray(householdsResult.data)) {
+          const households = householdsResult.data
+          const currentHousehold: Household | null = households.length > 0 ? (households[0] ?? null) : null
+          dispatch({
+            type: 'SET_HOUSEHOLDS',
+            payload: {
+              households,
+              currentHousehold,
+            },
+          })
+        }
+      } catch {
+        // Silently fail if household fetch fails
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Login failed'
+      dispatch({ type: 'LOGIN_ERROR', payload: message })
+      throw error
+    }
+  }, [])
+
+  // Register action
+  const register = useCallback(async (email: string, password: string) => {
+    dispatch({ type: 'LOGIN_START' })
+    try {
+      const result = await registerApi({ email, password })
+
+      if (!result.ok) {
+        throw new Error(result.message)
+      }
+
+      const expiresAt = new Date(result.data.expiresAt).getTime()
+      const token = result.data.token
+
+      dispatch({
+        type: 'REGISTER_SUCCESS',
+        payload: {
+          user: {
+            id: result.data.userId,
+            email: result.data.email,
+          },
+          token,
+          refreshToken: null,
+          expiresAt,
+        },
+      })
+
+      // Set token immediately for subsequent API calls
+      setApiToken(token)
+
+      // Fetch households after successful registration
+      try {
+        const householdsResult = await getUserHouseholdsApi()
+        if (householdsResult.ok && Array.isArray(householdsResult.data)) {
+          const households = householdsResult.data
+          const currentHousehold: Household | null = households.length > 0 ? (households[0] ?? null) : null
+          dispatch({
+            type: 'SET_HOUSEHOLDS',
+            payload: {
+              households,
+              currentHousehold,
+            },
+          })
+        }
+      } catch {
+        // Silently fail if household fetch fails
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Registration failed'
       dispatch({ type: 'LOGIN_ERROR', payload: message })
       throw error
     }
@@ -63,8 +148,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } finally {
       dispatch({ type: 'LOGOUT' })
+      setApiToken(null)
     }
   }, [state.token])
+
+  // Set current household action
+  const setCurrentHousehold = useCallback((household: Household) => {
+    dispatch({ type: 'SET_CURRENT_HOUSEHOLD', payload: household })
+  }, [])
 
   // Refresh token action
   const refreshTokenAsync = useCallback(async () => {
@@ -88,6 +179,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data = await response.json()
       const expiresAt = Date.now() + 3600000 // 1 hour from now
 
+      setApiToken(data.token)
       dispatch({
         type: 'REFRESH_TOKEN_SUCCESS',
         payload: {
@@ -105,22 +197,77 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'CLEAR_ERROR' })
   }, [])
 
+  // Refetch households action
+  const refetchHouseholds = useCallback(async () => {
+    try {
+      const householdsResult = await getUserHouseholdsApi()
+      if (householdsResult.ok && Array.isArray(householdsResult.data)) {
+        const households = householdsResult.data
+        const currentHousehold: Household | null = households.length > 0 ? (households[0] ?? null) : null
+        dispatch({
+          type: 'SET_HOUSEHOLDS',
+          payload: {
+            households,
+            currentHousehold,
+          },
+        })
+      }
+    } catch {
+      // Silently fail if household fetch fails
+    }
+  }, [])
+
   // On mount, restore session from localStorage
   useEffect(() => {
-    const savedState = localStorage.getItem('authState')
-    if (savedState) {
-      try {
-        const parsed = JSON.parse(savedState)
-        if (parsed.token && parsed.expiresAt) {
-          // Check if token is not expired
-          if (parsed.expiresAt > Date.now()) {
-            dispatch({ type: 'RESTORE_SESSION', payload: parsed })
+    const restoreSession = async () => {
+      const savedState = localStorage.getItem('authState')
+      if (savedState) {
+        try {
+          const parsed = JSON.parse(savedState)
+          if (parsed.token && parsed.expiresAt) {
+            // Check if token is not expired
+            if (parsed.expiresAt > Date.now()) {
+              setApiToken(parsed.token)
+              dispatch({ type: 'RESTORE_SESSION', payload: parsed })
+
+              // Restore households from localStorage if available
+              if (parsed.households && Array.isArray(parsed.households)) {
+                const currentHousehold = parsed.currentHousehold ?? (parsed.households.length > 0 ? parsed.households[0] : null)
+                dispatch({
+                  type: 'SET_HOUSEHOLDS',
+                  payload: {
+                    households: parsed.households,
+                    currentHousehold,
+                  },
+                })
+              } else {
+                // Refetch households if not in localStorage
+                try {
+                  const householdsResult = await getUserHouseholdsApi()
+                  if (householdsResult.ok && Array.isArray(householdsResult.data)) {
+                    const households = householdsResult.data
+                    const currentHousehold: Household | null = households.length > 0 ? (households[0] ?? null) : null
+                    dispatch({
+                      type: 'SET_HOUSEHOLDS',
+                      payload: {
+                        households,
+                        currentHousehold,
+                      },
+                    })
+                  }
+                } catch {
+                  // Silently fail if household fetch fails
+                }
+              }
+            }
           }
+        } catch (err) {
+          console.error('Failed to restore session:', err)
         }
-      } catch (err) {
-        console.error('Failed to restore session:', err)
       }
     }
+
+    restoreSession()
   }, [])
 
   // Save auth state to localStorage whenever it changes
@@ -132,6 +279,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         refreshToken: state.refreshToken,
         expiresAt: state.expiresAt,
         isAuthenticated: state.isAuthenticated,
+        households: state.households,
+        currentHousehold: state.currentHousehold,
       }
       localStorage.setItem('authState', JSON.stringify(stateToSave))
       // Also set token in a cookie for API requests
@@ -140,7 +289,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem('authState')
       document.cookie = 'authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
     }
-  }, [state.isAuthenticated, state.token, state.user, state.refreshToken, state.expiresAt])
+  }, [state.isAuthenticated, state.token, state.user, state.refreshToken, state.expiresAt, state.households, state.currentHousehold])
 
   const contextValue: AuthContextValue = {
     user: state.user,
@@ -149,10 +298,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isLoading: state.isLoading,
     isAuthenticated: state.isAuthenticated,
     error: state.error,
+    households: state.households,
+    currentHousehold: state.currentHousehold,
     login,
+    register,
     logout,
     refreshToken: refreshTokenAsync,
     clearError,
+    setCurrentHousehold,
+    refetchHouseholds,
   }
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>

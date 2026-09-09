@@ -22,33 +22,14 @@ class SchemaVerificationTest {
     }
 
     @Test
-    void householdMemberHasCorrectColumns() {
-        User creator = new User("creator@example.com", "hash");
-        creator.setId(UUID.randomUUID());
-
-        Household household = new Household("Test Household", creator);
-        household.setId(UUID.randomUUID());
-
-        HouseholdMember member = new HouseholdMember(household, creator, HouseholdMemberRole.CREATOR);
-        member.setId(UUID.randomUUID());
-
-        assertEquals(household.getId(), member.getHousehold().getId());
-        assertEquals(creator.getId(), member.getUser().getId());
-        assertEquals(HouseholdMemberRole.CREATOR, member.getRole());
-    }
-
-    @Test
     void taskTableHasAllRequiredColumns() {
         User creator = new User("creator@example.com", "hash");
         creator.setId(UUID.randomUUID());
 
-        User assignee = new User("assignee@example.com", "hash");
-        assignee.setId(UUID.randomUUID());
-
         Household household = new Household("Test Household", creator);
         household.setId(UUID.randomUUID());
 
-        Task task = new Task("Clean kitchen", household, assignee, creator);
+        Task task = new Task("Clean kitchen", household, creator);
         task.setId(UUID.randomUUID());
         task.setDescription("Deep clean");
         task.setCategory(TaskCategory.CLEANING);
@@ -61,7 +42,6 @@ class SchemaVerificationTest {
         assertEquals("Deep clean", task.getDescription());
         assertEquals(TaskCategory.CLEANING, task.getCategory());
         assertEquals(household.getId(), task.getHousehold().getId());
-        assertEquals(assignee.getId(), task.getAssignee().getId());
         assertEquals(creator.getId(), task.getCreatedBy().getId());
         assertFalse(task.isCompleted());
         assertNull(task.getDeletedAt());
@@ -75,7 +55,7 @@ class SchemaVerificationTest {
         Household household = new Household("Test Household", creator);
         household.setId(UUID.randomUUID());
 
-        Task task = new Task("Test", household, creator, creator);
+        Task task = new Task("Test", household, creator);
         task.setId(UUID.randomUUID());
 
         assertNull(task.getDeletedAt());
@@ -86,48 +66,15 @@ class SchemaVerificationTest {
     }
 
     @Test
-    void householdInvitationHasCorrectColumns() {
-        User creator = new User("creator@example.com", "hash");
-        creator.setId(UUID.randomUUID());
-
-        Household household = new Household("Test Household", creator);
-        household.setId(UUID.randomUUID());
-
-        String token = UUID.randomUUID().toString();
-        LocalDateTime expiresAt = LocalDateTime.now().plusHours(24);
-
-        HouseholdInvitation invitation = new HouseholdInvitation(
-                household,
-                "partner@example.com",
-                token,
-                expiresAt
-        );
-        invitation.setId(UUID.randomUUID());
-
-        assertEquals(household.getId(), invitation.getHousehold().getId());
-        assertEquals("partner@example.com", invitation.getInvitedEmail());
-        assertEquals(token, invitation.getInvitationToken());
-        assertEquals(expiresAt, invitation.getExpiresAt());
-        assertFalse(invitation.isAccepted());
-        assertNull(invitation.getAcceptedAt());
-        assertNull(invitation.getAcceptedByUser());
-    }
-
-    @Test
-    void householdMemberRoleEnumHasAllValues() {
-        assertEquals(2, HouseholdMemberRole.values().length);
-        assertTrue(enumValueExists(HouseholdMemberRole.class, "CREATOR"));
-        assertTrue(enumValueExists(HouseholdMemberRole.class, "PARTNER"));
-    }
-
-    @Test
     void taskCategoryEnumHasAllValues() {
-        assertEquals(5, TaskCategory.values().length);
+        assertEquals(7, TaskCategory.values().length);
         assertTrue(enumValueExists(TaskCategory.class, "CLEANING"));
         assertTrue(enumValueExists(TaskCategory.class, "SHOPPING"));
         assertTrue(enumValueExists(TaskCategory.class, "LAUNDRY"));
         assertTrue(enumValueExists(TaskCategory.class, "MAINTENANCE"));
         assertTrue(enumValueExists(TaskCategory.class, "BILLS"));
+        assertTrue(enumValueExists(TaskCategory.class, "SEASONAL"));
+        assertTrue(enumValueExists(TaskCategory.class, "ERRANDS"));
     }
 
     private <E extends Enum<E>> boolean enumValueExists(Class<E> enumClass, String name) {

@@ -770,14 +770,15 @@ Use `@SpringBootTest` + `MockMvc` or `TestRestTemplate` to make actual HTTP requ
 - [x] 3.3 Create POST /auth/login endpoint in AuthController — 14d8256
 - [x] 3.4 Write unit tests for LoginService (valid, invalid credentials, session creation) — 14d8256
 - [x] 3.5 Write integration tests for /auth/login endpoint and multi-device login — 14d8256
-- [ ] 3.6 Implement token refresh endpoint (optional; can defer to Phase 4)
+- [x] 3.6 Fix: Remove duplicate rate-limiting recording on login attempts — 3bd1d9f
+- [ ] 3.7 Implement token refresh endpoint (optional; can defer to Phase 4)
 
 #### Manual
 
-- [ ] 3.7 Log in with valid credentials → receive 200 with token
-- [ ] 3.8 Attempt login with wrong password → receive 401 "Invalid email or password"
-- [ ] 3.9 Log in twice from different devices → verify two UserSession records in database
-- [ ] 3.10 Use token from Phase 2 after Phase 3 login → verify both tokens work
+- [ ] 3.8 Log in with valid credentials → receive 200 with token
+- [ ] 3.9 Attempt login with wrong password → receive 401 "Invalid email or password"
+- [ ] 3.10 Log in twice from different devices → verify two UserSession records in database
+- [ ] 3.11 Use token from Phase 2 after Phase 3 login → verify both tokens work
 
 ### Phase 4: Security Hardening & Integration
 
@@ -795,9 +796,9 @@ Use `@SpringBootTest` + `MockMvc` or `TestRestTemplate` to make actual HTTP requ
 
 #### Manual
 
-- [ ] 4.10 Brute-force test: 5 failed logins → 6th attempt returns 429 with Retry-After
-- [ ] 4.11 Full flow: register → login → logout → attempt access with old token → 401
-- [ ] 4.12 Verify error messages don't leak sensitive info (no "user not found", just "Invalid credentials")
-- [ ] 4.13 Test tampered token (modify JWT payload) → 401
-- [ ] 4.14 Verify session table has multiple records after multi-device login
-- [ ] 4.15 Load test: login endpoint responds in <500ms under normal load
+- [ ] 4.11 Brute-force test: 5 failed logins → 6th attempt returns 429 with Retry-After
+- [ ] 4.12 Full flow: register → login → logout → attempt access with old token → 401
+- [ ] 4.13 Verify error messages don't leak sensitive info (no "user not found", just "Invalid credentials")
+- [ ] 4.14 Test tampered token (modify JWT payload) → 401
+- [ ] 4.15 Verify session table has multiple records after multi-device login
+- [ ] 4.16 Load test: login endpoint responds in <500ms under normal load
